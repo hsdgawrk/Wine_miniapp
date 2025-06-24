@@ -1,0 +1,8 @@
+{
+  "pages": ["pages/index/index", "pages/cocktail-detail/cocktail-detail", "pages/steps/steps", "pages/add-cocktail/add-cocktail", "pages/share/share"],
+  "window": {
+    "navigationBarTitleText": "调酒小程序"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

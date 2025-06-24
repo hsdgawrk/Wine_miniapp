@@ -1,0 +1,186 @@
+.container {
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+/* 步骤导航栏 */
+.step-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+  color: #fff;
+  backdrop-filter: blur(20rpx);
+  border-bottom: 1rpx solid rgba(255,255,255,0.2);
+}
+
+.nav-title {
+  font-size: 38rpx;
+  font-weight: 800;
+  text-shadow: 0 2rpx 10rpx rgba(0,0,0,0.3);
+}
+
+.step-count {
+  font-size: 28rpx;
+  opacity: 0.9;
+  background: rgba(255,255,255,0.2);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+/* 步骤卡片 */
+.steps-list {
+  padding: 30rpx;
+}
+
+.step-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 32rpx;
+  padding: 50rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+  backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(255,255,255,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.step-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  border-radius: 32rpx;
+}
+
+/* 步骤标题 */
+.step-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.step-number {
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: #fff;
+  font-weight: 800;
+  margin-right: 24rpx;
+  box-shadow: 0 8rpx 25rpx rgba(238, 90, 82, 0.3);
+  font-size: 26rpx;
+}
+
+.step-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* 步骤说明 */
+.step-instruction {
+  display: block;
+  font-size: 30rpx;
+  color: #5a6c7d;
+  margin-bottom: 30rpx;
+  line-height: 48rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* 动画示意图 */
+.step-illustration {
+  width: 100%;
+  height: 320rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+/* 底部操作栏 */
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 40rpx;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 -8rpx 30rpx rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20rpx);
+  border-top: 1rpx solid rgba(255,255,255,0.3);
+}
+
+.complete-button {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  padding: 24rpx 0;
+  border-radius: 50rpx;
+  border: none;
+  box-shadow: 0 8rpx 25rpx rgba(76, 175, 80, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.complete-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s;
+}
+
+.complete-button:active::before {
+  left: 100%;
+}
+
+.complete-button:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 15rpx rgba(76, 175, 80, 0.4);
+}
+
+/* 动画样式 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100rpx); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+}
+
+.slideIn {
+  animation-name: slideIn;
+}
+
+.zoomIn {
+  animation-name: zoomIn;
+}

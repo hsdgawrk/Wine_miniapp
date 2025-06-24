@@ -1,0 +1,22 @@
+<view class="container">
+  <!-- 鸡尾酒封面 -->
+  <view class="cocktail-header">
+    <image class="cocktail-cover" src="/images/{{cocktail.name}}.jpg" mode="aspectFill" />
+    <text class="cocktail-name">{{cocktail.name}}</text>
+  </view>
+
+  <!-- 鸡尾酒信息 -->
+  <view class="cocktail-info-card">
+    <text class="info-title">简介</text>
+    <text class="info-content">{{cocktail.description}}</text>
+    
+    <text class="info-title">历史背景</text>
+    <text class="info-content">{{cocktail.history}}</text>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="primary-button" bindtap="navigateToSteps">查看制作步骤</button>
+    <button class="secondary-button" bindtap="navigateToShare">分享配方</button>
+  </view>
+</view>

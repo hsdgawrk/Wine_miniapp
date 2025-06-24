@@ -1,0 +1,66 @@
+<view class="container">
+  <!-- 表单标题 -->
+  <view class="form-header">
+    <text class="form-title">添加新配方</text>
+    <text class="form-subtitle">请填写酒款信息和制作步骤</text>
+  </view>
+
+  <!-- 配方基本信息 -->
+  <view class="form-section">
+    <view class="form-group">
+      <text class="form-label">酒款名称</text>
+      <input 
+        class="form-input" 
+        bindinput="onInputName" 
+        placeholder="请输入酒名" 
+        value="{{cocktailName}}"
+        maxlength="30"
+      />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">简介描述</text>
+      <input 
+        class="form-input" 
+        bindinput="onInputDescription" 
+        placeholder="简要描述这款酒的特点" 
+        value="{{cocktailDescription}}"
+      />
+    </view>
+  </view>
+
+  <!-- 制作步骤 -->
+  <view class="form-section">
+    <text class="form-section-title">制作步骤</text>
+    
+    <block wx:for="{{steps}}" wx:key="number">
+      <view class="step-form-group">
+        <view class="step-header">
+          <text class="step-number">步骤 {{item.number}}</text>
+          <button 
+            class="remove-step-btn" 
+            bindtap="removeStep" 
+            data-index="{{index}}"
+            wx:if="{{steps.length > 1}}"
+          >移除</button>
+        </view>
+        
+        <input 
+          class="form-input step-input" 
+          bindinput="onInputStep" 
+          data-index="{{index}}" 
+          placeholder="详细描述该步骤的操作方法" 
+          value="{{item.instruction}}"
+        />
+      </view>
+    </block>
+
+    <button class="add-step-button" bindtap="addStep">+ 添加步骤</button>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="cancel-button" bindtap="navigateBack">取消</button>
+    <button class="save-button" bindtap="saveCocktail">保存配方</button>
+  </view>
+</view>

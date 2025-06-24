@@ -1,0 +1,45 @@
+<view class="container">
+  <!-- 分享方式选择 -->
+  <view class="share-methods">
+    <text class="section-title">选择分享方式</text>
+    
+    <view 
+      class="method-card" 
+      bindtap="onMethodSelect"
+      data-method="qrcode"
+    >
+      <image class="method-icon" src="/images/qrcode.png" mode="aspectFit" />
+      <text class="method-title">二维码分享</text>
+      <text class="method-desc">扫描二维码即可获取配方</text>
+    </view>
+    
+    <view 
+      class="method-card" 
+      bindtap="onMethodSelect"
+      data-method="code"
+    >
+      <image class="method-icon" src="/images/code.png" mode="aspectFit" />
+      <text class="method-title">口令分享</text>
+      <text class="method-desc">复制口令快速分享</text>
+    </view>
+  </view>
+
+  <!-- 口令展示 -->
+  <view class="code-section" wx:if="{{showCode}}">
+    <text class="code-label">您的专属口令：</text>
+    <text class="share-code">{{shareCode}}</text>
+    <button class="copy-button" bindtap="copyShareCode">复制口令</button>
+  </view>
+  
+  <!-- 二维码预览 -->
+  <view class="qrcode-section" wx:if="{{showQrCode}}">
+    <image class="qrcode-image" src="{{shareImageUrl}}" mode="aspectFit" />
+    <text class="qrcode-tips">长按保存或分享二维码</text>
+  </view>
+  
+  <!-- 底部提示 -->
+  <view class="tips-section">
+    <text class="tip-title">温馨提示</text>
+    <text class="tip-content">您可以同时使用两种方式进行分享，确保好友能顺利获取配方信息</text>
+  </view>
+</view>

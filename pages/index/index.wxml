@@ -1,0 +1,35 @@
+<view class="container">
+  <!-- 每日推荐 -->
+  <view class="daily-cocktail-card">
+    <image class="daily-cocktail-image" src="/images/cocktail-of-the-day.jpg" mode="aspectFill" />
+    <text class="daily-cocktail-title">每日推荐：{{randomCocktail.name}}</text>
+    <text class="daily-cocktail-description">{{randomCocktail.description}}</text>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input 
+      bindinput="onSearch" 
+      placeholder="🔍 搜索配方..." 
+      value="{{searchQuery}}"
+      class="search-input"
+    />
+  </view>
+
+  <!-- 配方列表 -->
+  <view class="section-title">经典配方</view>
+  <block wx:for="{{filteredCocktails}}" wx:key="name">
+    <view 
+      data-name="{{item.name}}" 
+      bindtap="navigateToCocktailDetail"
+      class="cocktail-card"
+    >
+      <image class="cocktail-thumbnail" src="/images/{{item.name}}.jpg" mode="aspectFill" />
+      <text class="cocktail-name">{{item.name}}</text>
+      <text class="cocktail-desc">{{item.description}}</text>
+    </view>
+  </block>
+
+  <!-- 添加按钮 -->
+  <button class="floating-add-button" bindtap="navigateToAddCocktail">+</button>
+</view>
