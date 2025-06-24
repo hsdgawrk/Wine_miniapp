@@ -1,8 +1,53 @@
 {
-  "pages": ["pages/index/index", "pages/cocktail-detail/cocktail-detail", "pages/steps/steps", "pages/add-cocktail/add-cocktail", "pages/share/share"],
+  "pages": [
+    "pages/index/index",
+    "pages/cocktail-detail/cocktail-detail",
+    "pages/steps/steps",
+    "pages/add-cocktail/add-cocktail",
+    "pages/share/share"
+  ],
   "window": {
-    "navigationBarTitleText": "调酒小程序"
+    "navigationBarTitleText": "调酒配方",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTextStyle": "white",
+    "backgroundTextStyle": "dark",
+    "backgroundColor": "#f5f7fa",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
   },
+  "tabBar": {
+    "color": "#666",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "position": "bottom",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/add-cocktail/add-cocktail",
+        "text": "添加",
+        "iconPath": "images/tab-add.png",
+        "selectedIconPath": "images/tab-add-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于获取当地调酒师推荐"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "networkTimeout": {
+    "request": 60000,
+    "downloadFile": 60000
+  },
+  "debug": false,
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }

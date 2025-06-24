@@ -1,0 +1,25 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- 房子主体 -->
+  <path d="M6 12 L16 4 L26 12 L26 26 Q26 27 25 27 L7 27 Q6 27 6 26 L6 12 Z" 
+        fill="url(#homeGradient)" stroke="url(#homeGradient)" stroke-width="1" filter="url(#glow)"/>
+  <!-- 屋顶 -->
+  <path d="M4 14 L16 2 L28 14" 
+        fill="none" stroke="url(#homeGradient)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- 门 -->
+  <rect x="12" y="18" width="8" height="9" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="1" rx="1"/>
+  <!-- 门把手 -->
+  <circle cx="17" cy="22" r="1" fill="rgba(255,255,255,0.8)"/>
+</svg>

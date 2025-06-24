@@ -1,3 +1,10 @@
 {
-  "navigationBarTitleText": "调酒小程序"
+  "navigationBarTitleText": "调酒配方",
+  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f5f7fa",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
 }

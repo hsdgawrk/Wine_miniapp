@@ -1,7 +1,16 @@
+/* 
+  主页面样式文件
+  @description 首页的所有样式定义
+  @author 开发团队
+  @version 2.0.0
+*/
+
+/* 主容器 */
 .container {
   padding: 0;
   background: linear-gradient(180deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
+  position: relative;
 }
 
 /* 每日推荐卡片 */
@@ -14,6 +23,12 @@
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(10rpx);
+  transition: all 0.3s ease;
+}
+
+.daily-cocktail-card:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 15rpx 40rpx rgba(102, 126, 234, 0.4);
 }
 
 .daily-cocktail-card::before {
@@ -31,8 +46,14 @@
 .daily-cocktail-image {
   width: 100%;
   height: 300rpx;
-  border-radius: 10rpx;
+  border-radius: 16rpx;
   margin-bottom: 20rpx;
+  object-fit: cover;
+}
+
+.daily-info {
+  position: relative;
+  z-index: 1;
 }
 
 .daily-cocktail-title {
@@ -42,42 +63,129 @@
   margin-bottom: 10rpx;
   display: block;
   text-shadow: 0 2rpx 10rpx rgba(0,0,0,0.3);
-  z-index: 1;
-  position: relative;
 }
 
 .daily-cocktail-description {
   font-size: 28rpx;
   color: rgba(255,255,255,0.9);
-  z-index: 1;
-  position: relative;
+  line-height: 1.5;
 }
 
-/* 搜索栏 */
-.search-bar {
+.daily-meta {
+  margin-top: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.meta-item {
+  background: rgba(255,255,255,0.2);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.9);
+}
+
+/* 搜索部分 */
+.search-section {
   margin: 24rpx;
+}
+
+.search-bar {
   background: rgba(255,255,255,0.95);
   border-radius: 50rpx;
-  padding: 8rpx 0;
+  padding: 8rpx 20rpx;
   box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(20rpx);
   border: 1rpx solid rgba(255,255,255,0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .search-input {
   font-size: 28rpx;
-  padding: 16rpx 30rpx;
+  padding: 16rpx;
   background: transparent;
   border: none;
+  flex: 1;
 }
 
-/* 分类标题 */
+.clear-search {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.1);
+  margin-left: 10rpx;
+}
+
+.clear-icon {
+  font-size: 32rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+.search-status {
+  padding: 16rpx 20rpx 0;
+  text-align: center;
+}
+
+.search-loading, .search-result, .total-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.search-loading {
+  color: #667eea;
+}
+
+.search-result {
+  color: #28a745;
+}
+
+/* 配方区域 */
+.cocktail-section {
+  flex: 1;
+}
+
 .section-title {
   font-size: 34rpx;
   font-weight: 600;
   padding: 30rpx 40rpx 20rpx;
   color: #2c3e50;
   text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
+}
+
+/* 无结果状态 */
+.no-results {
+  padding: 80rpx 40rpx;
+  text-align: center;
+}
+
+.no-results-text {
+  font-size: 32rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.no-results-tip {
+  font-size: 26rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 40rpx;
+}
+
+.clear-search-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
 }
 
 /* 配方卡片 */
@@ -122,20 +230,108 @@
   border-radius: 16rpx;
   margin-right: 30rpx;
   flex-shrink: 0;
+  object-fit: cover;
+}
+
+.cocktail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cocktail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
 }
 
 .cocktail-name {
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
-  margin-bottom: 10rpx;
-  display: block;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popularity {
+  margin-left: 16rpx;
+}
+
+.popularity-score {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: #fff;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
 }
 
 .cocktail-desc {
   font-size: 26rpx;
   color: #666;
-  display: block;
+  line-height: 1.4;
+  margin-bottom: 12rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.cocktail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.meta-tag {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  font-size: 22rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+}
+
+.meta-tag.difficulty {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.meta-tag.time {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.meta-tag.ingredients {
+  background: rgba(111, 66, 193, 0.1);
+  color: #6f42c1;
+}
+
+.cocktail-arrow {
+  margin-left: 16rpx;
+  width: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon {
+  font-size: 32rpx;
+  color: #ccc;
+  font-weight: bold;
+}
+
+/* 无更多数据 */
+.no-more {
+  padding: 40rpx;
+  text-align: center;
+}
+
+.no-more-text {
+  font-size: 24rpx;
+  color: #ccc;
 }
 
 /* 浮动添加按钮 */
@@ -155,6 +351,13 @@
   border: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10rpx);
+  z-index: 100;
+}
+
+.floating-add-button.hidden {
+  opacity: 0;
+  transform: translateY(100rpx);
+  pointer-events: none;
 }
 
 .floating-add-button::before {
@@ -172,4 +375,49 @@
 .floating-add-button:active {
   transform: scale(0.95);
   box-shadow: 0 8rpx 25rpx rgba(238, 90, 82, 0.6);
+}
+
+.add-icon {
+  font-size: 56rpx;
+  font-weight: 300;
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .daily-cocktail-card {
+    margin: 20rpx;
+    padding: 32rpx;
+  }
+  
+  .cocktail-card {
+    margin: 16rpx 20rpx;
+    padding: 24rpx;
+  }
+  
+  .search-section {
+    margin: 20rpx;
+  }
+}
+
+/* 加载状态样式覆盖 */
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+/* 动画延迟样式 */
+.scale-in[style*="animation-delay: 0s"] {
+  animation-delay: 0s !important;
+}
+
+.scale-in[style*="animation-delay: 0.1s"] {
+  animation-delay: 0.1s !important;
+}
+
+.scale-in[style*="animation-delay: 0.2s"] {
+  animation-delay: 0.2s !important;
+}
+
+.scale-in[style*="animation-delay: 0.3s"] {
+  animation-delay: 0.3s !important;
 }

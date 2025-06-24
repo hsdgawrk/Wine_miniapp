@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="addGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- 加号背景圆 -->
+  <circle cx="16" cy="16" r="12" fill="url(#addGradient)" filter="url(#glow)" opacity="0.9"/>
+  <!-- 主加号 -->
+  <line x1="16" y1="10" x2="16" y2="22" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <line x1="10" y1="16" x2="22" y2="16" stroke="white" stroke-width="3" stroke-linecap="round"/>
+</svg>

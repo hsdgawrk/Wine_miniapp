@@ -1,35 +1,161 @@
-<view class="container">
-  <!-- 每日推荐 -->
-  <view class="daily-cocktail-card">
-    <image class="daily-cocktail-image" src="/images/cocktail-of-the-day.jpg" mode="aspectFill" />
-    <text class="daily-cocktail-title">每日推荐：{{randomCocktail.name}}</text>
-    <text class="daily-cocktail-description">{{randomCocktail.description}}</text>
+<!--
+  主页面模板文件
+  @description 展示鸡尾酒配方列表和搜索功能
+  @author 开发团队
+  @version 2.0.0
+-->
+
+<view class="container fade-in">
+  
+  <!-- 加载状态 -->
+  <view wx:if="{{isLoading}}" class="loading">
+    <loading class="loading-spinner" type="dot-gray" />
+    <text class="loading-text">加载中...</text>
   </view>
 
-  <!-- 搜索栏 -->
-  <view class="search-bar">
-    <input 
-      bindinput="onSearch" 
-      placeholder="🔍 搜索配方..." 
-      value="{{searchQuery}}"
-      class="search-input"
-    />
+  <!-- 错误状态 -->
+  <view wx:elif="{{error}}" class="error-container">
+    <text class="error-text">{{error.message}}</text>
+    <text class="error-context">操作：{{error.context}}</text>
+    <button class="retry-btn" bindtap="retryOperation">重试</button>
   </view>
 
-  <!-- 配方列表 -->
-  <view class="section-title">经典配方</view>
-  <block wx:for="{{filteredCocktails}}" wx:key="name">
-    <view 
-      data-name="{{item.name}}" 
-      bindtap="navigateToCocktailDetail"
-      class="cocktail-card"
-    >
-      <image class="cocktail-thumbnail" src="/images/{{item.name}}.jpg" mode="aspectFill" />
-      <text class="cocktail-name">{{item.name}}</text>
-      <text class="cocktail-desc">{{item.description}}</text>
+  <!-- 主要内容 -->
+  <block wx:else>
+    
+    <!-- 每日推荐 -->
+    <view wx:if="{{randomCocktail}}" 
+          class="daily-cocktail-card slide-up" 
+          bindtap="onDailyRecommendTap"
+          aria-label="每日推荐配方">
+      <image 
+        class="daily-cocktail-image" 
+        src="{{randomCocktail.image || '/images/cocktail-of-the-day.jpg'}}" 
+        mode="aspectFill"
+        lazy-load="true"
+        alt="{{randomCocktail.name}}配方图片" />
+      <view class="daily-info">
+        <text class="daily-cocktail-title">每日推荐：{{randomCocktail.name}}</text>
+        <text class="daily-cocktail-description">{{randomCocktail.description}}</text>
+        <view wx:if="{{randomCocktail.difficulty || randomCocktail.time}}" class="daily-meta">
+          <text wx:if="{{randomCocktail.difficulty}}" class="meta-item">难度：{{randomCocktail.difficulty}}</text>
+          <text wx:if="{{randomCocktail.time}}" class="meta-item">时间：{{randomCocktail.time}}</text>
+        </view>
+      </view>
     </view>
+
+    <!-- 搜索栏 -->
+    <view class="search-section">
+      <view class="search-bar">
+        <input 
+          bindinput="onSearch" 
+          placeholder="🔍 搜索配方名称、成分..." 
+          value="{{searchQuery}}"
+          class="search-input"
+          confirm-type="search"
+          maxlength="50"
+          aria-label="搜索配方" />
+        <view wx:if="{{searchQuery}}" 
+              class="clear-search" 
+              bindtap="clearSearch"
+              aria-label="清除搜索">
+          <text class="clear-icon">×</text>
+        </view>
+      </view>
+      
+      <!-- 搜索状态提示 -->
+      <view class="search-status">
+        <text wx:if="{{isSearching}}" class="search-loading">搜索中...</text>
+        <text wx:elif="{{searchQuery}}" class="search-result">
+          找到 {{filteredCount}} 个配方
+        </text>
+        <text wx:else class="total-count">
+          共 {{totalCount}} 个配方
+        </text>
+      </view>
+    </view>
+
+    <!-- 配方列表 -->
+    <view class="cocktail-section">
+      <view class="section-title">
+        {{searchQuery ? '搜索结果' : '经典配方'}}
+      </view>
+      
+      <!-- 无搜索结果 -->
+      <view wx:if="{{searchQuery && filteredCount === 0}}" class="no-results">
+        <text class="no-results-text">未找到相关配方</text>
+        <text class="no-results-tip">试试搜索其他关键词</text>
+        <button class="clear-search-btn" bindtap="clearSearch">清除搜索</button>
+      </view>
+      
+      <!-- 配方列表 -->
+      <block wx:else>
+        <view 
+          wx:for="{{filteredCocktails}}" 
+          wx:key="id"
+          wx:for-item="cocktail"
+          data-id="{{cocktail.id}}"
+          data-name="{{cocktail.name}}" 
+          bindtap="navigateToCocktailDetail"
+          class="cocktail-card scale-in"
+          style="animation-delay: {{index * 0.1}}s"
+          aria-label="{{cocktail.name}}配方">
+          
+          <image 
+            class="cocktail-thumbnail" 
+            src="{{cocktail.image || '/images/' + cocktail.name + '.jpg'}}" 
+            mode="aspectFill"
+            lazy-load="true"
+            alt="{{cocktail.name}}配方图片" />
+          
+          <view class="cocktail-info">
+            <view class="cocktail-header">
+              <text class="cocktail-name">{{cocktail.name}}</text>
+              <view wx:if="{{cocktail.popularity}}" class="popularity">
+                <text class="popularity-score">{{cocktail.popularity}}%</text>
+              </view>
+            </view>
+            
+            <text class="cocktail-desc">{{cocktail.description}}</text>
+            
+            <!-- 配方元信息 -->
+            <view class="cocktail-meta">
+              <text wx:if="{{cocktail.difficulty}}" class="meta-tag difficulty">{{cocktail.difficulty}}</text>
+              <text wx:if="{{cocktail.time}}" class="meta-tag time">{{cocktail.time}}</text>
+              <text wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="meta-tag ingredients">
+                {{cocktail.ingredients.length}}种成分
+              </text>
+            </view>
+          </view>
+          
+          <!-- 右箭头 -->
+          <view class="cocktail-arrow">
+            <text class="arrow-icon">›</text>
+          </view>
+        </view>
+        
+        <!-- 暂无更多数据提示 -->
+        <view wx:if="{{!hasMore && filteredCount > 0}}" class="no-more">
+          <text class="no-more-text">- 已显示全部配方 -</text>
+        </view>
+      </block>
+    </view>
+
   </block>
 
-  <!-- 添加按钮 -->
-  <button class="floating-add-button" bindtap="navigateToAddCocktail">+</button>
+  <!-- 浮动添加按钮 -->
+  <button 
+    class="floating-add-button {{isLoading ? 'hidden' : ''}}" 
+    bindtap="navigateToAddCocktail"
+    aria-label="添加新配方">
+    <text class="add-icon">+</text>
+  </button>
+
+</view>
+
+<!-- 无障碍提示 -->
+<view class="sr-only" aria-live="polite">
+  <text wx:if="{{isLoading}}">页面正在加载</text>
+  <text wx:elif="{{error}}">页面加载出错：{{error.message}}</text>
+  <text wx:elif="{{isSearching}}">正在搜索配方</text>
 </view>

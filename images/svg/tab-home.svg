@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- 房子主体 -->
+  <path d="M6 12 L16 4 L26 12 L26 26 Q26 27 25 27 L7 27 Q6 27 6 26 L6 12 Z" 
+        fill="none" stroke="#666666" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- 屋顶 -->
+  <path d="M4 14 L16 2 L28 14" 
+        fill="none" stroke="#666666" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- 门 -->
+  <rect x="12" y="18" width="8" height="9" fill="none" stroke="#666666" stroke-width="2" rx="1"/>
+  <!-- 门把手 -->
+  <circle cx="17" cy="22" r="1" fill="#666666"/>
+</svg>
