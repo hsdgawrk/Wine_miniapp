@@ -334,49 +334,6 @@
   color: #ccc;
 }
 
-/* 浮动添加按钮 */
-.floating-add-button {
-  position: fixed;
-  right: 40rpx;
-  bottom: 40rpx;
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-  color: #fff;
-  font-size: 56rpx;
-  line-height: 112rpx;
-  text-align: center;
-  box-shadow: 0 12rpx 35rpx rgba(238, 90, 82, 0.4);
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10rpx);
-  z-index: 100;
-}
-
-.floating-add-button.hidden {
-  opacity: 0;
-  transform: translateY(100rpx);
-  pointer-events: none;
-}
-
-.floating-add-button::before {
-  content: '';
-  position: absolute;
-  top: 2rpx;
-  left: 2rpx;
-  right: 2rpx;
-  bottom: 2rpx;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
-  border-radius: 50%;
-  z-index: -1;
-}
-
-.floating-add-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 8rpx 25rpx rgba(238, 90, 82, 0.6);
-}
-
 .add-icon {
   font-size: 56rpx;
   font-weight: 300;

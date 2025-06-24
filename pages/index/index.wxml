@@ -143,14 +143,6 @@
 
   </block>
 
-  <!-- 浮动添加按钮 -->
-  <button 
-    class="floating-add-button {{isLoading ? 'hidden' : ''}}" 
-    bindtap="navigateToAddCocktail"
-    aria-label="添加新配方">
-    <text class="add-icon">+</text>
-  </button>
-
 </view>
 
 <!-- 无障碍提示 -->
