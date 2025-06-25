@@ -22,7 +22,7 @@
     rgba(102, 126, 234, 0.75) 75%, 
     rgba(118, 75, 162, 0.9) 100%);
   background-size: 400% 400%;
-  animation: fluidGradient 8s ease-in-out infinite;
+  animation: fluidGradient 28s ease-in-out infinite;
   border-radius: 32rpx;
   margin: 24rpx;
   box-shadow: 0 20rpx 60rpx rgba(102, 126, 234, 0.4);
@@ -77,19 +77,31 @@
 /* 流体渐变动画 */
 @keyframes fluidGradient {
   0% {
-    background-position: 0% 50%;
+    background-position: 20% 80%;
+  }
+  12.5% {
+    background-position: 80% 20%;
   }
   25% {
-    background-position: 100% 0%;
+    background-position: 60% 90%;
+  }
+  37.5% {
+    background-position: 10% 30%;
   }
   50% {
-    background-position: 100% 100%;
+    background-position: 90% 70%;
+  }
+  62.5% {
+    background-position: 30% 10%;
   }
   75% {
-    background-position: 0% 100%;
+    background-position: 70% 85%;
+  }
+  87.5% {
+    background-position: 40% 40%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 20% 80%;
   }
 }
 
