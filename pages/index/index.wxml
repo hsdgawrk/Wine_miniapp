@@ -28,18 +28,38 @@
           class="daily-cocktail-card slide-up" 
           bindtap="onDailyRecommendTap"
           aria-label="每日推荐配方">
-      <image 
-        class="daily-cocktail-image" 
-        src="{{randomCocktail.image || '/images/cocktail-of-the-day.jpg'}}" 
-        mode="aspectFill"
-        lazy-load="true"
-        alt="{{randomCocktail.name}}配方图片" />
-      <view class="daily-info">
-        <text class="daily-cocktail-title">每日推荐：{{randomCocktail.name}}</text>
+      
+      <!-- 日期区域 -->
+      <view class="daily-date-section">
+        <view class="date-badge">
+          <text class="date-month">{{currentDate.month}}</text>
+          <text class="date-day">{{currentDate.day}}</text>
+        </view>
+        <view class="date-info">
+          <text class="date-year">{{currentDate.year}}</text>
+          <text class="date-weekday">{{currentDate.weekday}}</text>
+        </view>
+      </view>
+
+      <!-- 推荐内容 -->
+      <view class="daily-content">
+        <view class="daily-header">
+          <text class="daily-label">今日推荐</text>
+          <view class="cocktail-icon">🍸</view>
+        </view>
+        
+        <text class="daily-cocktail-title">{{randomCocktail.name}}</text>
         <text class="daily-cocktail-description">{{randomCocktail.description}}</text>
+        
         <view wx:if="{{randomCocktail.difficulty || randomCocktail.time}}" class="daily-meta">
-          <text wx:if="{{randomCocktail.difficulty}}" class="meta-item">难度：{{randomCocktail.difficulty}}</text>
-          <text wx:if="{{randomCocktail.time}}" class="meta-item">时间：{{randomCocktail.time}}</text>
+          <text wx:if="{{randomCocktail.difficulty}}" class="meta-item difficulty">{{randomCocktail.difficulty}}</text>
+          <text wx:if="{{randomCocktail.time}}" class="meta-item time">{{randomCocktail.time}}</text>
+          <text wx:if="{{randomCocktail.ingredients && randomCocktail.ingredients.length}}" class="meta-item ingredients">{{randomCocktail.ingredients.length}}种成分</text>
+        </view>
+        
+        <view class="daily-action">
+          <text class="action-text">点击查看详情</text>
+          <text class="action-arrow">→</text>
         </view>
       </view>
     </view>

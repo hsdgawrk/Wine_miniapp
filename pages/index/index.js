@@ -13,6 +13,14 @@ Page({
     // 每日推荐配方
     randomCocktail: null,
     
+    // 当前日期信息
+    currentDate: {
+      year: '',
+      month: '',
+      day: '',
+      weekday: ''
+    },
+    
     // 搜索相关
     searchQuery: '',
     searchDebounceTimer: null,
@@ -143,17 +151,36 @@ Page({
 
     const cocktails = app.globalData.cocktails || [];
     const randomCocktail = this.getRandomCocktail(cocktails);
+    const currentDate = this.getCurrentDateInfo();
 
     this.setData({
       cocktails,
       filteredCocktails: cocktails,
       randomCocktail,
+      currentDate,
       totalCount: cocktails.length,
       filteredCount: cocktails.length,
       error: null
     });
 
     console.log(`📊 配方数据加载完成，共 ${cocktails.length} 个配方`);
+  },
+
+  /**
+   * 获取当前日期信息
+   * @returns {Object} 格式化的日期信息
+   */
+  getCurrentDateInfo() {
+    const now = new Date();
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+    
+    return {
+      year: now.getFullYear().toString(),
+      month: months[now.getMonth()],
+      day: now.getDate().toString().padStart(2, '0'),
+      weekday: weekdays[now.getDay()]
+    };
   },
 
   /**
