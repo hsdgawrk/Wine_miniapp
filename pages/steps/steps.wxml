@@ -2,31 +2,86 @@
   <!-- 步骤导航栏 -->
   <view class="step-navbar">
     <text class="nav-title">制作步骤</text>
-    <text class="step-count">{{steps.length}}步</text>
+    <text class="step-count">共{{steps.length}}步</text>
+  </view>
+
+  <!-- 进度条 -->
+  <view class="progress-section">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{currentProgress}}%"></view>
+    </view>
+    <text class="progress-text">{{currentStep}}/{{steps.length}}</text>
   </view>
 
   <!-- 步骤列表 -->
   <view class="steps-list">
     <block wx:for="{{steps}}" wx:key="number">
-      <view class="step-card {{item.animation}}">
-        <view class="step-header">
-          <text class="step-number">{{item.number}}</text>
-          <text class="step-title">步骤 {{item.number}}</text>
-        </view>
-        <text class="step-instruction">{{item.instruction}}</text>
+      <view class="step-card {{item.animation}}" style="animation-delay: {{index * 0.1}}s">
+        <!-- 时间线连接线 -->
+        <view class="timeline-connector" wx:if="{{index < steps.length - 1}}"></view>
         
-        <!-- 动画示意图 -->
-        <image 
-          class="step-illustration" 
-          src="/images/step-{{item.number}}.png" 
-          mode="aspectFit"
-        />
+        <!-- 步骤内容 -->
+        <view class="step-content">
+          <!-- 左侧步骤编号 -->
+          <view class="step-number-container">
+            <view class="step-number {{index < currentStep ? 'completed' : ''}}">
+              <text wx:if="{{index < currentStep}}" class="check-icon">✓</text>
+              <text wx:else>{{item.number}}</text>
+            </view>
+          </view>
+          
+          <!-- 右侧内容区 -->
+          <view class="step-details">
+            <view class="step-header">
+              <text class="step-title">步骤 {{item.number}}</text>
+              <text class="step-status {{index < currentStep ? 'completed' : index === currentStep ? 'active' : 'pending'}}">
+                {{index < currentStep ? '已完成' : index === currentStep ? '进行中' : '待完成'}}
+              </text>
+            </view>
+            
+            <!-- 步骤说明 -->
+            <view class="step-instruction-container">
+              <text class="step-instruction">{{item.instruction}}</text>
+              
+              <!-- 额外提示 -->
+              <view class="step-tips" wx:if="{{item.tips}}">
+                <text class="tips-icon">💡</text>
+                <text class="tips-text">{{item.tips}}</text>
+              </view>
+              
+              <!-- 预计时间 -->
+              <view class="step-time" wx:if="{{item.estimatedTime}}">
+                <text class="time-icon">⏱️</text>
+                <text class="time-text">预计 {{item.estimatedTime}} 分钟</text>
+              </view>
+            </view>
+            
+            <!-- 步骤操作按钮 -->
+            <view class="step-actions" wx:if="{{index === currentStep}}">
+              <button class="step-complete-btn" bindtap="completeStep" data-step="{{index}}">
+                完成此步骤
+              </button>
+            </view>
+          </view>
+        </view>
       </view>
     </block>
+    
+    <!-- 完成提示 -->
+    <view class="completion-card" wx:if="{{currentStep >= steps.length}}">
+      <view class="completion-icon">🎉</view>
+      <text class="completion-title">恭喜完成！</text>
+      <text class="completion-message">您的鸡尾酒已经制作完成，请享用美味！</text>
+    </view>
   </view>
 
   <!-- 底部操作栏 -->
   <view class="bottom-action-bar">
-    <button class="complete-button">完成调酒</button>
+    <button 
+      class="complete-button {{currentStep >= steps.length ? 'all-complete' : ''}}" 
+      bindtap="finishCocktail"
+    >
+      {{currentStep >= steps.length ? '返回首页' : '跳过剩余步骤'}}
+    </button>
   </view>
 </view>

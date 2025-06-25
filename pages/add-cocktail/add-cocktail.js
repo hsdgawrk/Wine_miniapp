@@ -22,6 +22,8 @@ Page({
     // 配方详细信息
     difficulty: '简单',
     time: '',
+    category: '经典',
+    emoji: '🍸',
     ingredients: [],
     newIngredient: '',
     
@@ -35,6 +37,8 @@ Page({
     
     // 选项数据
     difficultyOptions: ['简单', '中等', '困难'],
+    categoryOptions: ['经典', '清爽', '热带', '烈酒', '早餐酒', '酸甜', '时尚', '创新'],
+    emojiOptions: ['🍸', '🥃', '🌿', '🧊', '🍅', '🥭', '🍋', '💗', '🍹', '🥂', '🍷', '🎯'],
     animationOptions: ['fadeIn', 'slideIn', 'zoomIn']
   },
 
@@ -143,6 +147,30 @@ Page({
     this.setData({ difficulty });
     
     console.log(`🎯 用户选择难度: ${difficulty}`);
+  },
+
+  /**
+   * 分类选择处理
+   * @param {Object} e 事件对象
+   */
+  onCategoryChange(e) {
+    const index = e.detail.value;
+    const category = this.data.categoryOptions[index];
+    this.setData({ category });
+    
+    console.log(`🏷️ 用户选择分类: ${category}`);
+  },
+
+  /**
+   * 表情符号选择处理
+   * @param {Object} e 事件对象
+   */
+  onEmojiChange(e) {
+    const index = e.detail.value;
+    const emoji = this.data.emojiOptions[index];
+    this.setData({ emoji });
+    
+    console.log(`😀 用户选择表情: ${emoji}`);
   },
 
   /**
@@ -462,13 +490,14 @@ Page({
       const cocktailData = {
         id: Date.now().toString(), // 简单的ID生成
         name: this.data.cocktailName.trim(),
+        emoji: this.data.emoji,
+        category: this.data.category,
         description: this.data.cocktailDescription.trim(),
         difficulty: this.data.difficulty,
         time: this.data.time || '未设置',
         ingredients: this.data.ingredients,
         steps: this.data.steps.filter(step => step.instruction.trim()),
         popularity: Math.floor(Math.random() * 20) + 80, // 随机初始评分
-        image: '/images/default-cocktail.jpg',
         createdAt: new Date().toISOString()
       };
 

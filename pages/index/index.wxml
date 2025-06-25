@@ -121,35 +121,55 @@
           style="animation-delay: {{index * 0.1}}s"
           aria-label="{{cocktail.name}}配方">
           
-          <image 
-            class="cocktail-thumbnail" 
-            src="{{cocktail.image || '/images/' + cocktail.name + '.jpg'}}" 
-            mode="aspectFill"
-            lazy-load="true"
-            alt="{{cocktail.name}}配方图片" />
+          <!-- 左侧图标区域 -->
+          <view class="cocktail-icon-section">
+            <view class="cocktail-emoji">{{cocktail.emoji || '🍸'}}</view>
+            <view wx:if="{{cocktail.popularity}}" class="popularity-indicator">
+              <text class="popularity-score">{{cocktail.popularity}}%</text>
+              <text class="popularity-label">受欢迎</text>
+            </view>
+          </view>
           
-          <view class="cocktail-info">
+          <!-- 主要信息区域 -->
+          <view class="cocktail-content">
             <view class="cocktail-header">
               <text class="cocktail-name">{{cocktail.name}}</text>
-              <view wx:if="{{cocktail.popularity}}" class="popularity">
-                <text class="popularity-score">{{cocktail.popularity}}%</text>
+              <view class="cocktail-category">
+                <text class="category-text">{{cocktail.category || '经典'}}</text>
               </view>
             </view>
             
             <text class="cocktail-desc">{{cocktail.description}}</text>
             
-            <!-- 配方元信息 -->
-            <view class="cocktail-meta">
-              <text wx:if="{{cocktail.difficulty}}" class="meta-tag difficulty">{{cocktail.difficulty}}</text>
-              <text wx:if="{{cocktail.time}}" class="meta-tag time">{{cocktail.time}}</text>
-              <text wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="meta-tag ingredients">{{cocktail.ingredients.length}}种成分
-              </text>
+            <!-- 配方特色信息 -->
+            <view class="cocktail-features">
+              <view wx:if="{{cocktail.difficulty}}" class="feature-item">
+                <text class="feature-icon">📊</text>
+                <text class="feature-text">{{cocktail.difficulty}}</text>
+              </view>
+              <view wx:if="{{cocktail.time}}" class="feature-item">
+                <text class="feature-icon">⏱</text>
+                <text class="feature-text">{{cocktail.time}}</text>
+              </view>
+              <view wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="feature-item">
+                <text class="feature-icon">🥃</text>
+                <text class="feature-text">{{cocktail.ingredients.length}}种成分</text>
+              </view>
+            </view>
+            
+            <!-- 成分预览 -->
+            <view wx:if="{{cocktail.ingredients && cocktail.ingredients.length > 0}}" class="ingredients-preview">
+              <text class="ingredients-label">主要成分：</text>
+              <text class="ingredients-text">{{cocktail.ingredients.slice(0, 3).join('、')}}{{cocktail.ingredients.length > 3 ? '...' : ''}}</text>
             </view>
           </view>
           
-          <!-- 右箭头 -->
-          <view class="cocktail-arrow">
-            <text class="arrow-icon">›</text>
+          <!-- 右侧操作区域 -->
+          <view class="cocktail-action">
+            <view class="action-button">
+              <text class="action-text">制作</text>
+              <text class="action-arrow">→</text>
+            </view>
           </view>
         </view>
         

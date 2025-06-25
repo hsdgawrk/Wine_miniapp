@@ -21,14 +21,47 @@
 
     <view class="form-group">
       <text class="form-label">简介描述*</text>
-      <input 
-        class="form-input {{formErrors.description ? 'error' : ''}}" 
+      <textarea 
+        class="form-input form-textarea {{formErrors.description ? 'error' : ''}}" 
         bindinput="onInputDescription" 
-        placeholder="简要描述这款酒的特点" 
+        placeholder="简要描述这款酒的特点，如口感、风格、适饮场合等" 
         value="{{cocktailDescription}}"
         maxlength="100"
+        auto-height="true"
+        show-count="true"
       />
       <text wx:if="{{formErrors.description}}" class="error-message">{{formErrors.description}}</text>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">酒款分类</text>
+      <picker 
+        class="form-picker" 
+        bindchange="onCategoryChange" 
+        value="{{categoryOptions.indexOf(category)}}" 
+        range="{{categoryOptions}}"
+      >
+        <view class="picker-display">
+          <text class="picker-text">{{category}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">配方图标</text>
+      <picker 
+        class="form-picker emoji-picker" 
+        bindchange="onEmojiChange" 
+        value="{{emojiOptions.indexOf(emoji)}}" 
+        range="{{emojiOptions}}"
+      >
+        <view class="picker-display">
+          <text class="picker-emoji">{{emoji}}</text>
+          <text class="picker-text">选择表情符号</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
     </view>
 
     <view class="form-group">
@@ -116,13 +149,15 @@
           >移除</button>
         </view>
         
-        <input 
-          class="form-input step-input {{formErrors.steps ? 'error' : ''}}" 
+        <textarea 
+          class="form-input form-textarea step-input {{formErrors.steps ? 'error' : ''}}" 
           bindinput="onInputStep" 
           data-index="{{index}}" 
-          placeholder="详细描述该步骤的操作方法" 
+          placeholder="详细描述该步骤的操作方法，如倒酒顺序、调制手法、装饰要求等" 
           value="{{item.instruction}}"
           maxlength="200"
+          auto-height="true"
+          show-count="true"
         />
       </view>
     </block>
