@@ -6,7 +6,7 @@ Page({
   },
 
   onLoad(options) {
-    const name = options.name;
+    const name = decodeURIComponent(options.name);
     // 模拟从服务器获取数据
     const cocktailData = {
       name: name,

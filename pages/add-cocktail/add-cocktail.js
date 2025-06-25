@@ -124,7 +124,13 @@ Page({
    */
   onInputTime(e) {
     const value = e.detail.value;
-    this.setData({ time: value });
+    this.setData({ 
+      time: value,
+      'formErrors.time': null 
+    });
+    
+    // 实时验证时间格式
+    this.validateField('time', value);
   },
 
   /**
@@ -316,33 +322,39 @@ Page({
 
   /**
    * 表单验证
-   * @returns {boolean} 验证是否通过
+   * @returns {Object} 验证结果 {isValid: boolean, errors: Object, message: string}
    */
   validateForm() {
     const errors = {};
     let isValid = true;
+    const errorMessages = [];
 
     // 验证配方名称
     if (!this.data.cocktailName.trim()) {
       errors.name = '请输入配方名称';
+      errorMessages.push('配方名称未填写');
       isValid = false;
     } else if (this.data.cocktailName.length > 20) {
       errors.name = '配方名称不能超过20个字符';
+      errorMessages.push('配方名称过长');
       isValid = false;
     }
 
     // 验证配方描述
     if (!this.data.cocktailDescription.trim()) {
       errors.description = '请输入配方描述';
+      errorMessages.push('配方描述未填写');
       isValid = false;
     } else if (this.data.cocktailDescription.length > 100) {
       errors.description = '配方描述不能超过100个字符';
+      errorMessages.push('配方描述过长');
       isValid = false;
     }
 
     // 验证成分
     if (this.data.ingredients.length === 0) {
       errors.ingredients = '请至少添加一种成分';
+      errorMessages.push('未添加任何成分');
       isValid = false;
     }
 
@@ -350,11 +362,29 @@ Page({
     const hasEmptyStep = this.data.steps.some(step => !step.instruction.trim());
     if (hasEmptyStep) {
       errors.steps = '请完善所有制作步骤';
+      errorMessages.push('制作步骤不完整');
       isValid = false;
     }
 
+    // 验证时间格式（可选但如果填写需要合理）
+    if (this.data.time && this.data.time.trim()) {
+      const timeRegex = /^(\d+)(分钟|min|mins|小时|hours?)$/i;
+      if (!timeRegex.test(this.data.time.trim())) {
+        errors.time = '时间格式不正确，如：10分钟、15min';
+        errorMessages.push('制作时间格式错误');
+        isValid = false;
+      }
+    }
+
     this.setData({ formErrors: errors });
-    return isValid;
+    
+    // 生成具体的错误消息
+    let message = '请完善配方信息';
+    if (errorMessages.length > 0) {
+      message = errorMessages.join('、') + '，请检查后重试';
+    }
+
+    return { isValid, errors, message };
   },
 
   /**
@@ -385,6 +415,19 @@ Page({
           delete errors.description;
         }
         break;
+
+      case 'time':
+        if (value && value.trim()) {
+          const timeRegex = /^(\d+)(分钟|min|mins|小时|hours?)$/i;
+          if (!timeRegex.test(value.trim())) {
+            errors.time = '时间格式不正确，如：10分钟、15min';
+          } else {
+            delete errors.time;
+          }
+        } else {
+          delete errors.time; // 时间字段是可选的
+        }
+        break;
     }
 
     this.setData({ formErrors: errors });
@@ -402,11 +445,12 @@ Page({
     }
 
     // 表单验证
-    if (!this.validateForm()) {
+    const validation = this.validateForm();
+    if (!validation.isValid) {
       wx.showToast({
-        title: '请完善配方信息',
+        title: validation.message,
         icon: 'none',
-        duration: 2000
+        duration: 3000
       });
       return;
     }
@@ -416,6 +460,7 @@ Page({
     try {
       // 构建配方数据
       const cocktailData = {
+        id: Date.now().toString(), // 简单的ID生成
         name: this.data.cocktailName.trim(),
         description: this.data.cocktailDescription.trim(),
         difficulty: this.data.difficulty,
@@ -423,28 +468,31 @@ Page({
         ingredients: this.data.ingredients,
         steps: this.data.steps.filter(step => step.instruction.trim()),
         popularity: Math.floor(Math.random() * 20) + 80, // 随机初始评分
-        image: '/images/default-cocktail.jpg'
+        image: '/images/default-cocktail.jpg',
+        createdAt: new Date().toISOString()
       };
 
       // 保存到全局数据
       const app = getApp();
-      const success = app.addCocktail(cocktailData);
+      const success = app.addCocktail ? app.addCocktail(cocktailData) : false;
 
       if (success) {
         wx.showToast({
-          title: '保存成功',
+          title: '保存成功！',
           icon: 'success',
           duration: 2000
         });
 
         console.log('✅ 配方保存成功:', cocktailData.name);
 
-        // 延迟后返回
+        // 延迟后跳转到首页
         setTimeout(() => {
-          wx.navigateBack();
+          wx.switchTab({
+            url: '/pages/index/index'
+          });
         }, 1500);
       } else {
-        throw new Error('保存配方失败');
+        throw new Error('配方保存失败，请稍后重试');
       }
 
     } catch (error) {
@@ -503,37 +551,43 @@ Page({
   },
 
   /**
-   * 返回上一页
-   */
-  navigateBack() {
-    // 检查是否有未保存的数据
-    const hasData = this.data.cocktailName || 
-                   this.data.cocktailDescription || 
-                   this.data.ingredients.length > 0 ||
-                   this.data.steps.some(step => step.instruction);
-
-    if (hasData) {
-      wx.showModal({
-        title: '确认离开',
-        content: '当前页面有未保存的内容，确认离开吗？',
-        success: (res) => {
-          if (res.confirm) {
-            wx.navigateBack();
-          }
-        }
-      });
-    } else {
-      wx.navigateBack();
-    }
-  },
-
-  /**
    * 加载配方用于编辑（预留功能）
    * @param {string} id 配方ID
    */
   loadCocktailForEdit(id) {
     console.log(`📝 加载配方用于编辑: ${id}`);
     // 这里可以实现编辑现有配方的功能
+  },
+
+  /**
+   * 取消并返回首页
+   */
+  navigateBack() {
+    // 检查是否有未保存的内容
+    const hasContent = this.data.cocktailName.trim() || 
+                      this.data.cocktailDescription.trim() || 
+                      this.data.ingredients.length > 0 ||
+                      this.data.steps.some(step => step.instruction.trim());
+
+    if (hasContent) {
+      wx.showModal({
+        title: '确认离开',
+        content: '页面内容尚未保存，确认离开吗？',
+        success: (res) => {
+          if (res.confirm) {
+            console.log('🔙 用户确认离开页面，跳转到首页');
+            wx.switchTab({
+              url: '/pages/index/index'
+            });
+          }
+        }
+      });
+    } else {
+      console.log('🔙 页面内容为空，直接跳转首页');
+      wx.switchTab({
+        url: '/pages/index/index'
+      });
+    }
   },
 
   /**
