@@ -122,8 +122,7 @@
             <view class="cocktail-meta">
               <text wx:if="{{cocktail.difficulty}}" class="meta-tag difficulty">{{cocktail.difficulty}}</text>
               <text wx:if="{{cocktail.time}}" class="meta-tag time">{{cocktail.time}}</text>
-              <text wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="meta-tag ingredients">
-                {{cocktail.ingredients.length}}种成分
+              <text wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="meta-tag ingredients">{{cocktail.ingredients.length}}种成分
               </text>
             </view>
           </view>

@@ -288,10 +288,15 @@
 .meta-tag {
   background: rgba(102, 126, 234, 0.1);
   color: #667eea;
-  font-size: 22rpx;
+  font-size: 24rpx;
   padding: 6rpx 12rpx;
-  border-radius: 12rpx;
+  border-radius: 8rpx;
   font-weight: 500;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .meta-tag.difficulty {
