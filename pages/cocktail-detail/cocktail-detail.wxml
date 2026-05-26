@@ -1,22 +1,64 @@
-<view class="container">
-  <!-- 鸡尾酒封面 -->
-  <view class="cocktail-header">
-    <image class="cocktail-cover" src="/images/{{cocktail.name}}.jpg" mode="aspectFill" />
-    <text class="cocktail-name">{{cocktail.name}}</text>
+<view class="container detail-page" wx:if="{{cocktail}}">
+  <view class="detail-hero">
+    <view class="hero-copy">
+      <text class="hero-eyebrow">{{cocktail.category || 'COCKTAIL FILE'}}</text>
+      <text class="cocktail-name">{{cocktail.name}}</text>
+      <text class="cocktail-desc">{{cocktail.description}}</text>
+    </view>
+    <view class="hero-mark">
+      <text class="hero-emoji">{{cocktail.emoji || '🍸'}}</text>
+    </view>
   </view>
 
-  <!-- 鸡尾酒信息 -->
-  <view class="cocktail-info-card">
-    <text class="info-title">简介</text>
-    <text class="info-content">{{cocktail.description}}</text>
-    
-    <text class="info-title">历史背景</text>
-    <text class="info-content">{{cocktail.history}}</text>
+  <view class="quick-meta">
+    <view class="meta-cell">
+      <text class="meta-label">难度</text>
+      <text class="meta-value">{{cocktail.difficulty || '未标注'}}</text>
+    </view>
+    <view class="meta-cell">
+      <text class="meta-label">时间</text>
+      <text class="meta-value">{{cocktail.time || '按需'}}</text>
+    </view>
+    <view class="meta-cell">
+      <text class="meta-label">成分</text>
+      <text class="meta-value">{{cocktail.ingredients ? cocktail.ingredients.length : 0}}种</text>
+    </view>
   </view>
 
-  <!-- 操作按钮 -->
-  <view class="action-buttons">
-    <button class="primary-button" bindtap="navigateToSteps">查看制作步骤</button>
+  <view class="detail-section">
+    <text class="section-kicker">PROFILE</text>
+    <text class="section-title">风味简介</text>
+    <text class="section-body">{{cocktail.description}}</text>
+  </view>
+
+  <view class="detail-section" wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}">
+    <text class="section-kicker">INGREDIENTS</text>
+    <text class="section-title">配方成分</text>
+    <view class="ingredient-grid">
+      <text
+        class="ingredient-chip"
+        wx:for="{{cocktail.ingredients}}"
+        wx:key="index"
+      >{{item}}</text>
+    </view>
+  </view>
+
+  <view class="detail-section">
+    <text class="section-kicker">ORIGIN</text>
+    <text class="section-title">历史背景</text>
+    <text class="section-body">{{cocktail.history || '暂无历史背景记录。'}}</text>
+  </view>
+
+  <view class="action-dock">
+    <button class="primary-button" bindtap="navigateToSteps">开始制作</button>
     <button class="secondary-button" bindtap="navigateToShare">分享配方</button>
+  </view>
+</view>
+
+<view class="container detail-page error-page" wx:else>
+  <view class="detail-section">
+    <text class="section-kicker">ERROR</text>
+    <text class="section-title">配方不可用</text>
+    <text class="section-body">{{error || '请返回首页重新选择配方'}}</text>
   </view>
 </view>

@@ -5,6 +5,23 @@
  * @description 管理全局数据和应用生命周期
  */
 
+const {
+  CUSTOM_COCKTAILS_KEY,
+  builtInCocktails,
+  createCocktailLibrary
+} = require('./utils/cocktailLibrary');
+
+const cocktailLibrary = createCocktailLibrary({
+  storageAdapter: {
+    getCustomCocktails() {
+      return wx.getStorageSync(CUSTOM_COCKTAILS_KEY) || [];
+    },
+    setCustomCocktails(cocktails) {
+      wx.setStorageSync(CUSTOM_COCKTAILS_KEY, cocktails);
+    }
+  }
+});
+
 App({
   /**
    * 全局数据存储
@@ -12,96 +29,7 @@ App({
    */
   globalData: {
     // 配方数据库
-    cocktails: [
-      {
-        id: 1,
-        name: '马提尼',
-        emoji: '🍸',
-        category: '经典',
-        description: '优雅与经典的完美结合，干练口感中透露着杜松子的芬芳',
-        difficulty: '简单',
-        time: '3分钟',
-        popularity: 95,
-        ingredients: ['金酒', '干味美思', '橄榄', '柠檬皮']
-      },
-      {
-        id: 2,
-        name: '曼哈顿',
-        emoji: '🥃',
-        category: '经典',
-        description: '威士忌的醇厚与甜味美思的柔和，造就了这款永恒的经典',
-        difficulty: '中等',
-        time: '5分钟',
-        popularity: 88,
-        ingredients: ['威士忌', '甜味美思', '安格斯特拉苦精', '樱桃']
-      },
-      {
-        id: 3,
-        name: '莫吉托',
-        emoji: '🌿',
-        category: '清爽',
-        description: '薄荷叶的清香与朗姆酒的甘甜，夏日午后的完美选择',
-        difficulty: '简单',
-        time: '4分钟',
-        popularity: 92,
-        ingredients: ['白朗姆酒', '薄荷叶', '青柠汁', '苏打水', '白糖']
-      },
-      {
-        id: 4,
-        name: '血腥玛丽',
-        emoji: '🍅',
-        category: '早餐酒',
-        description: '浓郁的番茄汁与伏特加的深度融合，醒酒解腻的理想选择',
-        difficulty: '简单',
-        time: '5分钟',
-        popularity: 78,
-        ingredients: ['伏特加', '番茄汁', '柠檬汁', '伍斯特郡酱', '塔巴斯科辣椒酱', '芹菜盐']
-      },
-      {
-        id: 5,
-        name: '玛格丽特',
-        emoji: '🥭',
-        category: '热带',
-        description: '龙舌兰酒的烈性搭配青柠的酸爽，热情如火的墨西哥风情',
-        difficulty: '中等',
-        time: '6分钟',
-        popularity: 89,
-        ingredients: ['银龙舌兰酒', '三重橙酒', '青柠汁', '粗盐', '青柠片']
-      },
-      {
-        id: 6,
-        name: '长岛冰茶',
-        emoji: '🧊',
-        category: '烈酒',
-        description: '多种烈酒的完美调和，看似清淡实则浓烈，喝酒人的挑战',
-        difficulty: '困难',
-        time: '8分钟',
-        popularity: 85,
-        ingredients: ['伏特加', '朗姆酒', '金酒', '龙舌兰酒', '三重橙酒', '柠檬汁', '可乐']
-      },
-      {
-        id: 7,
-        name: '威士忌酸',
-        emoji: '🍋',
-        category: '酸甜',
-        description: '威士忌的醇香与柠檬的酸甜交织，层次丰富的口感体验',
-        difficulty: '简单',
-        time: '4分钟',
-        popularity: 82,
-        ingredients: ['波本威士忌', '柠檬汁', '糖浆', '蛋白', '安格斯特拉苦精']
-      },
-      {
-        id: 8,
-        name: '大都会',
-        emoji: '💗',
-        category: '时尚',
-        description: '粉红色的浪漫外表下，隐藏着伏特加与蔓越莓的完美和谐',
-        difficulty: '简单',
-        time: '3分钟',
-        popularity: 87,
-        ingredients: ['伏特加', '三重橙酒', '蔓越莓汁', '青柠汁']
-      }
-    ],
+    cocktails: builtInCocktails,
     
     // 用户偏好设置
     userSettings: {
@@ -123,6 +51,8 @@ App({
     error: null
   },
 
+  cocktailLibrary,
+
   /**
    * 应用启动生命周期函数
    * @description 监听小程序初始化，在小程序启动时触发一次
@@ -140,6 +70,9 @@ App({
       
       // 初始化用户设置
       this.initUserSettings();
+
+      // 初始化配方库
+      this.initCocktailLibrary();
       
       // 检查网络状态
       this.checkNetworkStatus();
@@ -255,6 +188,16 @@ App({
   },
 
   /**
+   * 初始化配方库
+   * @description 读取自定义配方并合并内置配方
+   */
+  initCocktailLibrary() {
+    const cocktails = this.cocktailLibrary.init();
+    this.globalData.cocktails = cocktails;
+    console.log(`🍸 配方库初始化完成，共 ${cocktails.length} 个配方`);
+  },
+
+  /**
    * 检查网络状态
    * @description 检查当前网络连接状态
    */
@@ -353,7 +296,7 @@ App({
    * @returns {Object|null} 配方对象
    */
   getCocktailById(id) {
-    return this.globalData.cocktails.find(cocktail => cocktail.id === id) || null;
+    return this.cocktailLibrary.getCocktailById(id);
   },
 
   /**
@@ -363,21 +306,12 @@ App({
    */
   addCocktail(cocktailData) {
     try {
-      const newCocktail = {
-        id: Date.now(), // 使用时间戳作为临时ID
-        ...cocktailData,
-        createdAt: new Date().toISOString()
-      };
-
-      this.globalData.cocktails.push(newCocktail);
-      
-      // 持久化存储
-      wx.setStorageSync('customCocktails', this.globalData.cocktails);
-      
-      return true;
+      const cocktail = this.cocktailLibrary.saveDraft(cocktailData);
+      this.globalData.cocktails = this.cocktailLibrary.listCocktails();
+      return cocktail;
     } catch (error) {
       this.handleError(error, '添加配方');
-      return false;
+      return null;
     }
   },
 

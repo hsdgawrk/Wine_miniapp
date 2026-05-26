@@ -1,87 +1,110 @@
-<view class="container">
-  <!-- 步骤导航栏 -->
-  <view class="step-navbar">
-    <text class="nav-title">制作步骤</text>
-    <text class="step-count">共{{steps.length}}步</text>
-  </view>
-
-  <!-- 进度条 -->
-  <view class="progress-section">
-    <view class="progress-bar">
-      <view class="progress-fill" style="width: {{currentProgress}}%"></view>
+<view class="container steps-page">
+  <view class="steps-header">
+    <view class="header-copy">
+      <text class="header-kicker">SHAKER DECK</text>
+      <text class="header-title">{{cocktailName || '制作步骤'}}</text>
     </view>
-    <text class="progress-text">{{currentStep}}/{{steps.length}}</text>
+    <view class="header-counter">
+      <text class="counter-current">{{currentStepNumber}}</text>
+      <text class="counter-total">/{{steps.length}}</text>
+    </view>
   </view>
 
-  <!-- 步骤列表 -->
-  <view class="steps-list">
-    <block wx:for="{{steps}}" wx:key="number">
-      <view class="step-card {{item.animation}}" style="animation-delay: {{index * 0.1}}s">
-        <!-- 时间线连接线 -->
-        <view class="timeline-connector" wx:if="{{index < steps.length - 1}}"></view>
-        
-        <!-- 步骤内容 -->
-        <view class="step-content">
-          <!-- 左侧步骤编号 -->
-          <view class="step-number-container">
-            <view class="step-number {{index < currentStep ? 'completed' : ''}}">
-              <text wx:if="{{index < currentStep}}" class="check-icon">✓</text>
-              <text wx:else>{{item.number}}</text>
+  <view class="progress-panel">
+    <view class="progress-meta">
+      <text class="progress-label">当前牌位</text>
+      <text class="progress-value">{{currentProgress}}%</text>
+    </view>
+    <view class="progress-track">
+      <view class="progress-fill" style="width: {{currentProgress}}%;"></view>
+    </view>
+  </view>
+
+  <view
+    class="deck-stage"
+    bindtouchstart="handleTouchStart"
+    bindtouchend="handleTouchEnd"
+  >
+    <button
+      wx:if="{{currentStep > 0}}"
+      class="side-nav side-nav-left"
+      hover-class="side-nav-press"
+      bindtap="goPreviousStep"
+    >
+      <text>上</text>
+      <text>一</text>
+      <text>步</text>
+    </button>
+
+    <view class="card-deck" wx:if="{{steps.length}}">
+      <block wx:for="{{deckSteps}}" wx:key="deckKey">
+        <view
+          wx:if="{{item.isVisible}}"
+          class="deck-card {{item.stackClass}} tone-{{item.tone}}"
+          style="z-index: {{item.zIndex}};"
+        >
+          <view class="card-front" wx:if="{{item.isCurrent}}">
+            <view class="card-topline">
+              <view>
+                <text class="card-kicker">STEP {{item.displayNumber}}</text>
+                <text class="card-title">当前步骤</text>
+              </view>
+              <text class="card-position">{{item.positionText}}</text>
             </view>
-          </view>
-          
-          <!-- 右侧内容区 -->
-          <view class="step-details">
-            <view class="step-header">
-              <text class="step-title">步骤 {{item.number}}</text>
-              <text class="step-status {{index < currentStep ? 'completed' : index === currentStep ? 'active' : 'pending'}}">
-                {{index < currentStep ? '已完成' : index === currentStep ? '进行中' : '待完成'}}
-              </text>
-            </view>
-            
-            <!-- 步骤说明 -->
-            <view class="step-instruction-container">
+
+            <scroll-view class="card-scroll" scroll-y="true">
               <text class="step-instruction">{{item.instruction}}</text>
-              
-              <!-- 额外提示 -->
-              <view class="step-tips" wx:if="{{item.tips}}">
-                <text class="tips-icon">💡</text>
-                <text class="tips-text">{{item.tips}}</text>
+
+              <view class="step-details">
+                <view class="detail-pill" wx:if="{{item.estimatedTime}}">
+                  <text class="detail-label">TIME</text>
+                  <text class="detail-text">约 {{item.estimatedTime}} 分钟</text>
+                </view>
+                <view class="detail-note" wx:if="{{item.tips}}">
+                  <text class="detail-label">TIP</text>
+                  <text class="detail-text">{{item.tips}}</text>
+                </view>
               </view>
-              
-              <!-- 预计时间 -->
-              <view class="step-time" wx:if="{{item.estimatedTime}}">
-                <text class="time-icon">⏱️</text>
-                <text class="time-text">预计 {{item.estimatedTime}} 分钟</text>
-              </view>
-            </view>
-            
-            <!-- 步骤操作按钮 -->
-            <view class="step-actions" wx:if="{{index === currentStep}}">
-              <button class="step-complete-btn" bindtap="completeStep" data-step="{{index}}">
-                完成此步骤
-              </button>
-            </view>
+            </scroll-view>
+          </view>
+
+          <view class="card-back" wx:else>
+            <text class="back-mark">STEP</text>
+            <text class="back-number">{{item.displayNumber}}</text>
           </view>
         </view>
-      </view>
-    </block>
-    
-    <!-- 完成提示 -->
-    <view class="completion-card" wx:if="{{currentStep >= steps.length}}">
-      <view class="completion-icon">🎉</view>
-      <text class="completion-title">恭喜完成！</text>
-      <text class="completion-message">您的鸡尾酒已经制作完成，请享用美味！</text>
+      </block>
     </view>
+
+    <view class="empty-state" wx:else>
+      <text class="empty-title">暂无制作步骤</text>
+      <text class="empty-copy">请返回配方页检查步骤内容。</text>
+    </view>
+
+    <button
+      wx:if="{{currentStep < steps.length - 1}}"
+      class="side-nav side-nav-right"
+      hover-class="side-nav-press"
+      bindtap="goNextStep"
+    >
+      <text>下</text>
+      <text>一</text>
+      <text>步</text>
+    </button>
   </view>
 
-  <!-- 底部操作栏 -->
-  <view class="bottom-action-bar">
-    <button 
-      class="complete-button {{currentStep >= steps.length ? 'all-complete' : ''}}" 
+  <view class="step-footer">
+    <view class="footer-hint">
+      <text class="hint-dot"></text>
+      <text>左右滑动也可以翻牌</text>
+    </view>
+    <button
+      wx:if="{{steps.length && currentStep >= steps.length - 1}}"
+      class="finish-button"
+      hover-class="finish-button-press"
       bindtap="finishCocktail"
     >
-      {{currentStep >= steps.length ? '返回首页' : '跳过剩余步骤'}}
+      完成制作
     </button>
   </view>
 </view>

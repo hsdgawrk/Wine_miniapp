@@ -73,6 +73,10 @@ Page({
    */
   onShow() {
     console.log('👀 主页面显示');
+
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 });
+    }
     
     // 刷新数据（可能在其他页面添加了新配方）
     this.refreshCocktailData();
@@ -145,13 +149,13 @@ Page({
   initPageData() {
     const app = getApp();
     
-    if (!app || !app.globalData) {
-      throw new Error('应用全局数据未初始化');
+    if (!app || !app.cocktailLibrary) {
+      throw new Error('配方库未初始化');
     }
 
-    const cocktails = app.globalData.cocktails || [];
-    const randomCocktail = this.getRandomCocktail(cocktails);
-    const currentDate = this.getCurrentDateInfo();
+    const cocktails = this.decorateCocktails(app.cocktailLibrary.listCocktails());
+    const randomCocktail = this.decorateCocktail(app.cocktailLibrary.getDailyCocktail());
+    const currentDate = app.cocktailLibrary.getCurrentDateInfo();
 
     this.setData({
       cocktails,
@@ -216,18 +220,22 @@ Page({
   refreshCocktailData() {
     try {
       const app = getApp();
-      const cocktails = app.globalData.cocktails || [];
+      const cocktails = this.decorateCocktails(app.cocktailLibrary
+        ? app.cocktailLibrary.listCocktails()
+        : app.globalData.cocktails || []);
+      const filteredCocktails = this.filterCocktails(cocktails, this.data.searchQuery);
+
+      this.setData({
+        cocktails,
+        filteredCocktails,
+        totalCount: cocktails.length,
+        filteredCount: filteredCocktails.length,
+        randomCocktail: app.cocktailLibrary
+          ? this.decorateCocktail(app.cocktailLibrary.getDailyCocktail())
+          : this.decorateCocktail(this.getRandomCocktail(cocktails))
+      });
       
-      // 如果数据有变化，才更新
-      if (cocktails.length !== this.data.totalCount) {
-        this.setData({
-          cocktails,
-          filteredCocktails: this.filterCocktails(cocktails, this.data.searchQuery),
-          totalCount: cocktails.length
-        });
-        
-        console.log(`🔄 配方数据已更新，当前 ${cocktails.length} 个配方`);
-      }
+      console.log(`🔄 配方数据已更新，当前 ${cocktails.length} 个配方`);
     } catch (error) {
       console.warn('⚠️ 刷新配方数据失败:', error);
     }
@@ -319,13 +327,18 @@ Page({
    * @returns {Array} 过滤后的配方列表
    */
   filterCocktails(cocktails, query) {
+    const app = getApp();
+    if (app && app.cocktailLibrary) {
+      return this.decorateCocktails(app.cocktailLibrary.searchCocktails(query));
+    }
+
     if (!query || query.trim() === '') {
-      return cocktails;
+      return this.decorateCocktails(cocktails);
     }
 
     const lowerQuery = query.toLowerCase().trim();
     
-    return cocktails.filter(cocktail => {
+    return this.decorateCocktails(cocktails.filter(cocktail => {
       // 搜索名称、描述、成分
       const searchableText = [
         cocktail.name || '',
@@ -335,7 +348,37 @@ Page({
       ].join(' ').toLowerCase();
       
       return searchableText.includes(lowerQuery);
-    });
+    }));
+  },
+
+  /**
+   * 补齐列表展示所需的派生字段，减少 WXML 中的复杂表达式。
+   * @param {Array} cocktails 配方列表
+   * @returns {Array} 补齐展示字段后的配方列表
+   */
+  decorateCocktails(cocktails) {
+    return (cocktails || []).map((cocktail, index) => this.decorateCocktail(cocktail, index));
+  },
+
+  /**
+   * 补齐单个配方的展示字段。
+   * @param {Object} cocktail 配方对象
+   * @param {number} index 列表索引
+   * @returns {Object|null} 补齐展示字段后的配方
+   */
+  decorateCocktail(cocktail, index = 0) {
+    if (!cocktail) {
+      return null;
+    }
+
+    const ingredients = cocktail.ingredients || [];
+    const preview = ingredients.slice(0, 3).join(' / ');
+
+    return {
+      ...cocktail,
+      listIndex: String(index + 1).padStart(2, '0'),
+      ingredientsPreview: `${preview}${ingredients.length > 3 ? ' / ...' : ''}`
+    };
   },
 
   /**
@@ -406,21 +449,14 @@ Page({
    */
   onDailyRecommendTap() {
     if (this.data.randomCocktail) {
-      // 找到对应的配方ID
-      const cocktail = this.data.cocktails.find(
-        item => item.name === this.data.randomCocktail.name
-      );
-      
-      if (cocktail) {
-        this.navigateToCocktailDetail({
-          currentTarget: {
-            dataset: {
-              id: cocktail.id,
-              name: cocktail.name
-            }
+      this.navigateToCocktailDetail({
+        currentTarget: {
+          dataset: {
+            id: this.data.randomCocktail.id,
+            name: this.data.randomCocktail.name
           }
-        });
-      }
+        }
+      });
     }
   },
 

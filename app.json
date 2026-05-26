@@ -8,31 +8,28 @@
   ],
   "window": {
     "navigationBarTitleText": "调酒配方",
-    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarBackgroundColor": "#12110f",
     "navigationBarTextStyle": "white",
     "backgroundTextStyle": "dark",
-    "backgroundColor": "#f5f7fa",
+    "backgroundColor": "#12110f",
     "enablePullDownRefresh": false,
     "onReachBottomDistance": 50
   },
   "tabBar": {
-    "color": "#666",
-    "selectedColor": "#667eea",
-    "backgroundColor": "#ffffff",
+    "custom": true,
+    "color": "#8f8880",
+    "selectedColor": "#d7ff68",
+    "backgroundColor": "#141311",
     "borderStyle": "black",
     "position": "bottom",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "images/tab-home.png",
-        "selectedIconPath": "images/tab-home-active.png"
+        "text": "首页"
       },
       {
         "pagePath": "pages/add-cocktail/add-cocktail",
-        "text": "添加",
-        "iconPath": "images/tab-add.png",
-        "selectedIconPath": "images/tab-add-active.png"
+        "text": "添加"
       }
     ]
   },

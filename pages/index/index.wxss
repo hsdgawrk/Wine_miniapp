@@ -1,749 +1,577 @@
-/* 
-  主页面样式文件
-  @description 首页的所有样式定义
-  @author 开发团队
-  @version 2.0.0
-*/
-
-/* 主容器 */
-.container {
-  padding: 0;
-  background: linear-gradient(180deg, #f5f7fa 0%, #c3cfe2 100%);
+.index-page {
+  position: relative;
   min-height: 100vh;
-  position: relative;
-}
-
-/* 每日推荐卡片 */
-.daily-cocktail-card {
-  background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.9) 0%, 
-    rgba(118, 75, 162, 0.85) 25%, 
-    rgba(240, 147, 251, 0.8) 50%, 
-    rgba(102, 126, 234, 0.75) 75%, 
-    rgba(118, 75, 162, 0.9) 100%);
-  background-size: 400% 400%;
-  animation: fluidGradient 28s ease-in-out infinite;
-  border-radius: 32rpx;
-  margin: 24rpx;
-  box-shadow: 0 20rpx 60rpx rgba(102, 126, 234, 0.4);
-  backdrop-filter: blur(20rpx);
-  border: 1rpx solid rgba(255,255,255,0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 28rpx 24rpx 56rpx;
+  box-sizing: border-box;
+  background:
+    linear-gradient(135deg, rgba(215, 255, 104, 0.08), transparent 30%),
+    linear-gradient(245deg, rgba(255, 255, 255, 0.05), transparent 34%),
+    linear-gradient(180deg, #171512 0%, #11100e 54%, #1b1813 100%);
   overflow: hidden;
-  position: relative;
 }
 
-.daily-cocktail-card:active {
-  transform: translateY(2rpx) scale(0.98);
-  box-shadow: 0 15rpx 40rpx rgba(102, 126, 234, 0.6);
+.top-strip {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 8rpx 0 24rpx;
+}
+
+.eyebrow {
+  display: block;
+  color: #d7ff68;
+  font-size: 20rpx;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 14rpx;
+}
+
+.page-title {
+  display: block;
+  color: #fff8ee;
+  font-size: 52rpx;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.library-stat {
+  min-width: 112rpx;
+  padding: 16rpx 18rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.07);
+  text-align: right;
+}
+
+.library-stat-value {
+  display: block;
+  color: #fff8ee;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.library-stat-label {
+  display: block;
+  color: rgba(247, 241, 232, 0.58);
+  font-size: 20rpx;
+  margin-top: 8rpx;
+}
+
+.daily-cocktail-card {
+  position: relative;
+  display: flex;
+  min-height: 360rpx;
+  padding: 26rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 172, 64, 0.24), transparent 42%),
+    linear-gradient(145deg, rgba(39, 38, 33, 0.96), rgba(20, 19, 16, 0.94));
+  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 28rpx 80rpx rgba(0, 0, 0, 0.36);
 }
 
 .daily-cocktail-card::before {
   content: '';
   position: absolute;
-  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, 
-    rgba(255,255,255,0.15) 0%, 
-    rgba(255,255,255,0.05) 50%, 
-    rgba(255,255,255,0.1) 100%);
-  background-size: 200% 200%;
-  animation: shimmer 6s ease-in-out infinite;
-  pointer-events: none;
+  height: 8rpx;
+  background: linear-gradient(90deg, #d7ff68, #ffb84d, #fff8ee);
 }
 
 .daily-cocktail-card::after {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, 
-    rgba(255,255,255,0.2) 0%, 
-    transparent 50%),
-    radial-gradient(circle at 80% 80%, 
-    rgba(255,255,255,0.15) 0%, 
-    transparent 50%),
-    radial-gradient(circle at 40% 70%, 
-    rgba(240, 147, 251, 0.1) 0%, 
-    transparent 50%);
-  mix-blend-mode: overlay;
+  left: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1rpx, transparent 1rpx),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 1rpx, transparent 1rpx);
+  background-size: 42rpx 42rpx;
+  opacity: 0.28;
   pointer-events: none;
 }
 
-/* 流体渐变动画 */
-@keyframes fluidGradient {
-  0% {
-    background-position: 20% 80%;
-  }
-  12.5% {
-    background-position: 80% 20%;
-  }
-  25% {
-    background-position: 60% 90%;
-  }
-  37.5% {
-    background-position: 10% 30%;
-  }
-  50% {
-    background-position: 90% 70%;
-  }
-  62.5% {
-    background-position: 30% 10%;
-  }
-  75% {
-    background-position: 70% 85%;
-  }
-  87.5% {
-    background-position: 40% 40%;
-  }
-  100% {
-    background-position: 20% 80%;
-  }
+.daily-cocktail-card:active {
+  transform: scale(0.99);
 }
 
-/* 光泽效果动画 */
-@keyframes shimmer {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
-/* 日期区域 */
-.daily-date-section {
-  display: flex;
-  align-items: center;
-  padding: 32rpx 40rpx 20rpx;
-  border-bottom: 1rpx solid rgba(0,0,0,0.05);
-}
-
-.date-badge {
-  width: 160rpx;
-  height: 160rpx;
-  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
-  border-radius: 24rpx;
+.date-plate {
+  position: relative;
+  z-index: 1;
+  width: 132rpx;
+  height: 204rpx;
+  padding: 18rpx 0;
+  box-sizing: border-box;
+  border-radius: 14rpx;
+  background: #fff8ee;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-right: 40rpx;
-  box-shadow: 0 12rpx 35rpx rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(20rpx);
-  border: 1rpx solid rgba(255,255,255,0.3);
+  box-shadow: 0 18rpx 44rpx rgba(0, 0, 0, 0.28);
 }
 
-.date-month {
-  font-size: 28rpx;
-  color: rgba(255,255,255,0.9);
-  font-weight: 600;
-  margin-bottom: 8rpx;
-  letter-spacing: 1rpx;
+.date-month,
+.date-weekday {
+  color: #312a20;
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .date-day {
-  font-size: 68rpx;
-  color: #fff;
+  color: #15130f;
+  font-size: 66rpx;
   font-weight: 900;
   line-height: 1;
-  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.3);
+  margin: 18rpx 0 16rpx;
 }
 
-.date-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.date-year {
-  font-size: 38rpx;
-  color: rgba(255,255,255,0.95);
-  font-weight: 700;
-  margin-bottom: 12rpx;
-  text-shadow: 0 2rpx 6rpx rgba(0,0,0,0.2);
-}
-
-.date-weekday {
-  font-size: 32rpx;
-  color: rgba(255,255,255,0.85);
-  font-weight: 600;
-  text-shadow: 0 1rpx 4rpx rgba(0,0,0,0.2);
-}
-
-/* 推荐内容区域 */
 .daily-content {
-  padding: 32rpx 40rpx 40rpx;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding-left: 28rpx;
+  padding-right: 76rpx;
+  min-width: 0;
 }
 
-.daily-header {
+.daily-kicker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24rpx;
+  margin-bottom: 18rpx;
 }
 
 .daily-label {
-  font-size: 28rpx;
-  color: #fff;
-  font-weight: 600;
-  background: rgba(255,255,255,0.2);
-  padding: 8rpx 16rpx;
-  border-radius: 20rpx;
-  backdrop-filter: blur(10rpx);
-  border: 1rpx solid rgba(255,255,255,0.3);
+  display: inline-flex;
+  color: #d7ff68;
+  font-size: 22rpx;
+  font-weight: 800;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(215, 255, 104, 0.34);
+  background: rgba(215, 255, 104, 0.1);
 }
 
-.cocktail-icon {
-  font-size: 32rpx;
+.daily-year {
+  color: rgba(247, 241, 232, 0.48);
+  font-size: 22rpx;
+  font-weight: 700;
 }
 
 .daily-cocktail-title {
-  font-size: 42rpx;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 16rpx;
   display: block;
-  line-height: 1.2;
-  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.3);
+  color: #fff8ee;
+  font-size: 48rpx;
+  font-weight: 900;
+  line-height: 1.08;
+  margin-bottom: 18rpx;
 }
 
 .daily-cocktail-description {
-  font-size: 28rpx;
-  color: rgba(255,255,255,0.9);
-  line-height: 1.5;
-  margin-bottom: 24rpx;
   display: -webkit-box;
+  color: rgba(247, 241, 232, 0.76);
+  font-size: 27rpx;
+  line-height: 1.52;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  text-shadow: 0 1rpx 4rpx rgba(0,0,0,0.2);
 }
 
 .daily-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
-  margin-bottom: 32rpx;
+  margin: 22rpx -8rpx 0 0;
 }
 
-.daily-meta .meta-item {
-  font-size: 24rpx;
-  padding: 8rpx 16rpx;
-  border-radius: 16rpx;
-  font-weight: 500;
-  line-height: 1;
-  color: #fff;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10rpx);
-  border: 1rpx solid rgba(255,255,255,0.2);
-}
-
-.daily-meta .meta-item.difficulty {
-  background: rgba(76, 217, 100, 0.2);
-  color: #4cd964;
-}
-
-.daily-meta .meta-item.time {
-  background: rgba(255, 204, 0, 0.2);
-  color: #ffcc00;
-}
-
-.daily-meta .meta-item.ingredients {
-  background: rgba(175, 82, 222, 0.2);
-  color: #af52de;
+.meta-item {
+  margin: 0 8rpx 8rpx 0;
+  padding: 8rpx 14rpx;
+  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(247, 241, 232, 0.82);
+  font-size: 22rpx;
+  font-weight: 700;
 }
 
 .daily-action {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: rgba(255,255,255,0.15);
-  padding: 20rpx 24rpx;
-  border-radius: 20rpx;
-  border: 1rpx solid rgba(255,255,255,0.3);
-  backdrop-filter: blur(10rpx);
+  margin-top: 22rpx;
 }
 
 .action-text {
-  font-size: 26rpx;
-  color: rgba(255,255,255,0.95);
-  font-weight: 500;
-  text-shadow: 0 1rpx 3rpx rgba(0,0,0,0.2);
+  color: #fff8ee;
+  font-size: 25rpx;
+  font-weight: 800;
 }
 
 .action-arrow {
-  font-size: 28rpx;
-  color: rgba(255,255,255,0.8);
-  font-weight: bold;
+  color: #d7ff68;
+  font-size: 30rpx;
+  font-weight: 900;
+  line-height: 1;
+  margin-left: 12rpx;
 }
 
-/* 搜索部分 */
+.hero-emoji {
+  position: absolute;
+  right: -16rpx;
+  bottom: 4rpx;
+  z-index: 1;
+  font-size: 128rpx;
+  opacity: 0.22;
+}
+
 .search-section {
-  margin: 24rpx;
+  margin: 26rpx 0 16rpx;
 }
 
 .search-bar {
-  background: rgba(255,255,255,0.95);
-  border-radius: 50rpx;
-  padding: 8rpx 20rpx;
-  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(20rpx);
-  border: 1rpx solid rgba(255,255,255,0.3);
-  position: relative;
+  min-height: 96rpx;
+  padding: 0 18rpx 0 24rpx;
   display: flex;
   align-items: center;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+}
+
+.search-glyph {
+  width: 44rpx;
+  color: #d7ff68;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .search-input {
-  font-size: 28rpx;
-  padding: 16rpx;
-  background: transparent;
-  border: none;
   flex: 1;
+  min-width: 0;
+  height: 96rpx;
+  padding: 0 12rpx;
+  box-sizing: border-box;
+  color: #fff8ee;
+  font-size: 28rpx;
 }
 
 .clear-search {
-  width: 60rpx;
-  height: 60rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.1);
-  margin-left: 10rpx;
 }
 
 .clear-icon {
-  font-size: 32rpx;
-  color: #666;
-  font-weight: bold;
+  color: rgba(247, 241, 232, 0.8);
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .search-status {
-  padding: 16rpx 20rpx 0;
-  text-align: center;
+  min-height: 44rpx;
+  padding: 12rpx 4rpx 0;
 }
 
-.search-loading, .search-result, .total-count {
+.search-loading,
+.search-result,
+.total-count {
+  color: rgba(247, 241, 232, 0.56);
   font-size: 24rpx;
-  color: #666;
-}
-
-.search-loading {
-  color: #667eea;
 }
 
 .search-result {
-  color: #28a745;
+  color: #d7ff68;
 }
 
-/* 配方区域 */
 .cocktail-section {
-  flex: 1;
+  padding-top: 10rpx;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 20rpx 0 16rpx;
 }
 
 .section-title {
-  font-size: 34rpx;
-  font-weight: 600;
-  padding: 30rpx 40rpx 20rpx;
-  color: #2c3e50;
-  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
+  color: #fff8ee;
+  font-size: 36rpx;
+  font-weight: 900;
+  line-height: 1.1;
 }
 
-/* 无结果状态 */
+.section-count {
+  color: rgba(247, 241, 232, 0.4);
+  font-size: 20rpx;
+  font-weight: 800;
+}
+
 .no-results {
-  padding: 80rpx 40rpx;
+  padding: 72rpx 28rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1rpx solid rgba(255, 255, 255, 0.12);
   text-align: center;
 }
 
-.no-results-text {
-  font-size: 32rpx;
-  color: #666;
+.no-results-mark {
   display: block;
+  color: #d7ff68;
+  font-size: 68rpx;
+  line-height: 1;
   margin-bottom: 20rpx;
 }
 
-.no-results-tip {
-  font-size: 26rpx;
-  color: #999;
+.no-results-text {
   display: block;
-  margin-bottom: 40rpx;
+  color: #fff8ee;
+  font-size: 32rpx;
+  font-weight: 800;
+  margin-bottom: 12rpx;
+}
+
+.no-results-tip {
+  display: block;
+  color: rgba(247, 241, 232, 0.58);
+  font-size: 25rpx;
+  margin-bottom: 34rpx;
 }
 
 .clear-search-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  border: none;
-  border-radius: 50rpx;
-  padding: 20rpx 40rpx;
-  font-size: 28rpx;
+  width: 260rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0;
+  border-radius: 14rpx;
+  background: #d7ff68;
+  color: #171511;
+  font-size: 27rpx;
+  font-weight: 800;
 }
 
-/* 配方卡片 - 全新玻璃质感纯文字设计 */
 .cocktail-card {
-  background: linear-gradient(145deg, 
-    rgba(255,255,255,0.25) 0%, 
-    rgba(255,255,255,0.1) 25%, 
-    rgba(255,255,255,0.15) 50%, 
-    rgba(255,255,255,0.05) 75%, 
-    rgba(255,255,255,0.2) 100%);
-  margin: 24rpx 24rpx;
-  padding: 0;
-  border-radius: 32rpx;
-  box-shadow: 
-    0 20rpx 60rpx rgba(102, 126, 234, 0.15),
-    0 8rpx 25rpx rgba(0, 0, 0, 0.08),
-    inset 0 1rpx 0 rgba(255,255,255,0.3),
-    inset 0 -1rpx 0 rgba(0,0,0,0.1);
+  position: relative;
   display: flex;
   align-items: stretch;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(25rpx);
-  border: 1.5rpx solid rgba(255,255,255,0.35);
-  position: relative;
+  min-height: 226rpx;
+  margin-bottom: 16rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1rpx solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  min-height: 220rpx;
+  box-shadow: 0 16rpx 50rpx rgba(0, 0, 0, 0.2);
+  transition: transform 0.18s ease, background 0.18s ease;
 }
 
-/* 玻璃光泽效果 */
 .cocktail-card::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
+  left: 0;
+  width: 6rpx;
   height: 100%;
-  background: linear-gradient(105deg, 
-    transparent 40%, 
-    rgba(255,255,255,0.35) 50%, 
-    rgba(255,255,255,0.2) 55%, 
-    transparent 60%);
-  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 内部渐变光晕 */
-.cocktail-card::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, 
-    rgba(102, 126, 234, 0.08) 0%, 
-    rgba(118, 75, 162, 0.05) 30%, 
-    transparent 60%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-}
-
-.cocktail-card:active::before {
-  left: 100%;
-}
-
-.cocktail-card:active::after {
-  opacity: 1;
+  background: #ffb84d;
 }
 
 .cocktail-card:active {
-  transform: translateY(2rpx) scale(0.98);
-  box-shadow: 
-    0 15rpx 45rpx rgba(102, 126, 234, 0.25),
-    0 5rpx 15rpx rgba(0, 0, 0, 0.12),
-    inset 0 1rpx 0 rgba(255,255,255,0.4),
-    inset 0 -1rpx 0 rgba(0,0,0,0.15);
+  transform: scale(0.985);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* 左侧图标区域 */
-.cocktail-icon-section {
-  width: 120rpx;
+.cocktail-symbol {
+  width: 126rpx;
+  padding: 26rpx 16rpx;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 32rpx 0;
-  background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.2) 0%, 
-    rgba(118, 75, 162, 0.15) 100%);
-  border-radius: 32rpx 0 0 32rpx;
-  position: relative;
-}
-
-.cocktail-icon-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 1rpx;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    rgba(255,255,255,0.3) 0%, 
-    rgba(255,255,255,0.1) 50%, 
-    rgba(255,255,255,0.3) 100%);
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .cocktail-emoji {
-  font-size: 48rpx;
-  margin-bottom: 16rpx;
-  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
-}
-
-.popularity-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(76, 217, 100, 0.2);
-  padding: 8rpx 12rpx;
-  border-radius: 16rpx;
-  backdrop-filter: blur(10rpx);
-  border: 1rpx solid rgba(76, 217, 100, 0.3);
-}
-
-.popularity-score {
-  font-size: 20rpx;
-  font-weight: 800;
-  color: #4cd964;
+  font-size: 56rpx;
   line-height: 1;
-  margin-bottom: 4rpx;
 }
 
-.popularity-label {
-  font-size: 16rpx;
-  color: #4cd964;
-  font-weight: 600;
-  opacity: 0.8;
+.cocktail-index {
+  color: rgba(247, 241, 232, 0.42);
+  font-size: 22rpx;
+  font-weight: 900;
 }
 
-/* 主要内容区域 */
 .cocktail-content {
   flex: 1;
-  padding: 32rpx 24rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
+  min-width: 0;
+  padding: 26rpx 14rpx 24rpx 24rpx;
+  box-sizing: border-box;
 }
 
 .cocktail-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
 .cocktail-name {
-  font-size: 36rpx;
-  font-weight: 800;
-  color: #2c3e50;
   flex: 1;
-  line-height: 1.2;
-  margin-right: 16rpx;
-  text-shadow: 0 1rpx 3rpx rgba(0,0,0,0.08);
-}
-
-.cocktail-category {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 6rpx 16rpx;
-  border-radius: 20rpx;
-  flex-shrink: 0;
+  min-width: 0;
+  color: #fff8ee;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.18;
+  margin-right: 14rpx;
 }
 
 .category-text {
-  font-size: 22rpx;
-  color: #fff;
-  font-weight: 600;
-  text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.2);
+  flex-shrink: 0;
+  max-width: 132rpx;
+  padding: 8rpx 12rpx;
+  border-radius: 999rpx;
+  color: #15130f;
+  background: #fff8ee;
+  font-size: 20rpx;
+  font-weight: 900;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cocktail-desc {
-  font-size: 28rpx;
-  color: #546e7a;
-  line-height: 1.5;
-  margin-bottom: 20rpx;
   display: -webkit-box;
+  color: rgba(247, 241, 232, 0.66);
+  font-size: 25rpx;
+  line-height: 1.48;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.05);
-}
-
-/* 特色信息 */
-.cocktail-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
   margin-bottom: 16rpx;
 }
 
+.cocktail-features {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -8rpx;
+  margin-bottom: 14rpx;
+}
+
 .feature-item {
+  margin: 0 8rpx 8rpx 0;
+  padding: 7rpx 11rpx;
+  border-radius: 10rpx;
+  color: rgba(247, 241, 232, 0.76);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 21rpx;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.feature-item.hot {
+  color: #d7ff68;
+  background: rgba(215, 255, 104, 0.1);
+}
+
+.ingredients-preview {
   display: flex;
   align-items: center;
-  background: rgba(255,255,255,0.7);
-  padding: 10rpx 16rpx;
-  border-radius: 20rpx;
-  backdrop-filter: blur(10rpx);
-  border: 1rpx solid rgba(255,255,255,0.5);
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
-}
-
-.feature-icon {
-  font-size: 24rpx;
-  margin-right: 8rpx;
-}
-
-.feature-text {
-  font-size: 24rpx;
-  color: #546e7a;
-  font-weight: 600;
-}
-
-/* 成分预览 */
-.ingredients-preview {
-  background: rgba(102, 126, 234, 0.08);
-  padding: 16rpx;
-  border-radius: 16rpx;
-  border-left: 4rpx solid #667eea;
-  margin-bottom: 8rpx;
-  margin-top: 8rpx;
+  min-width: 0;
+  padding-top: 12rpx;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .ingredients-label {
-  font-size: 24rpx;
-  color: #667eea;
-  font-weight: 700;
-  margin-right: 8rpx;
+  flex-shrink: 0;
+  color: rgba(247, 241, 232, 0.44);
+  font-size: 21rpx;
+  font-weight: 800;
+  margin-right: 12rpx;
 }
 
 .ingredients-text {
-  font-size: 24rpx;
-  color: #546e7a;
-  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  color: rgba(247, 241, 232, 0.7);
+  font-size: 22rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 右侧操作区域 */
 .cocktail-action {
-  width: 100rpx;
+  width: 70rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32rpx 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 152, 0, 0.15) 0%, 
-    rgba(255, 193, 7, 0.1) 100%);
-  border-radius: 0 32rpx 32rpx 0;
-  position: relative;
 }
 
-.cocktail-action::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1rpx;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    rgba(255,255,255,0.3) 0%, 
-    rgba(255,255,255,0.1) 50%, 
-    rgba(255,255,255,0.3) 100%);
+.cocktail-action .action-arrow {
+  margin-left: 0;
+  color: rgba(215, 255, 104, 0.88);
 }
 
-.action-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-  width: 60rpx;
-  height: 60rpx;
-  border-radius: 50%;
-  box-shadow: 0 6rpx 20rpx rgba(255, 152, 0, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.cocktail-card:active .action-button {
-  transform: scale(0.9);
-  box-shadow: 0 3rpx 10rpx rgba(255, 152, 0, 0.4);
-}
-
-.action-text {
-  font-size: 18rpx;
-  color: #fff;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 2rpx;
-  text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.2);
-}
-
-.action-arrow {
-  font-size: 20rpx;
-  color: #fff;
-  font-weight: 900;
-  line-height: 1;
-  text-shadow: 0 1rpx 2rpx rgba(0,0,0,0.2);
-}
-
-/* 无更多数据 */
 .no-more {
-  padding: 40rpx;
+  padding: 34rpx 0 14rpx;
   text-align: center;
 }
 
 .no-more-text {
+  color: rgba(247, 241, 232, 0.38);
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.error-context {
+  color: rgba(247, 241, 232, 0.58);
   font-size: 24rpx;
-  color: #ccc;
+  margin-bottom: 28rpx;
 }
 
-.add-icon {
-  font-size: 56rpx;
-  font-weight: 300;
-}
-
-/* 响应式适配 */
-@media (max-width: 750rpx) {
-  .daily-cocktail-card {
-    margin: 20rpx;
-    padding: 32rpx;
-  }
-  
-  .cocktail-card {
-    margin: 16rpx 20rpx;
-    padding: 24rpx;
-  }
-  
-  .search-section {
-    margin: 20rpx;
-  }
-}
-
-/* 加载状态样式覆盖 */
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
 }
 
-/* 动画延迟样式 */
-.scale-in[style*="animation-delay: 0s"] {
-  animation-delay: 0s !important;
-}
+@media (max-width: 750rpx) {
+  .index-page {
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+  }
 
-.scale-in[style*="animation-delay: 0.1s"] {
-  animation-delay: 0.1s !important;
-}
+  .daily-cocktail-card {
+    min-height: 342rpx;
+    padding: 22rpx;
+  }
 
-.scale-in[style*="animation-delay: 0.2s"] {
-  animation-delay: 0.2s !important;
-}
+  .date-plate {
+    width: 118rpx;
+    height: 188rpx;
+  }
 
-.scale-in[style*="animation-delay: 0.3s"] {
-  animation-delay: 0.3s !important;
+  .daily-content {
+    padding-left: 22rpx;
+    padding-right: 42rpx;
+  }
+
+  .daily-cocktail-title {
+    font-size: 42rpx;
+  }
+
+  .cocktail-symbol {
+    width: 112rpx;
+  }
 }

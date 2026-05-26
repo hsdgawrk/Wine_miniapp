@@ -1,63 +1,57 @@
-/* 全局样式文件 */
-
-/* 重置默认样式 */
 page {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(180deg, #f5f7fa 0%, #c3cfe2 100%);
-  color: #333;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #12110f;
+  color: #f7f1e8;
   line-height: 1.6;
+  letter-spacing: 0;
 }
 
-/* 全局容器样式 */
 .container {
   padding: 0;
   min-height: 100vh;
 }
 
-/* 通用卡片样式 */
 .glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20rpx);
-  border-radius: 24rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(29, 27, 24, 0.86);
+  backdrop-filter: blur(28rpx);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24rpx 70rpx rgba(0, 0, 0, 0.34);
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
 }
 
-/* 通用按钮样式 */
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: #d7ff68;
+  color: #171511;
   border: none;
-  border-radius: 50rpx;
-  padding: 20rpx 40rpx;
+  border-radius: 16rpx;
+  padding: 22rpx 40rpx;
   font-size: 28rpx;
-  font-weight: 600;
-  box-shadow: 0 8rpx 25rpx rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
+  font-weight: 700;
+  box-shadow: 0 18rpx 42rpx rgba(215, 255, 104, 0.2);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .btn-primary:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.4);
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 10rpx 26rpx rgba(215, 255, 104, 0.18);
 }
 
-/* 通用输入框样式 */
 .form-input {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1rpx solid rgba(0, 0, 0, 0.1);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  border-radius: 16rpx;
   padding: 24rpx;
   font-size: 28rpx;
-  transition: all 0.3s ease;
+  color: #f7f1e8;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .form-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 4rpx rgba(102, 126, 234, 0.1);
+  border-color: #d7ff68;
+  box-shadow: 0 0 0 4rpx rgba(215, 255, 104, 0.12);
 }
 
-/* 加载状态样式 */
 .loading {
   display: flex;
   align-items: center;
@@ -68,10 +62,9 @@ page {
 .loading-text {
   margin-left: 20rpx;
   font-size: 28rpx;
-  color: #666;
+  color: rgba(247, 241, 232, 0.76);
 }
 
-/* 错误状态样式 */
 .error-container {
   display: flex;
   flex-direction: column;
@@ -82,32 +75,35 @@ page {
 
 .error-text {
   font-size: 28rpx;
-  color: #ff6b6b;
+  color: #ff7a66;
   text-align: center;
   margin-bottom: 30rpx;
 }
 
 .retry-btn {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  background: #ff7a66;
   color: #fff;
   border: none;
-  border-radius: 50rpx;
+  border-radius: 16rpx;
   padding: 20rpx 40rpx;
   font-size: 28rpx;
   font-weight: 600;
 }
 
-/* 通用动画 */
+button::after {
+  border: none;
+}
+
 .fade-in {
-  animation: fadeIn 0.6s ease-in-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .slide-up {
-  animation: slideUp 0.4s ease-out;
+  animation: slideUp 0.45s ease-out;
 }
 
 .scale-in {
-  animation: scaleIn 0.3s ease-out;
+  animation: scaleIn 0.35s ease-out;
 }
 
 @keyframes fadeIn {
@@ -121,7 +117,7 @@ page {
 
 @keyframes slideUp {
   from {
-    transform: translateY(60rpx);
+    transform: translateY(34rpx);
     opacity: 0;
   }
   to {
@@ -132,7 +128,7 @@ page {
 
 @keyframes scaleIn {
   from {
-    transform: scale(0.8);
+    transform: scale(0.96);
     opacity: 0;
   }
   to {

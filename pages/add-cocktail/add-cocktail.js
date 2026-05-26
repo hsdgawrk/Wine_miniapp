@@ -5,40 +5,27 @@
  * @version 2.0.0
  */
 
+const cocktailDraft = require('../../utils/cocktailDraft');
+
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    // 基本配方信息
-    cocktailName: '',
-    cocktailDescription: '',
-    
-    // 制作步骤
-    steps: [
-      { number: 1, instruction: '', animation: 'fadeIn' }
-    ],
-    
-    // 配方详细信息
-    difficulty: '简单',
-    time: '',
-    category: '经典',
-    emoji: '🍸',
-    ingredients: [],
-    newIngredient: '',
+    ...cocktailDraft.createInitialDraft(),
     
     // 页面状态
     isLoading: false,
     isSaving: false,
     error: null,
     
-    // 表单验证
-    formErrors: {},
-    
     // 选项数据
     difficultyOptions: ['简单', '中等', '困难'],
     categoryOptions: ['经典', '清爽', '热带', '烈酒', '早餐酒', '酸甜', '时尚', '创新'],
     emojiOptions: ['🍸', '🥃', '🌿', '🧊', '🍅', '🥭', '🍋', '💗', '🍹', '🥂', '🍷', '🎯'],
+    difficultyIndex: 0,
+    categoryIndex: 0,
+    emojiIndex: 0,
     animationOptions: ['fadeIn', 'slideIn', 'zoomIn']
   },
 
@@ -66,6 +53,10 @@ Page({
    */
   onShow() {
     console.log('👀 添加配方页面显示');
+
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 });
+    }
   },
 
   /**
@@ -99,13 +90,11 @@ Page({
    */
   onInputName(e) {
     const value = e.detail.value;
+    const formErrors = cocktailDraft.validateField('name', value, this.data.formErrors);
     this.setData({ 
       cocktailName: value,
-      'formErrors.name': null 
+      formErrors
     });
-    
-    // 实时验证
-    this.validateField('name', value);
   },
 
   /**
@@ -114,12 +103,11 @@ Page({
    */
   onInputDescription(e) {
     const value = e.detail.value;
+    const formErrors = cocktailDraft.validateField('description', value, this.data.formErrors);
     this.setData({ 
       cocktailDescription: value,
-      'formErrors.description': null 
+      formErrors
     });
-    
-    this.validateField('description', value);
   },
 
   /**
@@ -128,13 +116,11 @@ Page({
    */
   onInputTime(e) {
     const value = e.detail.value;
+    const formErrors = cocktailDraft.validateField('time', value, this.data.formErrors);
     this.setData({ 
       time: value,
-      'formErrors.time': null 
+      formErrors
     });
-    
-    // 实时验证时间格式
-    this.validateField('time', value);
   },
 
   /**
@@ -142,9 +128,9 @@ Page({
    * @param {Object} e 事件对象
    */
   onDifficultyChange(e) {
-    const index = e.detail.value;
+    const index = Number(e.detail.value);
     const difficulty = this.data.difficultyOptions[index];
-    this.setData({ difficulty });
+    this.setData({ difficulty, difficultyIndex: index });
     
     console.log(`🎯 用户选择难度: ${difficulty}`);
   },
@@ -154,9 +140,9 @@ Page({
    * @param {Object} e 事件对象
    */
   onCategoryChange(e) {
-    const index = e.detail.value;
+    const index = Number(e.detail.value);
     const category = this.data.categoryOptions[index];
-    this.setData({ category });
+    this.setData({ category, categoryIndex: index });
     
     console.log(`🏷️ 用户选择分类: ${category}`);
   },
@@ -166,9 +152,9 @@ Page({
    * @param {Object} e 事件对象
    */
   onEmojiChange(e) {
-    const index = e.detail.value;
+    const index = Number(e.detail.value);
     const emoji = this.data.emojiOptions[index];
-    this.setData({ emoji });
+    this.setData({ emoji, emojiIndex: index });
     
     console.log(`😀 用户选择表情: ${emoji}`);
   },
@@ -185,33 +171,26 @@ Page({
    * 添加成分
    */
   addIngredient() {
-    const ingredient = this.data.newIngredient.trim();
-    
-    if (!ingredient) {
+    const result = cocktailDraft.addIngredient(this.data.ingredients, this.data.newIngredient);
+
+    if (result.error) {
       wx.showToast({
-        title: '请输入成分名称',
+        title: result.error,
         icon: 'none',
         duration: 2000
       });
       return;
     }
 
-    if (this.data.ingredients.includes(ingredient)) {
-      wx.showToast({
-        title: '成分已存在',
-        icon: 'none',
-        duration: 2000
-      });
-      return;
-    }
-
-    const updatedIngredients = [...this.data.ingredients, ingredient];
+    const formErrors = { ...this.data.formErrors };
+    delete formErrors.ingredients;
     this.setData({
-      ingredients: updatedIngredients,
-      newIngredient: ''
+      ingredients: result.ingredients,
+      newIngredient: '',
+      formErrors
     });
 
-    console.log(`➕ 添加成分: ${ingredient}`);
+    console.log(`➕ 添加成分: ${this.data.newIngredient}`);
   },
 
   /**
@@ -221,8 +200,7 @@ Page({
   removeIngredient(e) {
     const index = e.currentTarget.dataset.index;
     const ingredient = this.data.ingredients[index];
-    
-    const updatedIngredients = this.data.ingredients.filter((_, i) => i !== index);
+    const updatedIngredients = cocktailDraft.removeIngredient(this.data.ingredients, index);
     this.setData({ ingredients: updatedIngredients });
 
     console.log(`➖ 删除成分: ${ingredient}`);
@@ -233,16 +211,10 @@ Page({
    */
   addStep() {
     try {
-      const newStep = { 
-        number: this.data.steps.length + 1, 
-        instruction: '', 
-        animation: this.getNextAnimation()
-      };
-      
-      const updatedSteps = [...this.data.steps, newStep];
+      const updatedSteps = cocktailDraft.addStep(this.data.steps, this.data.animationOptions);
       this.setData({ steps: updatedSteps });
 
-      console.log(`➕ 添加步骤 ${newStep.number}`);
+      console.log(`➕ 添加步骤 ${updatedSteps.length}`);
       
     } catch (error) {
       this.handleError(error, '添加步骤');
@@ -254,9 +226,8 @@ Page({
    * @returns {string} 动画类型
    */
   getNextAnimation() {
-    const { animationOptions } = this.data;
-    const index = this.data.steps.length % animationOptions.length;
-    return animationOptions[index];
+    const nextSteps = cocktailDraft.addStep(this.data.steps, this.data.animationOptions);
+    return nextSteps[nextSteps.length - 1].animation;
   },
 
   /**
@@ -266,12 +237,13 @@ Page({
   onInputStep(e) {
     const index = e.currentTarget.dataset.index;
     const value = e.detail.value;
+    const updatedSteps = cocktailDraft.updateStep(this.data.steps, index, value);
+    const formErrors = { ...this.data.formErrors };
+    if (updatedSteps.every(step => step.instruction.trim())) {
+      delete formErrors.steps;
+    }
     
-    const updatedSteps = this.data.steps.map((step, i) =>
-      i === index ? { ...step, instruction: value } : step
-    );
-    
-    this.setData({ steps: updatedSteps });
+    this.setData({ steps: updatedSteps, formErrors });
   },
 
   /**
@@ -280,24 +252,18 @@ Page({
    */
   removeStep(e) {
     const index = e.currentTarget.dataset.index;
+    const result = cocktailDraft.removeStep(this.data.steps, index);
     
-    if (this.data.steps.length <= 1) {
+    if (result.error) {
       wx.showToast({
-        title: '至少保留一个步骤',
+        title: result.error,
         icon: 'none',
         duration: 2000
       });
       return;
     }
-
-    const updatedSteps = this.data.steps.filter((_, i) => i !== index);
-    // 重新编号
-    const reorderedSteps = updatedSteps.map((step, i) => ({
-      ...step,
-      number: i + 1
-    }));
     
-    this.setData({ steps: reorderedSteps });
+    this.setData({ steps: result.steps });
 
     console.log(`➖ 删除步骤 ${index + 1}`);
   },
@@ -308,17 +274,7 @@ Page({
    */
   moveStepUp(e) {
     const index = e.currentTarget.dataset.index;
-    
-    if (index === 0) return;
-
-    const steps = [...this.data.steps];
-    [steps[index - 1], steps[index]] = [steps[index], steps[index - 1]];
-    
-    // 重新编号
-    const reorderedSteps = steps.map((step, i) => ({
-      ...step,
-      number: i + 1
-    }));
+    const reorderedSteps = cocktailDraft.moveStep(this.data.steps, index, 'up');
     
     this.setData({ steps: reorderedSteps });
 
@@ -331,17 +287,7 @@ Page({
    */
   moveStepDown(e) {
     const index = e.currentTarget.dataset.index;
-    
-    if (index === this.data.steps.length - 1) return;
-
-    const steps = [...this.data.steps];
-    [steps[index], steps[index + 1]] = [steps[index + 1], steps[index]];
-    
-    // 重新编号
-    const reorderedSteps = steps.map((step, i) => ({
-      ...step,
-      number: i + 1
-    }));
+    const reorderedSteps = cocktailDraft.moveStep(this.data.steps, index, 'down');
     
     this.setData({ steps: reorderedSteps });
 
@@ -353,66 +299,9 @@ Page({
    * @returns {Object} 验证结果 {isValid: boolean, errors: Object, message: string}
    */
   validateForm() {
-    const errors = {};
-    let isValid = true;
-    const errorMessages = [];
-
-    // 验证配方名称
-    if (!this.data.cocktailName.trim()) {
-      errors.name = '请输入配方名称';
-      errorMessages.push('配方名称未填写');
-      isValid = false;
-    } else if (this.data.cocktailName.length > 20) {
-      errors.name = '配方名称不能超过20个字符';
-      errorMessages.push('配方名称过长');
-      isValid = false;
-    }
-
-    // 验证配方描述
-    if (!this.data.cocktailDescription.trim()) {
-      errors.description = '请输入配方描述';
-      errorMessages.push('配方描述未填写');
-      isValid = false;
-    } else if (this.data.cocktailDescription.length > 100) {
-      errors.description = '配方描述不能超过100个字符';
-      errorMessages.push('配方描述过长');
-      isValid = false;
-    }
-
-    // 验证成分
-    if (this.data.ingredients.length === 0) {
-      errors.ingredients = '请至少添加一种成分';
-      errorMessages.push('未添加任何成分');
-      isValid = false;
-    }
-
-    // 验证制作步骤
-    const hasEmptyStep = this.data.steps.some(step => !step.instruction.trim());
-    if (hasEmptyStep) {
-      errors.steps = '请完善所有制作步骤';
-      errorMessages.push('制作步骤不完整');
-      isValid = false;
-    }
-
-    // 验证时间格式（可选但如果填写需要合理）
-    if (this.data.time && this.data.time.trim()) {
-      const timeRegex = /^(\d+)(分钟|min|mins|小时|hours?)$/i;
-      if (!timeRegex.test(this.data.time.trim())) {
-        errors.time = '时间格式不正确，如：10分钟、15min';
-        errorMessages.push('制作时间格式错误');
-        isValid = false;
-      }
-    }
-
-    this.setData({ formErrors: errors });
-    
-    // 生成具体的错误消息
-    let message = '请完善配方信息';
-    if (errorMessages.length > 0) {
-      message = errorMessages.join('、') + '，请检查后重试';
-    }
-
-    return { isValid, errors, message };
+    const validation = cocktailDraft.validateDraft(this.data);
+    this.setData({ formErrors: validation.errors });
+    return validation;
   },
 
   /**
@@ -421,44 +310,9 @@ Page({
    * @param {string} value 字段值
    */
   validateField(field, value) {
-    const errors = { ...this.data.formErrors };
-
-    switch (field) {
-      case 'name':
-        if (!value.trim()) {
-          errors.name = '请输入配方名称';
-        } else if (value.length > 20) {
-          errors.name = '配方名称不能超过20个字符';
-        } else {
-          delete errors.name;
-        }
-        break;
-
-      case 'description':
-        if (!value.trim()) {
-          errors.description = '请输入配方描述';
-        } else if (value.length > 100) {
-          errors.description = '配方描述不能超过100个字符';
-        } else {
-          delete errors.description;
-        }
-        break;
-
-      case 'time':
-        if (value && value.trim()) {
-          const timeRegex = /^(\d+)(分钟|min|mins|小时|hours?)$/i;
-          if (!timeRegex.test(value.trim())) {
-            errors.time = '时间格式不正确，如：10分钟、15min';
-          } else {
-            delete errors.time;
-          }
-        } else {
-          delete errors.time; // 时间字段是可选的
-        }
-        break;
-    }
-
-    this.setData({ formErrors: errors });
+    this.setData({
+      formErrors: cocktailDraft.validateField(field, value, this.data.formErrors)
+    });
   },
 
   /**
@@ -486,33 +340,18 @@ Page({
     this.setData({ isSaving: true });
 
     try {
-      // 构建配方数据
-      const cocktailData = {
-        id: Date.now().toString(), // 简单的ID生成
-        name: this.data.cocktailName.trim(),
-        emoji: this.data.emoji,
-        category: this.data.category,
-        description: this.data.cocktailDescription.trim(),
-        difficulty: this.data.difficulty,
-        time: this.data.time || '未设置',
-        ingredients: this.data.ingredients,
-        steps: this.data.steps.filter(step => step.instruction.trim()),
-        popularity: Math.floor(Math.random() * 20) + 80, // 随机初始评分
-        createdAt: new Date().toISOString()
-      };
-
       // 保存到全局数据
       const app = getApp();
-      const success = app.addCocktail ? app.addCocktail(cocktailData) : false;
+      const savedCocktail = app.addCocktail ? app.addCocktail(validation.draft) : null;
 
-      if (success) {
+      if (savedCocktail) {
         wx.showToast({
           title: '保存成功！',
           icon: 'success',
           duration: 2000
         });
 
-        console.log('✅ 配方保存成功:', cocktailData.name);
+        console.log('✅ 配方保存成功:', savedCocktail.name);
 
         // 延迟后跳转到首页
         setTimeout(() => {
@@ -535,9 +374,10 @@ Page({
    * 预览配方
    */
   previewCocktail() {
-    if (!this.validateForm()) {
+    const validation = this.validateForm();
+    if (!validation.isValid) {
       wx.showToast({
-        title: '请完善配方信息',
+        title: validation.message,
         icon: 'none',
         duration: 2000
       });
@@ -548,7 +388,7 @@ Page({
     console.log('👀 预览配方');
     wx.showModal({
       title: '预览配方',
-      content: `${this.data.cocktailName}\n${this.data.cocktailDescription}\n共${this.data.steps.length}个步骤`,
+      content: `${validation.draft.name}\n${validation.draft.description}\n共${validation.draft.steps.length}个步骤`,
       showCancel: false
     });
   },
@@ -563,14 +403,10 @@ Page({
       success: (res) => {
         if (res.confirm) {
           this.setData({
-            cocktailName: '',
-            cocktailDescription: '',
-            steps: [{ number: 1, instruction: '', animation: 'fadeIn' }],
-            difficulty: '简单',
-            time: '',
-            ingredients: [],
-            newIngredient: '',
-            formErrors: {}
+            ...cocktailDraft.createInitialDraft(),
+            difficultyIndex: 0,
+            categoryIndex: 0,
+            emojiIndex: 0
           });
 
           console.log('🔄 表单已重置');
@@ -593,10 +429,7 @@ Page({
    */
   navigateBack() {
     // 检查是否有未保存的内容
-    const hasContent = this.data.cocktailName.trim() || 
-                      this.data.cocktailDescription.trim() || 
-                      this.data.ingredients.length > 0 ||
-                      this.data.steps.some(step => step.instruction.trim());
+    const hasContent = cocktailDraft.hasContent(this.data);
 
     if (hasContent) {
       wx.showModal({

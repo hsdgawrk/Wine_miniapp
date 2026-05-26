@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "添加配方"
+  "navigationBarTitleText": "添加配方",
+  "navigationBarBackgroundColor": "#12110f",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#12110f",
+  "backgroundTextStyle": "dark"
 }

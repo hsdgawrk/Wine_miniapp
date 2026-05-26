@@ -1,45 +1,73 @@
-<view class="container">
-  <!-- 分享方式选择 -->
+<view class="container share-page" wx:if="{{!error}}">
+  <view class="share-ticket">
+    <text class="ticket-kicker">SHARE TICKET</text>
+    <text class="ticket-title">{{cocktail.name}}</text>
+    <text class="ticket-desc">{{cocktail.description}}</text>
+    <view class="ticket-line"></view>
+    <text class="ticket-code">{{shareCode}}</text>
+  </view>
+
   <view class="share-methods">
     <text class="section-title">选择分享方式</text>
-    
-    <view 
-      class="method-card" 
+
+    <view
+      class="method-card {{showQrCode ? 'active' : ''}}"
       bindtap="onMethodSelect"
       data-method="qrcode"
     >
-      <image class="method-icon" src="/images/qrcode.png" mode="aspectFit" />
-      <text class="method-title">二维码分享</text>
-      <text class="method-desc">扫描二维码即可获取配方</text>
+      <view class="method-icon method-icon-text">QR</view>
+      <view class="method-copy">
+        <text class="method-title">路径分享</text>
+        <text class="method-desc">复制小程序路径，好友可直达配方</text>
+      </view>
+      <text class="method-arrow">→</text>
     </view>
-    
-    <view 
-      class="method-card" 
+
+    <view
+      class="method-card {{showCode ? 'active' : ''}}"
       bindtap="onMethodSelect"
       data-method="code"
     >
-      <image class="method-icon" src="/images/code.png" mode="aspectFit" />
-      <text class="method-title">口令分享</text>
-      <text class="method-desc">复制口令快速分享</text>
+      <view class="method-icon method-icon-text">#</view>
+      <view class="method-copy">
+        <text class="method-title">口令分享</text>
+        <text class="method-desc">复制短口令，适合聊天转发</text>
+      </view>
+      <text class="method-arrow">→</text>
     </view>
   </view>
 
-  <!-- 口令展示 -->
   <view class="code-section" wx:if="{{showCode}}">
-    <text class="code-label">您的专属口令：</text>
+    <text class="code-label">专属口令</text>
     <text class="share-code">{{shareCode}}</text>
     <button class="copy-button" bindtap="copyShareCode">复制口令</button>
   </view>
-  
-  <!-- 二维码预览 -->
+
   <view class="qrcode-section" wx:if="{{showQrCode}}">
-    <image class="qrcode-image" src="{{shareImageUrl}}" mode="aspectFit" />
-    <text class="qrcode-tips">长按保存或分享二维码</text>
+    <image
+      wx:if="{{shareImageUrl}}"
+      class="qrcode-image"
+      src="{{shareImageUrl}}"
+      mode="aspectFit"
+      bindtap="previewShareImage"
+    />
+    <view wx:else class="share-path-card">
+      <text class="code-label">小程序路径</text>
+      <text class="share-path">{{sharePath}}</text>
+      <button class="copy-button" bindtap="copySharePath">复制路径</button>
+    </view>
+    <text class="qrcode-tips">复制后可发送给好友打开对应配方</text>
   </view>
-  
-  <!-- 底部提示 -->
+
   <view class="tips-section">
-    <text class="tip-title">温馨提示</text>
-    <text class="tip-content">您可以同时使用两种方式进行分享，确保好友能顺利获取配方信息</text>
+    <text class="tip-title">分享提示</text>
+    <text class="tip-content">路径适合精准打开配方，口令适合在聊天中快速传递。</text>
+  </view>
+</view>
+
+<view class="container share-page error-page" wx:else>
+  <view class="tips-section">
+    <text class="tip-title">分享不可用</text>
+    <text class="tip-content">{{error}}</text>
   </view>
 </view>
