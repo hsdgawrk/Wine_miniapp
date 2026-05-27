@@ -5,13 +5,14 @@
  * @version 2.0.0
  */
 
+const mainTabState = require('../../utils/mainTabState');
+
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    activeMainTab: 'home',
-    mainTabTransitionClass: '',
+    ...mainTabState.createInitialMainTabState(),
 
     // 每日推荐配方
     randomCocktail: null,
@@ -89,9 +90,9 @@ Page({
       app.ensureDarkWindowBackground();
     }
 
-    const pendingMainTab = app && app.globalData ? app.globalData.pendingMainTab : '';
+    const pendingStore = mainTabState.createPendingMainTabStore(app && app.globalData);
+    const pendingMainTab = pendingStore.consume();
     if (pendingMainTab) {
-      app.globalData.pendingMainTab = '';
       this.setMainTab(pendingMainTab, { scrollToTop: false });
     } else {
       this.syncTabBarSelection(this.data.activeMainTab);
@@ -446,21 +447,19 @@ Page({
    * 导航到添加配方页
    */
   navigateToAddCocktail() {
-    this.setMainTab('add');
+    this.setMainTab(mainTabState.MAIN_TABS.ADD);
   },
 
   switchMainTab(e) {
-    const tab = e.currentTarget.dataset.tab || 'home';
+    const tab = e.currentTarget.dataset.tab || mainTabState.MAIN_TABS.HOME;
     this.setMainTab(tab);
   },
 
   setMainTab(tab, options = {}) {
-    const targetTab = tab === 'add' ? 'add' : 'home';
-    const shouldScrollToTop = options.scrollToTop !== false;
+    const selection = mainTabState.selectMainTab(this.data, tab, options);
+    this.syncTabBarSelection(selection.tab);
 
-    this.syncTabBarSelection(targetTab);
-
-    if (targetTab === this.data.activeMainTab) {
+    if (!selection.changed) {
       return;
     }
 
@@ -468,20 +467,17 @@ Page({
       clearTimeout(this.mainTabTransitionTimer);
     }
 
-    this.setData({
-      activeMainTab: targetTab,
-      mainTabTransitionClass: 'main-tab-enter'
-    });
+    this.setData(selection.patch);
 
     wx.setNavigationBarTitle({
-      title: targetTab === 'add' ? '添加配方' : '调酒配方'
+      title: selection.title
     });
 
-    if (targetTab === 'home') {
+    if (selection.shouldRefreshCocktails) {
       this.refreshCocktailData();
     }
 
-    if (shouldScrollToTop && typeof wx.pageScrollTo === 'function') {
+    if (selection.shouldScrollToTop && typeof wx.pageScrollTo === 'function') {
       wx.pageScrollTo({
         scrollTop: 0,
         duration: 120
@@ -489,18 +485,18 @@ Page({
     }
 
     this.mainTabTransitionTimer = setTimeout(() => {
-      this.setData({ mainTabTransitionClass: '' });
+      this.setData(mainTabState.clearTransition());
     }, 260);
   },
 
   syncTabBarSelection(tab = this.data.activeMainTab) {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: tab === 'add' ? 1 : 0 });
+      this.getTabBar().setData({ selected: mainTabState.getSelectedIndex(tab) });
     }
   },
 
   returnHomeTab() {
-    this.setMainTab('home');
+    this.setMainTab(mainTabState.MAIN_TABS.HOME);
   },
 
   /**

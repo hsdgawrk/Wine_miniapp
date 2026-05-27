@@ -1,3 +1,5 @@
+const mainTabState = require('../utils/mainTabState');
+
 Component({
   data: {
     selected: 0,
@@ -22,8 +24,8 @@ Component({
   methods: {
     switchTab(e) {
       const path = e.currentTarget.dataset.path;
-      const index = Number(e.currentTarget.dataset.index);
-      const tab = e.currentTarget.dataset.tab;
+      const tab = mainTabState.normalizeMainTab(e.currentTarget.dataset.tab);
+      const index = mainTabState.getSelectedIndex(tab);
       const pages = getCurrentPages();
       const currentPage = pages[pages.length - 1];
 
@@ -38,9 +40,8 @@ Component({
       }
 
       const app = getApp();
-      if (app && app.globalData) {
-        app.globalData.pendingMainTab = tab || 'home';
-      }
+      const pendingStore = mainTabState.createPendingMainTabStore(app && app.globalData);
+      pendingStore.write(tab);
 
       if (index === this.data.selected) {
         return;

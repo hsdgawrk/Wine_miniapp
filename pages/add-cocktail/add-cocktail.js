@@ -6,6 +6,7 @@
  */
 
 const cocktailDraft = require('../../utils/cocktailDraft');
+const DRAFT_ACTIONS = cocktailDraft.ACTIONS;
 
 Page({
   /**
@@ -102,11 +103,9 @@ Page({
    * @param {Object} e 事件对象
    */
   onInputName(e) {
-    const value = e.detail.value;
-    const formErrors = cocktailDraft.validateField('name', value, this.data.formErrors);
-    this.setData({ 
-      cocktailName: value,
-      formErrors
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.INPUT_NAME,
+      value: e.detail.value
     });
   },
 
@@ -115,11 +114,9 @@ Page({
    * @param {Object} e 事件对象
    */
   onInputDescription(e) {
-    const value = e.detail.value;
-    const formErrors = cocktailDraft.validateField('description', value, this.data.formErrors);
-    this.setData({ 
-      cocktailDescription: value,
-      formErrors
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.INPUT_DESCRIPTION,
+      value: e.detail.value
     });
   },
 
@@ -128,11 +125,9 @@ Page({
    * @param {Object} e 事件对象
    */
   onInputTime(e) {
-    const value = e.detail.value;
-    const formErrors = cocktailDraft.validateField('time', value, this.data.formErrors);
-    this.setData({ 
-      time: value,
-      formErrors
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.INPUT_TIME,
+      value: e.detail.value
     });
   },
 
@@ -141,9 +136,12 @@ Page({
    * @param {Object} e 事件对象
    */
   onDifficultyChange(e) {
-    const index = Number(e.detail.value);
-    const difficulty = this.data.difficultyOptions[index];
-    this.setData({ difficulty, difficultyIndex: index });
+    const result = this.applyDraftAction({
+      type: DRAFT_ACTIONS.SELECT_DIFFICULTY,
+      index: e.detail.value,
+      options: this.data.difficultyOptions
+    });
+    const difficulty = result.patch.difficulty || this.data.difficulty;
     
     console.log(`🎯 用户选择难度: ${difficulty}`);
   },
@@ -153,9 +151,12 @@ Page({
    * @param {Object} e 事件对象
    */
   onCategoryChange(e) {
-    const index = Number(e.detail.value);
-    const category = this.data.categoryOptions[index];
-    this.setData({ category, categoryIndex: index });
+    const result = this.applyDraftAction({
+      type: DRAFT_ACTIONS.SELECT_CATEGORY,
+      index: e.detail.value,
+      options: this.data.categoryOptions
+    });
+    const category = result.patch.category || this.data.category;
     
     console.log(`🏷️ 用户选择分类: ${category}`);
   },
@@ -165,9 +166,12 @@ Page({
    * @param {Object} e 事件对象
    */
   onEmojiChange(e) {
-    const index = Number(e.detail.value);
-    const emoji = this.data.emojiOptions[index];
-    this.setData({ emoji, emojiIndex: index });
+    const result = this.applyDraftAction({
+      type: DRAFT_ACTIONS.SELECT_EMOJI,
+      index: e.detail.value,
+      options: this.data.emojiOptions
+    });
+    const emoji = result.patch.emoji || this.data.emoji;
     
     console.log(`😀 用户选择表情: ${emoji}`);
   },
@@ -177,33 +181,27 @@ Page({
    * @param {Object} e 事件对象
    */
   onInputIngredient(e) {
-    this.setData({ newIngredient: e.detail.value });
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.INPUT_INGREDIENT,
+      value: e.detail.value
+    });
   },
 
   /**
    * 添加成分
    */
   addIngredient() {
-    const result = cocktailDraft.addIngredient(this.data.ingredients, this.data.newIngredient);
+    const result = this.applyDraftAction({
+      type: DRAFT_ACTIONS.ADD_INGREDIENT
+    });
 
     if (result.error) {
-      wx.showToast({
-        title: result.error,
-        icon: 'none',
-        duration: 2000
-      });
+      this.showDraftError(result.error);
       return;
     }
 
-    const formErrors = { ...this.data.formErrors };
-    delete formErrors.ingredients;
-    this.setData({
-      ingredients: result.ingredients,
-      newIngredient: '',
-      formErrors
-    });
-
-    console.log(`➕ 添加成分: ${this.data.newIngredient}`);
+    const addedIngredient = result.patch.ingredients[result.patch.ingredients.length - 1];
+    console.log(`➕ 添加成分: ${addedIngredient}`);
   },
 
   /**
@@ -213,8 +211,10 @@ Page({
   removeIngredient(e) {
     const index = e.currentTarget.dataset.index;
     const ingredient = this.data.ingredients[index];
-    const updatedIngredients = cocktailDraft.removeIngredient(this.data.ingredients, index);
-    this.setData({ ingredients: updatedIngredients });
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.REMOVE_INGREDIENT,
+      index
+    });
 
     console.log(`➖ 删除成分: ${ingredient}`);
   },
@@ -224,10 +224,17 @@ Page({
    */
   addStep() {
     try {
-      const updatedSteps = cocktailDraft.addStep(this.data.steps, this.data.animationOptions);
-      this.setData({ steps: updatedSteps });
+      const result = this.applyDraftAction({
+        type: DRAFT_ACTIONS.ADD_STEP,
+        animations: this.data.animationOptions
+      });
 
-      console.log(`➕ 添加步骤 ${updatedSteps.length}`);
+      if (result.error) {
+        this.showDraftError(result.error);
+        return;
+      }
+
+      console.log(`➕ 添加步骤 ${result.patch.steps.length}`);
       
     } catch (error) {
       this.handleError(error, '添加步骤');
@@ -235,28 +242,15 @@ Page({
   },
 
   /**
-   * 获取下一个动画类型
-   * @returns {string} 动画类型
-   */
-  getNextAnimation() {
-    const nextSteps = cocktailDraft.addStep(this.data.steps, this.data.animationOptions);
-    return nextSteps[nextSteps.length - 1].animation;
-  },
-
-  /**
    * 步骤内容输入处理
    * @param {Object} e 事件对象
    */
   onInputStep(e) {
-    const index = e.currentTarget.dataset.index;
-    const value = e.detail.value;
-    const updatedSteps = cocktailDraft.updateStep(this.data.steps, index, value);
-    const formErrors = { ...this.data.formErrors };
-    if (updatedSteps.every(step => step.instruction.trim())) {
-      delete formErrors.steps;
-    }
-    
-    this.setData({ steps: updatedSteps, formErrors });
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.UPDATE_STEP,
+      index: e.currentTarget.dataset.index,
+      value: e.detail.value
+    });
   },
 
   /**
@@ -265,18 +259,15 @@ Page({
    */
   removeStep(e) {
     const index = e.currentTarget.dataset.index;
-    const result = cocktailDraft.removeStep(this.data.steps, index);
+    const result = this.applyDraftAction({
+      type: DRAFT_ACTIONS.REMOVE_STEP,
+      index
+    });
     
     if (result.error) {
-      wx.showToast({
-        title: result.error,
-        icon: 'none',
-        duration: 2000
-      });
+      this.showDraftError(result.error);
       return;
     }
-    
-    this.setData({ steps: result.steps });
 
     console.log(`➖ 删除步骤 ${index + 1}`);
   },
@@ -287,9 +278,11 @@ Page({
    */
   moveStepUp(e) {
     const index = e.currentTarget.dataset.index;
-    const reorderedSteps = cocktailDraft.moveStep(this.data.steps, index, 'up');
-    
-    this.setData({ steps: reorderedSteps });
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.MOVE_STEP,
+      index,
+      direction: 'up'
+    });
 
     console.log(`⬆️ 步骤 ${index + 1} 上移`);
   },
@@ -300,9 +293,11 @@ Page({
    */
   moveStepDown(e) {
     const index = e.currentTarget.dataset.index;
-    const reorderedSteps = cocktailDraft.moveStep(this.data.steps, index, 'down');
-    
-    this.setData({ steps: reorderedSteps });
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.MOVE_STEP,
+      index,
+      direction: 'down'
+    });
 
     console.log(`⬇️ 步骤 ${index + 1} 下移`);
   },
@@ -315,17 +310,6 @@ Page({
     const validation = cocktailDraft.validateDraft(this.data);
     this.setData({ formErrors: validation.errors });
     return validation;
-  },
-
-  /**
-   * 单个字段验证
-   * @param {string} field 字段名
-   * @param {string} value 字段值
-   */
-  validateField(field, value) {
-    this.setData({
-      formErrors: cocktailDraft.validateField(field, value, this.data.formErrors)
-    });
   },
 
   /**
@@ -415,11 +399,8 @@ Page({
       content: '重置后将清空所有已填写的内容，确认继续吗？',
       success: (res) => {
         if (res.confirm) {
-          this.setData({
-            ...cocktailDraft.createInitialDraft(),
-            difficultyIndex: 0,
-            categoryIndex: 0,
-            emojiIndex: 0
+          this.applyDraftAction({
+            type: DRAFT_ACTIONS.RESET
           });
 
           console.log('🔄 表单已重置');
@@ -485,6 +466,24 @@ Page({
 
     wx.showToast({
       title: `${context}失败`,
+      icon: 'none',
+      duration: 2000
+    });
+  },
+
+  applyDraftAction(action) {
+    const result = cocktailDraft.reduceDraftState(this.data, action);
+
+    if (Object.keys(result.patch).length) {
+      this.setData(result.patch);
+    }
+
+    return result;
+  },
+
+  showDraftError(message) {
+    wx.showToast({
+      title: message,
       icon: 'none',
       duration: 2000
     });
