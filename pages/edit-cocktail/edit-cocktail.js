@@ -1,24 +1,18 @@
-const cocktailDraft = require('../../utils/cocktailDraft');
+const cocktailDraftForm = require('../../utils/cocktailDraftForm');
 
-const DRAFT_ACTIONS = cocktailDraft.ACTIONS;
+const DRAFT_ACTIONS = cocktailDraftForm.ACTIONS;
 
 Page({
   data: {
-    ...cocktailDraft.createInitialDraft(),
+    ...cocktailDraftForm.createInitialFormData(),
     cocktailId: '',
     originalCocktail: null,
     isLoading: true,
     isSaving: false,
     error: '',
-    difficultyOptions: cocktailDraft.DIFFICULTY_OPTIONS,
-    categoryOptions: cocktailDraft.CATEGORY_OPTIONS,
-    emojiOptions: cocktailDraft.EMOJI_OPTIONS,
-    timeNumberOptions: cocktailDraft.TIME_NUMBER_OPTIONS,
-    timeUnitOptions: cocktailDraft.TIME_UNIT_OPTIONS,
     difficultyIndex: 0,
     categoryIndex: 0,
-    emojiIndex: 0,
-    animationOptions: cocktailDraft.DEFAULT_ANIMATIONS
+    emojiIndex: 0
   },
 
   onLoad(options) {
@@ -47,22 +41,13 @@ Page({
       return;
     }
 
-    const draft = cocktailDraft.createDraftFromCocktail(cocktail);
-    const categoryOptions = this.ensureOption(this.data.categoryOptions, draft.category);
-    const emojiOptions = this.ensureOption(this.data.emojiOptions, draft.emoji);
-    const difficultyOptions = this.ensureOption(this.data.difficultyOptions, draft.difficulty);
+    const draft = cocktailDraftForm.createFormDataFromCocktail(cocktail);
     this.initialDraft = draft;
 
     this.setData({
       ...draft,
       cocktailId: cocktail.id,
       originalCocktail: cocktail,
-      categoryOptions,
-      emojiOptions,
-      difficultyOptions,
-      categoryIndex: categoryOptions.indexOf(draft.category),
-      emojiIndex: emojiOptions.indexOf(draft.emoji),
-      difficultyIndex: difficultyOptions.indexOf(draft.difficulty),
       isLoading: false,
       error: ''
     });
@@ -78,13 +63,6 @@ Page({
         showCancel: false
       });
     }
-  },
-
-  ensureOption(options, value) {
-    if (!value || options.includes(value)) {
-      return options;
-    }
-    return [...options, value];
   },
 
   onInputName(e) {
@@ -214,22 +192,13 @@ Page({
   },
 
   validateForm() {
-    const validation = cocktailDraft.validateDraft(this.data, { checkNameConflict: false });
-    if (validation.isValid && this.hasUnsavedChanges()) {
-      const conflict = cocktailDraft.findNameConflict(
-        validation.draft.name,
-        this.getNameValidationOptions().existingCocktails,
-        this.data.cocktailId
-      );
-      if (conflict) {
-        validation.isValid = false;
-        validation.errors = {
-          ...validation.errors,
-          name: '已存在同名配方，请修改名称'
-        };
-        validation.message = '配方名称重复，请检查后重试';
-      }
-    }
+    const nameOptions = this.getNameValidationOptions();
+    const validation = cocktailDraftForm.validateEdit(this.data, {
+      initialDraft: this.initialDraft,
+      hasSaved: this.hasSaved,
+      existingCocktails: nameOptions.existingCocktails,
+      currentId: nameOptions.currentId
+    });
     this.setData({ formErrors: validation.errors });
     return validation;
   },
@@ -307,11 +276,7 @@ Page({
   },
 
   hasUnsavedChanges() {
-    return Boolean(
-      this.initialDraft
-      && !this.hasSaved
-      && cocktailDraft.hasDraftChanged(this.initialDraft, this.data)
-    );
+    return cocktailDraftForm.hasUnsavedChanges(this.initialDraft, this.data, this.hasSaved);
   },
 
   updateBeforeUnloadGuard() {
@@ -336,21 +301,18 @@ Page({
 
   getNameValidationOptions() {
     const app = getApp();
-    return {
-      existingCocktails: app && app.cocktailLibrary ? app.cocktailLibrary.listCocktails() : [],
-      currentId: this.data.cocktailId
-    };
+    return cocktailDraftForm.getNameValidationOptions(
+      app && app.cocktailLibrary ? app.cocktailLibrary.listCocktails() : [],
+      this.data.cocktailId
+    );
   },
 
   applyDraftAction(action) {
-    const result = cocktailDraft.reduceDraftState(this.data, action);
-
-    if (Object.keys(result.patch).length) {
-      this.setData(result.patch);
-      this.updateBeforeUnloadGuard();
-    }
-
-    return result;
+    return cocktailDraftForm.applyDraftAction(this, action, {
+      afterPatch: () => {
+        this.updateBeforeUnloadGuard();
+      }
+    });
   },
 
   showDraftError(message) {

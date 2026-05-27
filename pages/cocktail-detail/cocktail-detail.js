@@ -66,11 +66,45 @@ Page({
     if (!this.data.cocktail) {
       return;
     }
+    this.morePanelTouchStartY = 0;
+    this.morePanelTouchDeltaY = 0;
     this.setData({ showMorePanel: true });
   },
 
   closeMorePanel() {
+    this.resetMorePanelTouch();
     this.setData({ showMorePanel: false });
+  },
+
+  noopTouchMove() {},
+
+  onMorePanelTouchStart(e) {
+    const touch = e.touches && e.touches[0];
+    this.morePanelTouchStartY = touch ? touch.clientY : 0;
+    this.morePanelTouchDeltaY = 0;
+  },
+
+  onMorePanelTouchMove(e) {
+    const touch = e.touches && e.touches[0];
+    if (!touch || !this.morePanelTouchStartY) {
+      return;
+    }
+
+    this.morePanelTouchDeltaY = touch.clientY - this.morePanelTouchStartY;
+  },
+
+  onMorePanelTouchEnd() {
+    if (this.morePanelTouchDeltaY > 56) {
+      this.closeMorePanel();
+      return;
+    }
+
+    this.resetMorePanelTouch();
+  },
+
+  resetMorePanelTouch() {
+    this.morePanelTouchStartY = 0;
+    this.morePanelTouchDeltaY = 0;
   },
 
   navigateToEdit() {

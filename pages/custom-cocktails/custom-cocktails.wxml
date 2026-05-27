@@ -7,7 +7,11 @@
     </view>
     <view class="header-actions">
       <button class="add-header-button" bindtap="navigateToAdd">添加</button>
-      <button class="manage-button {{isManaging ? 'active' : ''}}" bindtap="toggleManageMode">
+      <button
+        class="manage-button {{isManaging ? 'active' : ''}} {{customCocktails.length === 0 ? 'disabled' : ''}}"
+        disabled="{{customCocktails.length === 0}}"
+        bindtap="toggleManageMode"
+      >
         {{manageButtonText}}
       </button>
     </view>
@@ -109,8 +113,8 @@
     <button class="batch-delete" bindtap="confirmBatchDelete">删除所选</button>
   </view>
 
-  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel"></view>
-  <view wx:if="{{showMorePanel}}" class="more-sheet">
+  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel" catchtouchmove="noopTouchMove"></view>
+  <view wx:if="{{showMorePanel}}" class="more-sheet" catchtouchmove="noopTouchMove">
     <view class="sheet-handle"></view>
     <text class="sheet-title">{{activeCocktail.name}}</text>
     <button class="sheet-action" bindtap="editActiveCocktail">编辑配方</button>

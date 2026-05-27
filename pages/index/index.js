@@ -3,14 +3,15 @@
  */
 
 const mainTabState = require('../../utils/mainTabState');
-const cocktailDraft = require('../../utils/cocktailDraft');
+const cocktailListView = require('../../utils/cocktailListView');
+const cocktailDraftForm = require('../../utils/cocktailDraftForm');
 
-const DRAFT_ACTIONS = cocktailDraft.ACTIONS;
+const DRAFT_ACTIONS = cocktailDraftForm.ACTIONS;
 
 Page({
   data: {
     ...mainTabState.createInitialMainTabState(),
-    ...cocktailDraft.createInitialDraft(),
+    ...cocktailDraftForm.createInitialFormData(),
 
     mainTabs: [
       { tab: 'home', text: '首页', code: '01', action: '菜单' },
@@ -42,15 +43,9 @@ Page({
     customCount: 0,
     builtInCount: 0,
 
-    difficultyOptions: cocktailDraft.DIFFICULTY_OPTIONS,
-    categoryOptions: cocktailDraft.CATEGORY_OPTIONS,
-    emojiOptions: cocktailDraft.EMOJI_OPTIONS,
-    timeNumberOptions: cocktailDraft.TIME_NUMBER_OPTIONS,
-    timeUnitOptions: cocktailDraft.TIME_UNIT_OPTIONS,
     difficultyIndex: 0,
     categoryIndex: 0,
-    emojiIndex: 0,
-    animationOptions: cocktailDraft.DEFAULT_ANIMATIONS
+    emojiIndex: 0
   },
 
   onLoad() {
@@ -124,20 +119,22 @@ Page({
       throw new Error('配方库未初始化');
     }
 
-    const cocktails = this.decorateCocktails(app.cocktailLibrary.listCocktails());
-    const customCount = app.cocktailLibrary.countCustomCocktails();
-    const randomCocktail = this.decorateCocktail(app.cocktailLibrary.getDailyCocktail());
+    const listView = cocktailListView.buildCocktailListView({
+      cocktails: app.cocktailLibrary.listCocktails(),
+      query: this.data.searchQuery
+    });
+    const randomCocktail = cocktailListView.decorateCocktail(app.cocktailLibrary.getDailyCocktail());
     const currentDate = app.cocktailLibrary.getCurrentDateInfo();
 
     this.setData({
-      cocktails,
-      filteredCocktails: this.filterDecoratedCocktails(cocktails, this.data.searchQuery),
+      cocktails: listView.allItems,
+      filteredCocktails: listView.items,
       randomCocktail,
       currentDate,
-      totalCount: cocktails.length,
-      filteredCount: this.filterDecoratedCocktails(cocktails, this.data.searchQuery).length,
-      customCount,
-      builtInCount: Math.max(0, cocktails.length - customCount),
+      totalCount: listView.totalCount,
+      filteredCount: listView.filteredCount,
+      customCount: listView.customCount,
+      builtInCount: listView.builtInCount,
       error: null
     });
   },
@@ -168,18 +165,19 @@ Page({
         return;
       }
 
-      const cocktails = this.decorateCocktails(app.cocktailLibrary.listCocktails());
-      const filteredCocktails = this.filterDecoratedCocktails(cocktails, this.data.searchQuery);
-      const customCount = app.cocktailLibrary.countCustomCocktails();
+      const listView = cocktailListView.buildCocktailListView({
+        cocktails: app.cocktailLibrary.listCocktails(),
+        query: this.data.searchQuery
+      });
 
       this.setData({
-        cocktails,
-        filteredCocktails,
-        totalCount: cocktails.length,
-        filteredCount: filteredCocktails.length,
-        customCount,
-        builtInCount: Math.max(0, cocktails.length - customCount),
-        randomCocktail: this.decorateCocktail(app.cocktailLibrary.getDailyCocktail())
+        cocktails: listView.allItems,
+        filteredCocktails: listView.items,
+        totalCount: listView.totalCount,
+        filteredCount: listView.filteredCount,
+        customCount: listView.customCount,
+        builtInCount: listView.builtInCount,
+        randomCocktail: cocktailListView.decorateCocktail(app.cocktailLibrary.getDailyCocktail())
       });
     } catch (error) {
       console.warn('刷新配方数据失败:', error);
@@ -205,56 +203,19 @@ Page({
     try {
       this.setData({ isSearching: true });
 
-      const filteredCocktails = this.filterDecoratedCocktails(this.data.cocktails, query);
+      const listView = cocktailListView.buildCocktailListView({
+        cocktails: this.data.cocktails,
+        query
+      });
 
       this.setData({
-        filteredCocktails,
-        filteredCount: filteredCocktails.length,
+        filteredCocktails: listView.items,
+        filteredCount: listView.filteredCount,
         isSearching: false
       });
     } catch (error) {
       this.handlePageError(error, '搜索配方');
     }
-  },
-
-  filterDecoratedCocktails(cocktails, query) {
-    if (!query || !query.trim()) {
-      return cocktails;
-    }
-
-    const lowerQuery = query.toLowerCase().trim();
-
-    return (cocktails || []).filter((cocktail) => {
-      const searchableText = [
-        cocktail.name || '',
-        cocktail.description || '',
-        cocktail.difficulty || '',
-        cocktail.category || '',
-        ...(cocktail.ingredients || [])
-      ].join(' ').toLowerCase();
-
-      return searchableText.includes(lowerQuery);
-    });
-  },
-
-  decorateCocktails(cocktails) {
-    return (cocktails || []).map((cocktail, index) => this.decorateCocktail(cocktail, index));
-  },
-
-  decorateCocktail(cocktail, index = 0) {
-    if (!cocktail) {
-      return null;
-    }
-
-    const ingredients = cocktail.ingredients || [];
-    const preview = ingredients.slice(0, 3).join(' / ');
-
-    return {
-      ...cocktail,
-      listIndex: String(index + 1).padStart(2, '0'),
-      sourceText: cocktail.source === 'custom' ? '自定义' : '内置',
-      ingredientsPreview: `${preview}${ingredients.length > 3 ? ' / ...' : ''}`
-    };
   },
 
   navigateToCocktailDetail(e) {
@@ -296,7 +257,7 @@ Page({
       !options.force
       && this.data.activeMainTab === mainTabState.MAIN_TABS.ADD
       && targetTab !== mainTabState.MAIN_TABS.ADD
-      && cocktailDraft.hasContent(this.data)
+      && cocktailDraftForm.hasCreateContent(this.data)
     ) {
       wx.showModal({
         title: '确认离开',
@@ -505,7 +466,10 @@ Page({
   },
 
   validateAddForm() {
-    const validation = cocktailDraft.validateDraft(this.data, this.getNameValidationOptions());
+    const validation = cocktailDraftForm.validateCreate(
+      this.data,
+      this.getNameValidationOptions().existingCocktails
+    );
     this.setData({ formErrors: validation.errors });
     return validation;
   },
@@ -558,10 +522,7 @@ Page({
 
   resetAddDraft() {
     this.setData({
-      ...cocktailDraft.createInitialDraft(),
-      difficultyIndex: 0,
-      categoryIndex: 0,
-      emojiIndex: 0
+      ...cocktailDraftForm.createEmptyPickerPatch()
     });
   },
 
@@ -573,13 +534,7 @@ Page({
   },
 
   applyDraftAction(action) {
-    const result = cocktailDraft.reduceDraftState(this.data, action);
-
-    if (Object.keys(result.patch).length) {
-      this.setData(result.patch);
-    }
-
-    return result;
+    return cocktailDraftForm.applyDraftAction(this, action);
   },
 
   showDraftError(message) {

@@ -51,11 +51,19 @@
 
   <view class="action-dock">
     <button class="primary-button" bindtap="navigateToSteps">开始制作</button>
+    <view class="action-gap"></view>
     <button class="secondary-button" bindtap="openMorePanel">更多</button>
   </view>
 
-  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel"></view>
-  <view wx:if="{{showMorePanel}}" class="more-sheet">
+  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel" catchtouchmove="noopTouchMove"></view>
+  <view
+    wx:if="{{showMorePanel}}"
+    class="more-sheet"
+    bindtouchstart="onMorePanelTouchStart"
+    catchtouchmove="onMorePanelTouchMove"
+    bindtouchend="onMorePanelTouchEnd"
+    bindtouchcancel="resetMorePanelTouch"
+  >
     <view class="sheet-handle"></view>
     <text class="sheet-title">{{cocktail.name}}</text>
 

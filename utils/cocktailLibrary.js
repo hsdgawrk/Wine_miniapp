@@ -506,26 +506,6 @@ function createCocktailLibrary(options = {}) {
     return cocktailTransfer.createImportCode(validation.draft);
   }
 
-  function createSharePayload(params = {}) {
-    const cocktail = getCocktailById(params.id) || getCocktailByName(params.name);
-    if (!cocktail) {
-      return null;
-    }
-
-    const encodedName = encodeURIComponent(cocktail.name);
-    const path = `/pages/cocktail-detail/cocktail-detail?id=${encodeURIComponent(cocktail.id)}&name=${encodedName}`;
-
-    return {
-      cocktailId: cocktail.id,
-      cocktailName: cocktail.name,
-      shareCode: `COCKTAIL_${Math.abs(hashCode(cocktail.id + cocktail.name)).toString(36).toUpperCase()}`,
-      sharePath: path,
-      title: `分享${cocktail.name}配方`,
-      description: cocktail.description,
-      shareImageUrl: ''
-    };
-  }
-
   function persistCustomCocktails() {
     cocktails = mergeCocktails(builtInCocktails, customCocktails);
     storageAdapter.setCustomCocktails(customCocktails.map(cloneCocktail));
@@ -551,8 +531,7 @@ function createCocktailLibrary(options = {}) {
     deleteCustomCocktails,
     createImportPreview,
     confirmImport,
-    exportCustomCocktail,
-    createSharePayload
+    exportCustomCocktail
   };
 }
 

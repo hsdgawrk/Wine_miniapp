@@ -70,6 +70,13 @@ page {
   color: #15130f;
 }
 
+.manage-button.disabled,
+.manage-button[disabled] {
+  opacity: 0.42;
+  color: rgba(247, 241, 232, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
+
 .header-actions {
   flex-shrink: 0;
   display: flex;
@@ -246,14 +253,17 @@ page {
 
 .empty-actions {
   display: flex;
+  justify-content: center;
   margin-top: 34rpx;
 }
 
 .primary-button,
 .secondary-button {
-  flex: 1;
+  flex: 0 1 260rpx;
+  width: 260rpx;
   height: 82rpx;
   line-height: 82rpx;
+  margin: 0;
   padding: 0;
   border-radius: 14rpx;
   font-size: 27rpx;
@@ -266,7 +276,7 @@ page {
 }
 
 .secondary-button {
-  margin-left: 14rpx;
+  margin-left: 18rpx;
   background: rgba(255, 255, 255, 0.09);
   color: #fff8ee;
 }
