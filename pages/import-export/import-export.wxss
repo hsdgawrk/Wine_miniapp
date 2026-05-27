@@ -336,6 +336,19 @@ page {
   line-height: 1.55;
 }
 
+.step-detail-list {
+  margin-top: 12rpx;
+}
+
+.step-detail {
+  display: block;
+  color: rgba(215, 255, 104, 0.76);
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.45;
+  margin-top: 6rpx;
+}
+
 @media (max-width: 750rpx) {
   .transfer-page {
     padding-left: 20rpx;

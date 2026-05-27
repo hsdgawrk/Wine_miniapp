@@ -8,17 +8,17 @@ const TAB_DEFINITIONS = [
   {
     tab: MAIN_TABS.HOME,
     selectedIndex: 0,
-    title: '调酒配方'
+    title: '调酒酒谱'
   },
   {
     tab: MAIN_TABS.ADD,
     selectedIndex: 1,
-    title: '添加配方'
+    title: '记一杯新酒'
   },
   {
     tab: MAIN_TABS.MINE,
     selectedIndex: 2,
-    title: '我的配方'
+    title: '私藏酒谱'
   }
 ];
 

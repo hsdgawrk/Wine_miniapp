@@ -65,9 +65,9 @@ function validateEdit(data, options = {}) {
       validation.isValid = false;
       validation.errors = {
         ...validation.errors,
-        name: '已存在同名配方，请修改名称'
+        name: '这个酒名已经存在'
       };
-      validation.message = '配方名称重复，请检查后重试';
+      validation.message = '这个酒名已经存在，请检查后重试';
     }
   }
   return validation;

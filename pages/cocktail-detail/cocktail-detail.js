@@ -40,12 +40,12 @@ Page({
       this.setData({
         cocktail: null,
         steps: [],
-        error: '未找到配方',
+        error: '未找到酒谱',
         showMorePanel: false
       });
       if (!settings.silent) {
         wx.showToast({
-          title: '未找到配方',
+          title: '未找到酒谱',
           icon: 'none',
           duration: 2000
         });
@@ -267,8 +267,8 @@ Page({
     this.closeMorePanel();
 
     wx.showModal({
-      title: '删除自定义配方',
-      content: `确认删除「${cocktail.name}」吗？删除后不可恢复。`,
+      title: '删除私藏酒谱',
+      content: `要删除「${cocktail.name}」吗？删除后不可恢复。`,
       confirmText: '删除',
       confirmColor: '#ff7a66',
       success: (res) => {

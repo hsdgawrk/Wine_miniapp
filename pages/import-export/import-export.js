@@ -4,9 +4,9 @@ Page({
   data: {
     mode: 'import',
     isExport: false,
-    modeTitle: '配方导入',
+    modeTitle: '收录酒谱',
     modeEyebrow: 'IMPORT CODE',
-    modeSubtitle: '粘贴配方导入码，预览确认后保存为自定义配方',
+    modeSubtitle: '粘贴酒谱文本，预览后收录到私藏',
     cocktailId: '',
     cocktail: null,
     importCode: '',
@@ -27,16 +27,16 @@ Page({
     this.setData({
       mode,
       isExport,
-      modeTitle: isExport ? '配方导出' : '配方导入',
+      modeTitle: isExport ? '分享酒谱' : '收录酒谱',
       modeEyebrow: isExport ? 'EXPORT CODE' : 'IMPORT CODE',
       modeSubtitle: isExport
-        ? '把单条自定义配方转换为可复制文本'
-        : '粘贴配方导入码，预览确认后保存为自定义配方',
+        ? '把这条私藏酒谱转换为可复制文本'
+        : '粘贴酒谱文本，预览后收录到私藏',
       cocktailId: options.id || ''
     });
 
     wx.setNavigationBarTitle({
-      title: mode === 'export' ? '配方导出' : '配方导入'
+      title: mode === 'export' ? '分享酒谱' : '收录酒谱'
     });
 
     if (mode === 'export') {
@@ -161,7 +161,7 @@ Page({
       app.globalData.cocktails = app.cocktailLibrary.listCocktails();
 
       wx.showToast({
-        title: '导入成功',
+        title: '已收录',
         icon: 'success',
         duration: 1200
       });

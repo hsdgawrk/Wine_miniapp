@@ -6,7 +6,7 @@
 
   <view wx:elif="{{error}}" class="error-container">
     <text class="error-text">{{error.message}}</text>
-    <text class="error-context">操作：{{error.context}}</text>
+    <text class="error-context">位置：{{error.context}}</text>
     <button class="retry-btn" bindtap="retryOperation">重试</button>
   </view>
 
@@ -25,7 +25,7 @@
         </view>
         <view class="library-stat">
           <text class="library-stat-value">{{totalCount}}</text>
-          <text class="library-stat-label">配方</text>
+          <text class="library-stat-label">酒谱</text>
         </view>
       </view>
 
@@ -53,7 +53,7 @@
           <view class="daily-meta">
             <text wx:if="{{randomCocktail.difficulty}}" class="meta-item">{{randomCocktail.difficulty}}</text>
             <text wx:if="{{randomCocktail.time}}" class="meta-item">{{randomCocktail.time}}</text>
-            <text wx:if="{{randomCocktail.ingredients && randomCocktail.ingredients.length}}" class="meta-item">{{randomCocktail.ingredients.length}}种成分</text>
+            <text wx:if="{{randomCocktail.ingredients && randomCocktail.ingredients.length}}" class="meta-item">{{randomCocktail.ingredients.length}}种材料</text>
           </view>
 
           <view class="daily-action">
@@ -70,7 +70,7 @@
           <text class="search-glyph">⌕</text>
           <input
             bindinput="onSearch"
-            placeholder="搜索名称、风味或成分"
+            placeholder="搜索酒名、风味或材料"
             value="{{searchQuery}}"
             class="search-input"
             confirm-type="search"
@@ -83,8 +83,8 @@
 
         <view class="search-status">
           <text wx:if="{{isSearching}}" class="search-loading">正在筛选酒单</text>
-          <text wx:elif="{{searchQuery}}" class="search-result">找到 {{filteredCount}} 个配方</text>
-          <text wx:else class="total-count">经典、热带、酸甜与自定义配方</text>
+          <text wx:elif="{{searchQuery}}" class="search-result">找到 {{filteredCount}} 条酒谱</text>
+          <text wx:else class="total-count">经典、热带、酸甜与私藏酒谱</text>
         </view>
       </view>
 
@@ -96,7 +96,7 @@
 
         <view wx:if="{{searchQuery && filteredCount === 0}}" class="no-results">
           <text class="no-results-mark">⌕</text>
-          <text class="no-results-text">未找到相关配方</text>
+          <text class="no-results-text">未找到相关酒谱</text>
           <text class="no-results-tip">换一个酒名、材料或风味关键词试试</text>
           <button class="clear-search-btn" bindtap="clearSearch">清除搜索</button>
         </view>
@@ -129,11 +129,11 @@
                 <text class="feature-item">{{cocktail.sourceText}}</text>
                 <text wx:if="{{cocktail.difficulty}}" class="feature-item">{{cocktail.difficulty}}</text>
                 <text wx:if="{{cocktail.time}}" class="feature-item">{{cocktail.time}}</text>
-                <text wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="feature-item">{{cocktail.ingredients.length}} 种成分</text>
+                <text wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}" class="feature-item">{{cocktail.ingredients.length}} 种材料</text>
               </view>
 
               <view wx:if="{{cocktail.ingredients && cocktail.ingredients.length > 0}}" class="ingredients-preview">
-                <text class="ingredients-label">主要成分</text>
+                <text class="ingredients-label">主要材料</text>
                 <text class="ingredients-text">{{cocktail.ingredientsPreview}}</text>
               </view>
             </view>
@@ -144,7 +144,7 @@
           </view>
 
           <view wx:if="{{!hasMore && filteredCount > 0}}" class="no-more">
-            <text class="no-more-text">已显示全部配方</text>
+            <text class="no-more-text">已显示全部酒谱</text>
           </view>
         </block>
       </view>
@@ -154,15 +154,15 @@
       <view class="form-header add-form-header">
         <view>
           <text class="eyebrow">NEW RECIPE</text>
-          <text class="form-title">添加自定义配方</text>
-          <text class="form-subtitle">记录名称、成分和制作步骤，保存后会进入本机配方库</text>
+          <text class="form-title">记一杯新酒</text>
+          <text class="form-subtitle">写下酒名、材料和调制步骤，保存后存入私藏酒谱</text>
         </view>
         <view class="add-preview-symbol">{{emoji}}</view>
       </view>
 
       <view class="form-section">
         <view class="form-group">
-          <text class="form-label">配方名称*</text>
+          <text class="form-label">酒名*</text>
           <input
             class="form-input {{formErrors.name ? 'error' : ''}}"
             bindinput="onInputName"
@@ -175,11 +175,11 @@
         </view>
 
         <view class="form-group">
-          <text class="form-label">简介</text>
+          <text class="form-label">风味小记</text>
           <textarea
             class="form-input form-textarea {{formErrors.description ? 'error' : ''}}"
             bindinput="onInputDescription"
-            placeholder="可不填，保存时显示为-"
+            placeholder="可不填，留空显示为-"
             placeholder-class="preview-placeholder"
             value="{{cocktailDescription}}"
             maxlength="100"
@@ -224,7 +224,7 @@
           </view>
 
           <view class="form-group form-grid-item">
-            <text class="form-label">制作时间</text>
+            <text class="form-label">调制时间</text>
             <view class="time-picker-row {{formErrors.time ? 'error' : ''}}">
               <picker class="time-picker" bindchange="onTimeNumberChange" value="{{timeNumberIndex}}" range="{{timeNumberOptions}}">
                 <view class="time-picker-display">{{timeNumber}}</view>
@@ -240,7 +240,7 @@
 
       <view class="form-section">
         <view class="section-title-row">
-          <text class="form-section-title">配方成分*</text>
+          <text class="form-section-title">所需材料*</text>
           <text class="section-mini-label">{{ingredients.length}}/30</text>
         </view>
 
@@ -248,7 +248,7 @@
           <input
             class="ingredient-input"
             bindinput="onInputIngredient"
-            placeholder="输入成分名称"
+            placeholder="输入材料名称"
             placeholder-class="preview-placeholder"
             value="{{newIngredient}}"
             maxlength="20"
@@ -268,14 +268,14 @@
 
       <view class="form-section">
         <view class="section-title-row">
-          <text class="form-section-title">制作步骤*</text>
+          <text class="form-section-title">调制步骤*</text>
           <text class="section-mini-label">{{steps.length}}/30</text>
         </view>
 
         <block wx:for="{{steps}}" wx:key="number">
           <view class="step-form-group">
             <view class="step-header">
-              <text class="step-number">步骤 {{item.number}}</text>
+              <text class="step-number">第 {{item.number}} 步</text>
               <view class="step-tools">
                 <button wx:if="{{index > 0}}" class="step-tool-btn" bindtap="moveStepUp" data-index="{{index}}">上移</button>
                 <button wx:if="{{index < steps.length - 1}}" class="step-tool-btn" bindtap="moveStepDown" data-index="{{index}}">下移</button>
@@ -294,34 +294,66 @@
               auto-height="true"
               show-count="true"
             />
+
+            <view class="step-extra-row">
+              <view class="step-extra-field step-time-field">
+                <text class="step-extra-label">TIME</text>
+                <view class="step-time-input-wrap {{formErrors.steps ? 'error' : ''}}">
+                  <input
+                    class="step-extra-input step-time-input"
+                    bindinput="onInputStepTime"
+                    data-index="{{index}}"
+                    placeholder="分钟"
+                    placeholder-class="preview-placeholder"
+                    value="{{item.estimatedTime}}"
+                    type="number"
+                    maxlength="3"
+                  />
+                  <text class="step-time-unit">分钟</text>
+                </view>
+              </view>
+
+              <view class="step-extra-field step-tip-field">
+                <text class="step-extra-label">TIP</text>
+                <input
+                  class="step-extra-input {{formErrors.steps ? 'error' : ''}}"
+                  bindinput="onInputStepTip"
+                  data-index="{{index}}"
+                  placeholder="可选提示，不超过100字"
+                  placeholder-class="preview-placeholder"
+                  value="{{item.tips}}"
+                  maxlength="100"
+                />
+              </view>
+            </view>
           </view>
         </block>
 
         <text wx:if="{{formErrors.steps}}" class="error-message">{{formErrors.steps}}</text>
-        <button class="add-step-button" bindtap="addStep">+ 添加步骤</button>
+        <button class="add-step-button" bindtap="addStep">+ 添加一步</button>
       </view>
 
       <view class="action-buttons">
         <button class="cancel-button" bindtap="returnHomeTab">取消</button>
-        <button class="save-button" loading="{{isSaving}}" disabled="{{isSaving}}" bindtap="saveCocktail">保存配方</button>
+        <button class="save-button" loading="{{isSaving}}" disabled="{{isSaving}}" bindtap="saveCocktail">存入私藏</button>
       </view>
     </view>
 
     <view wx:elif="{{activeMainTab === 'mine'}}" class="main-tab-panel mine-panel {{mainTabTransitionClass}}">
       <view class="mine-header">
         <text class="eyebrow">LOCAL CELLAR</text>
-        <text class="page-title">我的配方</text>
-        <text class="mine-subtitle">本机个人空间只管理当前设备上的自定义配方</text>
+        <text class="page-title">私藏酒谱</text>
+        <text class="mine-subtitle">管理这台设备上的私藏酒谱</text>
       </view>
 
       <view class="mine-stats">
         <view class="mine-stat">
           <text class="mine-stat-value">{{customCount}}</text>
-          <text class="mine-stat-label">自定义配方</text>
+          <text class="mine-stat-label">私藏酒谱</text>
         </view>
         <view class="mine-stat">
           <text class="mine-stat-value">{{totalCount}}</text>
-          <text class="mine-stat-label">可浏览配方</text>
+          <text class="mine-stat-label">可读酒谱</text>
         </view>
       </view>
 
@@ -329,8 +361,8 @@
         <view class="mine-entry" bindtap="navigateToCustomCocktails">
           <view class="entry-code">LIST</view>
           <view class="entry-copy">
-            <text class="entry-title">自定义配方管理</text>
-            <text class="entry-desc">查看、编辑、删除和批量管理本机自定义配方</text>
+            <text class="entry-title">私藏酒谱</text>
+            <text class="entry-desc">查看、编辑或删除这台设备上的私藏酒谱</text>
           </view>
           <text class="entry-arrow">→</text>
         </view>
@@ -338,8 +370,8 @@
         <view class="mine-entry" bindtap="navigateToImport">
           <view class="entry-code">IN</view>
           <view class="entry-copy">
-            <text class="entry-title">配方导入</text>
-            <text class="entry-desc">粘贴配方导入码，预览确认后保存到本机</text>
+            <text class="entry-title">收录酒谱</text>
+            <text class="entry-desc">粘贴酒谱文本，预览后收录到私藏</text>
           </view>
           <text class="entry-arrow">→</text>
         </view>
@@ -369,5 +401,5 @@
 <view class="sr-only" aria-live="polite">
   <text wx:if="{{isLoading}}">页面正在加载</text>
   <text wx:elif="{{error}}">页面加载出错：{{error.message}}</text>
-  <text wx:elif="{{isSearching}}">正在搜索配方</text>
+  <text wx:elif="{{isSearching}}">正在搜索酒谱</text>
 </view>

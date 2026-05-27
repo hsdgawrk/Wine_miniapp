@@ -20,9 +20,9 @@ Component({
       },
       {
         pagePath: "/pages/index/index",
-        text: "我的",
+        text: "私藏",
         code: "ME",
-        action: "配方",
+        action: "酒谱",
         tab: "mine"
       }
     ]

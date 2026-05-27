@@ -161,8 +161,8 @@ function createAfterBatchDeletePatch(state = {}) {
 
 function createDeleteOneIntent(cocktail = {}) {
   return {
-    title: '删除自定义配方',
-    content: `确认删除「${cocktail.name || '这条配方'}」吗？删除后不可恢复。`,
+    title: '删除私藏酒谱',
+    content: `要删除「${cocktail.name || '这条酒谱'}」吗？删除后不可恢复。`,
     confirmText: '删除',
     confirmColor: '#ff7a66'
   };
@@ -171,7 +171,7 @@ function createDeleteOneIntent(cocktail = {}) {
 function createBatchDeleteIntent(selectedCount) {
   return {
     title: '批量删除',
-    content: `确认删除所选 ${selectedCount} 条自定义配方吗？删除后不可恢复。`,
+    content: `要删除所选 ${selectedCount} 条私藏酒谱吗？删除后不可恢复。`,
     confirmText: '删除',
     confirmColor: '#ff7a66'
   };

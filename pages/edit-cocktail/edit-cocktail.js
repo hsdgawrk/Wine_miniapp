@@ -36,7 +36,7 @@ Page({
     if (!cocktail || cocktail.source !== 'custom') {
       this.setData({
         isLoading: false,
-        error: cocktail ? '内置配方不能编辑' : '未找到配方'
+        error: cocktail ? '馆藏酒谱不能编辑' : '未找到酒谱'
       });
       return;
     }
@@ -58,8 +58,8 @@ Page({
 
     if (draft.timeNeedsReselect) {
       wx.showModal({
-        title: '需要重新选择时间',
-        content: `原制作时间「${draft.legacyTimeText}」不符合当前规则，请选择合法时间或保存为未设置。`,
+        title: '重新选择时间',
+        content: `原调制时间「${draft.legacyTimeText}」无法使用，请重新选择或留为未设置。`,
         showCancel: false
       });
     }
@@ -165,6 +165,22 @@ Page({
     });
   },
 
+  onInputStepTime(e) {
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.UPDATE_STEP_TIME,
+      index: e.currentTarget.dataset.index,
+      value: e.detail.value
+    });
+  },
+
+  onInputStepTip(e) {
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.UPDATE_STEP_TIP,
+      index: e.currentTarget.dataset.index,
+      value: e.detail.value
+    });
+  },
+
   removeStep(e) {
     const result = this.applyDraftAction({
       type: DRAFT_ACTIONS.REMOVE_STEP,
@@ -262,8 +278,8 @@ Page({
     }
 
     wx.showModal({
-      title: '确认离开',
-      content: '当前编辑内容尚未保存，离开后将丢弃修改。',
+      title: '离开此页',
+      content: '当前酒谱还没保存，离开后将丢弃修改。',
       confirmText: '离开',
       cancelText: '继续编辑',
       success: (res) => {
@@ -286,7 +302,7 @@ Page({
 
     if (this.hasUnsavedChanges()) {
       wx.enableAlertBeforeUnload({
-        message: '当前编辑内容尚未保存，离开后将丢弃修改。'
+        message: '当前酒谱还没保存，离开后将丢弃修改。'
       });
     } else {
       this.disableBeforeUnload();

@@ -21,19 +21,19 @@
     </view>
     <view class="meta-cell">
       <text class="meta-label">来源</text>
-      <text class="meta-value">{{cocktail.source === 'custom' ? '自定义' : '内置'}}</text>
+      <text class="meta-value">{{cocktail.source === 'custom' ? '私藏' : '馆藏'}}</text>
     </view>
   </view>
 
   <view class="detail-section">
     <text class="section-kicker">PROFILE</text>
-    <text class="section-title">风味简介</text>
+    <text class="section-title">风味小记</text>
     <text class="section-body">{{cocktail.description}}</text>
   </view>
 
   <view class="detail-section" wx:if="{{cocktail.ingredients && cocktail.ingredients.length}}">
     <text class="section-kicker">INGREDIENTS</text>
-    <text class="section-title">配方成分</text>
+    <text class="section-title">所需材料</text>
     <view class="ingredient-grid">
       <text
         class="ingredient-chip"
@@ -45,12 +45,12 @@
 
   <view class="detail-section" wx:if="{{cocktail.source === 'built-in' && cocktail.history}}">
     <text class="section-kicker">ORIGIN</text>
-    <text class="section-title">历史背景</text>
+    <text class="section-title">酒款来历</text>
     <text class="section-body">{{cocktail.history}}</text>
   </view>
 
   <view class="action-dock">
-    <button class="primary-button" bindtap="navigateToSteps">开始制作</button>
+    <button class="primary-button" bindtap="navigateToSteps">开始调制</button>
     <view class="action-gap"></view>
     <button class="secondary-button" bindtap="openMorePanel">更多</button>
   </view>
@@ -75,14 +75,14 @@
     <text class="sheet-title">{{cocktail.name}}</text>
 
     <block wx:if="{{cocktail.source === 'custom'}}">
-      <button class="sheet-action" bindtap="navigateToEdit">编辑配方</button>
-      <button class="sheet-action" bindtap="navigateToExport">导出配方导入码</button>
-      <button class="sheet-action danger" bindtap="confirmDelete">删除自定义配方</button>
+      <button class="sheet-action" bindtap="navigateToEdit">编辑酒谱</button>
+      <button class="sheet-action" bindtap="navigateToExport">分享酒谱</button>
+      <button class="sheet-action danger" bindtap="confirmDelete">删除私藏酒谱</button>
     </block>
 
     <view wx:else class="sheet-empty">
-      <text class="sheet-empty-title">内置配方</text>
-      <text class="sheet-empty-copy">内置配方当前不提供编辑、删除或导出操作。</text>
+      <text class="sheet-empty-title">馆藏酒谱</text>
+      <text class="sheet-empty-copy">馆藏酒谱暂不支持编辑、删除或分享。</text>
     </view>
 
     <button class="sheet-cancel" bindtap="closeMorePanel">取消</button>
@@ -92,7 +92,7 @@
 <view class="container detail-page error-page" wx:else>
   <view class="detail-section">
     <text class="section-kicker">ERROR</text>
-    <text class="section-title">配方不可用</text>
-    <text class="section-body">{{error || '请返回首页重新选择配方'}}</text>
+    <text class="section-title">酒谱不可用</text>
+    <text class="section-body">{{error || '请返回首页重新选择酒谱'}}</text>
   </view>
 </view>

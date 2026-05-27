@@ -6,7 +6,7 @@
 
   <view wx:elif="{{error}}" class="error-state">
     <text class="error-kicker">ERROR</text>
-    <text class="error-title">无法编辑配方</text>
+    <text class="error-title">无法编辑酒谱</text>
     <text class="error-copy">{{error}}</text>
     <button class="primary-button" bindtap="navigateBack">返回</button>
   </view>
@@ -15,20 +15,20 @@
     <view class="form-header">
       <view>
         <text class="eyebrow">EDIT RECIPE</text>
-        <text class="form-title">编辑自定义配方</text>
-        <text class="form-subtitle">保存后仍为同一条自定义配方，并刷新最近修改时间</text>
+        <text class="form-title">编辑私藏酒谱</text>
+        <text class="form-subtitle">保存后仍是这条私藏酒谱</text>
       </view>
       <view class="header-symbol">{{emoji}}</view>
     </view>
 
     <view wx:if="{{timeNeedsReselect}}" class="warning-panel">
-      <text class="warning-title">制作时间需要重新选择</text>
-      <text class="warning-copy">原值「{{legacyTimeText}}」不符合当前规则，请选择合法时间或保存为未设置。</text>
+      <text class="warning-title">调制时间需要重新选择</text>
+      <text class="warning-copy">原值「{{legacyTimeText}}」无法使用，请重新选择或留为未设置。</text>
     </view>
 
     <view class="form-section">
       <view class="form-group">
-        <text class="form-label">配方名称*</text>
+        <text class="form-label">酒名*</text>
         <input
           class="form-input {{formErrors.name ? 'error' : ''}}"
           bindinput="onInputName"
@@ -41,11 +41,11 @@
       </view>
 
       <view class="form-group">
-        <text class="form-label">简介</text>
+        <text class="form-label">风味小记</text>
         <textarea
           class="form-input form-textarea {{formErrors.description ? 'error' : ''}}"
           bindinput="onInputDescription"
-          placeholder="可不填，保存时显示为-"
+          placeholder="可不填，留空显示为-"
           placeholder-class="placeholder"
           value="{{cocktailDescription}}"
           maxlength="100"
@@ -90,7 +90,7 @@
         </view>
 
         <view class="form-group form-grid-item">
-          <text class="form-label">制作时间</text>
+          <text class="form-label">调制时间</text>
           <view class="time-picker-row {{formErrors.time ? 'error' : ''}}">
             <picker class="time-picker" bindchange="onTimeNumberChange" value="{{timeNumberIndex}}" range="{{timeNumberOptions}}">
               <view class="time-picker-display">{{timeNumber}}</view>
@@ -106,7 +106,7 @@
 
     <view class="form-section">
       <view class="section-title-row">
-        <text class="form-section-title">配方成分*</text>
+        <text class="form-section-title">所需材料*</text>
         <text class="section-mini-label">{{ingredients.length}}/30</text>
       </view>
 
@@ -114,7 +114,7 @@
         <input
           class="ingredient-input"
           bindinput="onInputIngredient"
-          placeholder="输入成分名称"
+          placeholder="输入材料名称"
           placeholder-class="placeholder"
           value="{{newIngredient}}"
           maxlength="20"
@@ -133,14 +133,14 @@
 
     <view class="form-section">
       <view class="section-title-row">
-        <text class="form-section-title">制作步骤*</text>
+        <text class="form-section-title">调制步骤*</text>
         <text class="section-mini-label">{{steps.length}}/30</text>
       </view>
 
       <block wx:for="{{steps}}" wx:key="number">
         <view class="step-form-group">
           <view class="step-header">
-            <text class="step-number">步骤 {{item.number}}</text>
+            <text class="step-number">第 {{item.number}} 步</text>
             <view class="step-tools">
               <button wx:if="{{index > 0}}" class="step-tool-btn" bindtap="moveStepUp" data-index="{{index}}">上移</button>
               <button wx:if="{{index < steps.length - 1}}" class="step-tool-btn" bindtap="moveStepDown" data-index="{{index}}">下移</button>
@@ -159,16 +159,48 @@
             auto-height="true"
             show-count="true"
           />
+
+          <view class="step-extra-row">
+            <view class="step-extra-field step-time-field">
+              <text class="step-extra-label">TIME</text>
+              <view class="step-time-input-wrap {{formErrors.steps ? 'error' : ''}}">
+                <input
+                  class="step-extra-input step-time-input"
+                  bindinput="onInputStepTime"
+                  data-index="{{index}}"
+                  placeholder="分钟"
+                  placeholder-class="placeholder"
+                  value="{{item.estimatedTime}}"
+                  type="number"
+                  maxlength="3"
+                />
+                <text class="step-time-unit">分钟</text>
+              </view>
+            </view>
+
+            <view class="step-extra-field step-tip-field">
+              <text class="step-extra-label">TIP</text>
+              <input
+                class="step-extra-input {{formErrors.steps ? 'error' : ''}}"
+                bindinput="onInputStepTip"
+                data-index="{{index}}"
+                placeholder="可选提示，不超过100字"
+                placeholder-class="placeholder"
+                value="{{item.tips}}"
+                maxlength="100"
+              />
+            </view>
+          </view>
         </view>
       </block>
 
       <text wx:if="{{formErrors.steps}}" class="error-message">{{formErrors.steps}}</text>
-      <button class="add-step-button" bindtap="addStep">+ 添加步骤</button>
+      <button class="add-step-button" bindtap="addStep">+ 添加一步</button>
     </view>
 
     <view class="action-buttons">
       <button class="cancel-button" bindtap="navigateBack">取消</button>
-      <button class="save-button" loading="{{isSaving}}" disabled="{{isSaving}}" bindtap="saveCocktail">保存修改</button>
+      <button class="save-button" loading="{{isSaving}}" disabled="{{isSaving}}" bindtap="saveCocktail">保存酒谱</button>
     </view>
   </block>
 </view>

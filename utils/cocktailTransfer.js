@@ -14,14 +14,14 @@ const ERROR_CODES = {
 };
 
 const ERROR_MESSAGES = {
-  [ERROR_CODES.IMPORT_FORMAT_INVALID]: '导入码格式不正确',
-  [ERROR_CODES.IMPORT_VERSION_UNSUPPORTED]: '暂不支持此版本的配方导入码',
-  [ERROR_CODES.IMPORT_CONTENT_INVALID]: '配方内容不完整或不符合当前规则',
-  [ERROR_CODES.IMPORT_NAME_CONFLICT]: '导入后名称已存在，请修改名称',
+  [ERROR_CODES.IMPORT_FORMAT_INVALID]: '酒谱文本格式不正确',
+  [ERROR_CODES.IMPORT_VERSION_UNSUPPORTED]: '暂不支持此版本的酒谱文本',
+  [ERROR_CODES.IMPORT_CONTENT_INVALID]: '酒谱内容不完整或无法使用',
+  [ERROR_CODES.IMPORT_NAME_CONFLICT]: '这个酒名已经存在，请修改酒名',
   [ERROR_CODES.IMPORT_CLIPBOARD_FAILED]: '无法读取剪贴板，请手动粘贴',
-  [ERROR_CODES.EXPORT_NOT_CUSTOM]: '当前配方不可导出',
-  [ERROR_CODES.EXPORT_CONTENT_INVALID]: '配方内容不符合当前规则，请先编辑并保存',
-  [ERROR_CODES.COCKTAIL_NOT_FOUND]: '未找到配方'
+  [ERROR_CODES.EXPORT_NOT_CUSTOM]: '这条酒谱暂不支持分享',
+  [ERROR_CODES.EXPORT_CONTENT_INVALID]: '酒谱内容无法分享，请先编辑并保存',
+  [ERROR_CODES.COCKTAIL_NOT_FOUND]: '未找到酒谱'
 };
 
 function createImportCode(cocktail) {
@@ -32,9 +32,7 @@ function createImportCode(cocktail) {
     difficulty: cocktail.difficulty,
     time: cocktail.time || cocktailDraft.DEFAULT_TIME,
     ingredients: cocktail.ingredients || [],
-    steps: (cocktail.steps || []).map((step) => ({
-      instruction: step.instruction
-    }))
+    steps: (cocktail.steps || []).map(serializeStepForTransfer)
   };
 
   return `${IMPORT_PREFIX}${encodeBase64Utf8(JSON.stringify(payload))}`;
@@ -81,7 +79,9 @@ function normalizeImportedPayload(payload) {
 
   const steps = Array.isArray(payload.steps)
     ? payload.steps.map((step) => ({
-      instruction: step.instruction
+      instruction: step.instruction,
+      estimatedTime: Object.prototype.hasOwnProperty.call(step, 'estimatedTime') ? step.estimatedTime : '',
+      tips: Object.prototype.hasOwnProperty.call(step, 'tips') ? step.tips : ''
     }))
     : [];
 
@@ -124,6 +124,8 @@ function isValidPayloadShape(payload) {
     || typeof step !== 'object'
     || Array.isArray(step)
     || typeof step.instruction !== 'string'
+    || (Object.prototype.hasOwnProperty.call(step, 'estimatedTime') && !isValidStepTimePayloadValue(step.estimatedTime))
+    || (Object.prototype.hasOwnProperty.call(step, 'tips') && typeof step.tips !== 'string')
   ))) {
     return false;
   }
@@ -137,6 +139,27 @@ function isValidPayloadShape(payload) {
   }
 
   return true;
+}
+
+function isValidStepTimePayloadValue(value) {
+  return value === null || value === '' || typeof value === 'number' || typeof value === 'string';
+}
+
+function serializeStepForTransfer(step = {}) {
+  const serialized = {
+    instruction: step.instruction
+  };
+  const estimatedTime = cocktailDraft.normalizeStepEstimatedTime(step.estimatedTime);
+  const tips = cocktailDraft.normalizeText(step.tips);
+
+  if (estimatedTime) {
+    serialized.estimatedTime = estimatedTime;
+  }
+  if (tips) {
+    serialized.tips = tips;
+  }
+
+  return serialized;
 }
 
 function buildImportPreview(importedDraft, existingCocktails = []) {

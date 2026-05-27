@@ -32,7 +32,7 @@ Page({
     });
 
     wx.setNavigationBarTitle({
-      title: `制作${cocktailName}`
+      title: `调制${cocktailName}`
     });
   },
 
@@ -94,8 +94,8 @@ Page({
 
   finishCocktail() {
     wx.showModal({
-      title: '制作完成',
-      content: `恭喜您成功制作了${this.data.cocktailName}！是否返回首页？`,
+      title: '调制完成',
+      content: `${this.data.cocktailName} 已调制完成，是否返回首页？`,
       confirmText: '返回首页',
       cancelText: '再看看',
       success: (res) => {

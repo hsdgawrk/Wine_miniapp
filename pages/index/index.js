@@ -16,7 +16,7 @@ Page({
     mainTabs: [
       { tab: 'home', text: '首页', code: '01', action: '菜单' },
       { tab: 'add', text: '添加', code: '+', action: '创建' },
-      { tab: 'mine', text: '我的', code: 'ME', action: '配方' }
+      { tab: 'mine', text: '私藏', code: 'ME', action: '酒谱' }
     ],
 
     randomCocktail: null,
@@ -54,7 +54,7 @@ Page({
     try {
       this.initPageData();
     } catch (error) {
-      this.handlePageError(error, '页面初始化');
+      this.handlePageError(error, '页面加载');
     } finally {
       this.setData({ isLoading: false });
     }
@@ -106,8 +106,8 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '一起学习调酒吧！',
-      desc: '发现更多经典鸡尾酒配方',
+      title: '今晚选一杯',
+      desc: '收好几份清爽酒谱',
       path: '/pages/index/index',
       imageUrl: ''
     };
@@ -116,7 +116,7 @@ Page({
   initPageData() {
     const app = getApp();
     if (!app || !app.cocktailLibrary) {
-      throw new Error('配方库未初始化');
+      throw new Error('酒谱暂未准备好');
     }
 
     const listView = cocktailListView.buildCocktailListView({
@@ -147,12 +147,12 @@ Page({
       this.initPageData();
 
       wx.showToast({
-        title: '刷新成功',
+        title: '已刷新',
         icon: 'success',
         duration: 1500
       });
     } catch (error) {
-      this.handlePageError(error, '刷新数据');
+      this.handlePageError(error, '刷新酒谱');
     } finally {
       this.setData({ isLoading: false });
     }
@@ -214,7 +214,7 @@ Page({
         isSearching: false
       });
     } catch (error) {
-      this.handlePageError(error, '搜索配方');
+      this.handlePageError(error, '搜索酒谱');
     }
   },
 
@@ -224,21 +224,21 @@ Page({
       const cocktailName = e.currentTarget.dataset.name;
 
       if (!cocktailId && !cocktailName) {
-        throw new Error('配方信息不完整');
+        throw new Error('酒谱信息不完整');
       }
 
       wx.navigateTo({
         url: `/pages/cocktail-detail/cocktail-detail?id=${encodeURIComponent(cocktailId || '')}&name=${encodeURIComponent(cocktailName || '')}`,
         fail: () => {
           wx.showToast({
-            title: '页面跳转失败',
+            title: '暂时打不开',
             icon: 'none',
             duration: 2000
           });
         }
       });
     } catch (error) {
-      this.handlePageError(error, '打开配方详情');
+      this.handlePageError(error, '打开酒谱');
     }
   },
 
@@ -260,10 +260,10 @@ Page({
       && cocktailDraftForm.hasCreateContent(this.data)
     ) {
       wx.showModal({
-        title: '确认离开',
-        content: '添加配方草稿尚未保存，离开后将丢弃当前输入。',
+        title: '离开此页',
+        content: '这杯还没存入私藏，离开后将丢弃当前输入。',
         confirmText: '离开',
-        cancelText: '继续填写',
+        cancelText: '继续记录',
         success: (res) => {
           if (res.confirm) {
             this.resetAddDraft();
@@ -438,6 +438,22 @@ Page({
     });
   },
 
+  onInputStepTime(e) {
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.UPDATE_STEP_TIME,
+      index: e.currentTarget.dataset.index,
+      value: e.detail.value
+    });
+  },
+
+  onInputStepTip(e) {
+    this.applyDraftAction({
+      type: DRAFT_ACTIONS.UPDATE_STEP_TIP,
+      index: e.currentTarget.dataset.index,
+      value: e.detail.value
+    });
+  },
+
   removeStep(e) {
     const result = this.applyDraftAction({
       type: DRAFT_ACTIONS.REMOVE_STEP,
@@ -496,14 +512,14 @@ Page({
       const savedCocktail = app.addCocktail ? app.addCocktail(validation.draft) : null;
 
       if (!savedCocktail) {
-        throw new Error('配方保存失败，请稍后重试');
+        throw new Error('保存失败，请稍后重试');
       }
 
       this.resetAddDraft();
       this.refreshCocktailData();
 
       wx.showToast({
-        title: '保存成功',
+        title: '已存入私藏',
         icon: 'success',
         duration: 1200
       });
@@ -514,7 +530,7 @@ Page({
         });
       }, 500);
     } catch (error) {
-      this.handlePageError(error, '保存配方');
+      this.handlePageError(error, '保存酒谱');
     } finally {
       this.setData({ isSaving: false });
     }
@@ -559,8 +575,8 @@ Page({
 
   async loadMoreCocktails() {},
 
-  handlePageError(error, context = '未知操作') {
-    const errorMessage = error.message || '未知错误';
+  handlePageError(error, context = '当前操作') {
+    const errorMessage = error.message || '出了点问题';
 
     console.error(`${context}错误:`, error);
 

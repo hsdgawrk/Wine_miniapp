@@ -7,6 +7,8 @@ const MAX_INGREDIENTS = 30;
 const MAX_INGREDIENT_LENGTH = 20;
 const MAX_STEPS = 30;
 const MAX_STEP_LENGTH = 200;
+const MAX_STEP_TIME = 999;
+const MAX_STEP_TIP_LENGTH = 100;
 const DEFAULT_DESCRIPTION = '-';
 const DEFAULT_TIME = '未设置';
 const EMPTY_PICKER_VALUE = '-';
@@ -34,6 +36,8 @@ const ACTIONS = {
   REMOVE_INGREDIENT: 'removeIngredient',
   ADD_STEP: 'addStep',
   UPDATE_STEP: 'updateStep',
+  UPDATE_STEP_TIME: 'updateStepTime',
+  UPDATE_STEP_TIP: 'updateStepTip',
   REMOVE_STEP: 'removeStep',
   MOVE_STEP: 'moveStep',
   RESET: 'reset'
@@ -43,7 +47,7 @@ function createInitialDraft() {
   return {
     cocktailName: '',
     cocktailDescription: '',
-    steps: [{ number: 1, instruction: '', animation: 'fadeIn' }],
+    steps: [{ number: 1, instruction: '', estimatedTime: '', tips: '', animation: 'fadeIn' }],
     difficulty: DIFFICULTY_OPTIONS[0],
     time: DEFAULT_TIME,
     timeNumber: EMPTY_PICKER_VALUE,
@@ -68,7 +72,7 @@ function createDraftFromCocktail(cocktail = {}) {
     ...createInitialDraft(),
     cocktailName: cocktail.name || '',
     cocktailDescription: cocktail.description === DEFAULT_DESCRIPTION ? '' : (cocktail.description || ''),
-    steps: normalizedSteps.length ? normalizedSteps : [{ number: 1, instruction: '', animation: 'fadeIn' }],
+    steps: normalizedSteps.length ? normalizedSteps : [{ number: 1, instruction: '', estimatedTime: '', tips: '', animation: 'fadeIn' }],
     difficulty: cocktail.difficulty || DIFFICULTY_OPTIONS[0],
     time: timeSelection.time,
     timeNumber: timeSelection.timeNumber,
@@ -108,20 +112,20 @@ function validateDraft(data, options = {}) {
   const timeResult = resolveTime(data);
 
   if (!draft.name) {
-    errors.name = '请输入配方名称';
-    errorMessages.push('配方名称未填写');
+    errors.name = '请输入酒名';
+    errorMessages.push('酒名未填写');
   } else if (draft.name.length > MAX_NAME_LENGTH) {
-    errors.name = `配方名称不能超过${MAX_NAME_LENGTH}个字符`;
-    errorMessages.push('配方名称过长');
+    errors.name = `酒名不能超过${MAX_NAME_LENGTH}个字符`;
+    errorMessages.push('酒名过长');
   } else if (options.checkNameConflict !== false && findNameConflict(draft.name, options.existingCocktails, options.currentId)) {
-    errors.name = '已存在同名配方，请修改名称';
-    errorMessages.push('配方名称重复');
+    errors.name = '这个酒名已经存在';
+    errorMessages.push('酒名重复');
   }
 
   const description = normalizeText(data.cocktailDescription);
   if (description && description.length > MAX_DESCRIPTION_LENGTH) {
-    errors.description = `简介不能超过${MAX_DESCRIPTION_LENGTH}个字符`;
-    errorMessages.push('简介过长');
+    errors.description = `风味小记不能超过${MAX_DESCRIPTION_LENGTH}个字符`;
+    errorMessages.push('风味小记过长');
   }
 
   if (!draft.category) {
@@ -133,50 +137,42 @@ function validateDraft(data, options = {}) {
   }
 
   if (!DIFFICULTY_OPTIONS.includes(draft.difficulty)) {
-    errors.difficulty = '制作难度不符合当前规则';
-    errorMessages.push('制作难度不合法');
+    errors.difficulty = '请选择有效难度';
+    errorMessages.push('难度不合法');
   }
 
   if (!timeResult.isValid) {
     errors.time = timeResult.message;
-    errorMessages.push('制作时间不完整');
+    errorMessages.push('调制时间不完整');
   }
 
   if (!rawIngredients.length) {
-    errors.ingredients = '请至少添加一种成分';
-    errorMessages.push('未添加任何成分');
+    errors.ingredients = '请至少添加一种材料';
+    errorMessages.push('未添加材料');
   } else if (rawIngredients.length > MAX_INGREDIENTS) {
-    errors.ingredients = `成分最多添加${MAX_INGREDIENTS}种`;
-    errorMessages.push('成分数量过多');
+    errors.ingredients = `材料最多添加${MAX_INGREDIENTS}种`;
+    errorMessages.push('材料数量过多');
   } else if (normalizedIngredients.some((item) => !item)) {
-    errors.ingredients = '成分名称不能为空';
-    errorMessages.push('成分名称为空');
+    errors.ingredients = '材料名称不能为空';
+    errorMessages.push('材料名称为空');
   } else if (normalizedIngredients.some((item) => item.length > MAX_INGREDIENT_LENGTH)) {
-    errors.ingredients = `单个成分不能超过${MAX_INGREDIENT_LENGTH}个字符`;
-    errorMessages.push('成分名称过长');
+    errors.ingredients = `单个材料不能超过${MAX_INGREDIENT_LENGTH}个字符`;
+    errorMessages.push('材料名称过长');
   } else if (hasDuplicates(normalizedIngredients.map(normalizeComparable))) {
-    errors.ingredients = '成分不能重复';
-    errorMessages.push('成分重复');
+    errors.ingredients = '材料不能重复';
+    errorMessages.push('材料重复');
   }
 
-  if (!orderedSteps.length) {
-    errors.steps = '请至少添加一个制作步骤';
-    errorMessages.push('未添加制作步骤');
-  } else if (orderedSteps.length > MAX_STEPS) {
-    errors.steps = `制作步骤最多添加${MAX_STEPS}步`;
-    errorMessages.push('制作步骤数量过多');
-  } else if (orderedSteps.some((step) => !normalizeText(step.instruction))) {
-    errors.steps = '请完善所有制作步骤';
-    errorMessages.push('制作步骤不完整');
-  } else if (orderedSteps.some((step) => normalizeText(step.instruction).length > MAX_STEP_LENGTH)) {
-    errors.steps = `单个制作步骤不能超过${MAX_STEP_LENGTH}个字符`;
-    errorMessages.push('制作步骤过长');
+  const stepsValidation = validateSteps(orderedSteps);
+  if (!stepsValidation.isValid) {
+    errors.steps = stepsValidation.error;
+    errorMessages.push(stepsValidation.message);
   }
 
   return {
     isValid: errorMessages.length === 0,
     errors,
-    message: errorMessages.length ? `${errorMessages.join('、')}，请检查后重试` : '验证通过',
+    message: errorMessages.length ? `${errorMessages.join('、')}，请检查后重试` : '内容可用',
     draft
   };
 }
@@ -191,9 +187,9 @@ function validateCocktail(cocktail, options = {}) {
       isValid: false,
       errors: {
         ...validation.errors,
-        time: '制作时间不符合当前规则'
+        time: '调制时间无法使用'
       },
-      message: '制作时间不符合当前规则，请检查后重试'
+      message: '调制时间无法使用，请检查后重试'
     };
   }
 
@@ -206,11 +202,11 @@ function validateField(field, value, currentErrors = {}, options = {}) {
 
   if (field === 'name') {
     if (!text) {
-      errors.name = '请输入配方名称';
+      errors.name = '请输入酒名';
     } else if (text.length > MAX_NAME_LENGTH) {
-      errors.name = `配方名称不能超过${MAX_NAME_LENGTH}个字符`;
+      errors.name = `酒名不能超过${MAX_NAME_LENGTH}个字符`;
     } else if (options.checkNameConflict !== false && findNameConflict(text, options.existingCocktails, options.currentId)) {
-      errors.name = '已存在同名配方，请修改名称';
+      errors.name = '这个酒名已经存在';
     } else {
       delete errors.name;
     }
@@ -218,7 +214,7 @@ function validateField(field, value, currentErrors = {}, options = {}) {
 
   if (field === 'description') {
     if (text && text.length > MAX_DESCRIPTION_LENGTH) {
-      errors.description = `简介不能超过${MAX_DESCRIPTION_LENGTH}个字符`;
+      errors.description = `风味小记不能超过${MAX_DESCRIPTION_LENGTH}个字符`;
     } else {
       delete errors.description;
     }
@@ -239,20 +235,20 @@ function validateField(field, value, currentErrors = {}, options = {}) {
 function addIngredient(ingredients, rawIngredient) {
   const ingredient = normalizeText(rawIngredient);
   if (!ingredient) {
-    return { ingredients: normalizeIngredients(ingredients), error: '请输入成分名称' };
+    return { ingredients: normalizeIngredients(ingredients), error: '请输入材料名称' };
   }
 
   const normalizedIngredients = normalizeIngredients(ingredients);
   if (normalizedIngredients.length >= MAX_INGREDIENTS) {
-    return { ingredients: normalizedIngredients, error: `成分最多添加${MAX_INGREDIENTS}种` };
+    return { ingredients: normalizedIngredients, error: `材料最多添加${MAX_INGREDIENTS}种` };
   }
 
   if (ingredient.length > MAX_INGREDIENT_LENGTH) {
-    return { ingredients: normalizedIngredients, error: `单个成分不能超过${MAX_INGREDIENT_LENGTH}个字符` };
+    return { ingredients: normalizedIngredients, error: `单个材料不能超过${MAX_INGREDIENT_LENGTH}个字符` };
   }
 
   if (normalizedIngredients.map(normalizeComparable).includes(normalizeComparable(ingredient))) {
-    return { ingredients: normalizedIngredients, error: '成分已存在' };
+    return { ingredients: normalizedIngredients, error: '这个材料已经添加过' };
   }
 
   return {
@@ -270,7 +266,7 @@ function addStep(steps, animations = DEFAULT_ANIMATIONS) {
   if (normalizedSteps.length >= MAX_STEPS) {
     return {
       steps: normalizedSteps,
-      error: `制作步骤最多添加${MAX_STEPS}步`
+      error: `调制步骤最多添加${MAX_STEPS}步`
     };
   }
 
@@ -281,6 +277,8 @@ function addStep(steps, animations = DEFAULT_ANIMATIONS) {
       {
         number: normalizedSteps.length + 1,
         instruction: '',
+        estimatedTime: '',
+        tips: '',
         animation
       }
     ],
@@ -291,6 +289,18 @@ function addStep(steps, animations = DEFAULT_ANIMATIONS) {
 function updateStep(steps, index, instruction) {
   return normalizeStepOrder(steps).map((step, itemIndex) => (
     itemIndex === Number(index) ? { ...step, instruction } : step
+  ));
+}
+
+function updateStepEstimatedTime(steps, index, estimatedTime) {
+  return normalizeStepOrder(steps).map((step, itemIndex) => (
+    itemIndex === Number(index) ? { ...step, estimatedTime } : step
+  ));
+}
+
+function updateStepTip(steps, index, tips) {
+  return normalizeStepOrder(steps).map((step, itemIndex) => (
+    itemIndex === Number(index) ? { ...step, tips } : step
   ));
 }
 
@@ -324,7 +334,11 @@ function moveStep(steps, index, direction) {
 }
 
 function hasContent(data) {
-  const hasFilledStep = normalizeStepOrder(data.steps).some((step) => normalizeText(step.instruction));
+  const hasFilledStep = normalizeStepOrder(data.steps).some((step) => (
+    normalizeText(step.instruction)
+    || normalizeText(step.estimatedTime)
+    || normalizeText(step.tips)
+  ));
   return Boolean(
     normalizeText(data.cocktailName) ||
     normalizeText(data.cocktailDescription) ||
@@ -439,11 +453,35 @@ function reduceDraftState(data, action = {}) {
 
   if (type === ACTIONS.UPDATE_STEP) {
     const steps = updateStep(data.steps, action.index, action.value);
-    const nextErrors = steps.every((step) => normalizeText(step.instruction))
+    const nextErrors = validateSteps(steps).isValid
       ? removeError(formErrors, 'steps')
       : formErrors;
 
     return patchResult({ steps, formErrors: nextErrors });
+  }
+
+  if (type === ACTIONS.UPDATE_STEP_TIME) {
+    const steps = updateStepEstimatedTime(data.steps, action.index, action.value);
+    const nextErrors = validateSteps(steps).isValid
+      ? removeError(formErrors, 'steps')
+      : formErrors;
+
+    return patchResult({
+      steps,
+      formErrors: nextErrors
+    });
+  }
+
+  if (type === ACTIONS.UPDATE_STEP_TIP) {
+    const steps = updateStepTip(data.steps, action.index, action.value);
+    const nextErrors = validateSteps(steps).isValid
+      ? removeError(formErrors, 'steps')
+      : formErrors;
+
+    return patchResult({
+      steps,
+      formErrors: nextErrors
+    });
   }
 
   if (type === ACTIONS.REMOVE_STEP) {
@@ -488,7 +526,7 @@ function resolveTime(data = {}) {
     return {
       isValid: false,
       time: rawTime,
-      message: '制作时间需为1-999加分钟或小时'
+      message: '调制时间需为1-999分钟或小时'
     };
   }
 
@@ -521,7 +559,7 @@ function resolveTimeSelection(timeNumber, timeUnit) {
       time: '',
       timeNumber: normalizedNumber,
       timeUnit: normalizedUnit,
-      message: '请完整选择制作时间'
+      message: '请完整选择调制时间'
     };
   }
 
@@ -532,7 +570,7 @@ function resolveTimeSelection(timeNumber, timeUnit) {
       time: '',
       timeNumber: normalizedNumber,
       timeUnit: normalizedUnit,
-      message: '制作时间需为1-999加分钟或小时'
+      message: '调制时间需为1-999分钟或小时'
     };
   }
 
@@ -636,7 +674,9 @@ function normalizeSteps(steps) {
   return normalizeStepOrder(steps)
     .map((step) => ({
       ...step,
-      instruction: normalizeText(step.instruction)
+      instruction: normalizeText(step.instruction),
+      estimatedTime: normalizeStepEstimatedTime(step.estimatedTime),
+      tips: normalizeText(step.tips)
     }))
     .filter((step) => step.instruction);
 }
@@ -647,14 +687,71 @@ function normalizeStepOrder(steps) {
   }
 
   if (!steps.length) {
-    return [{ number: 1, instruction: '', animation: 'fadeIn' }];
+    return [{ number: 1, instruction: '', estimatedTime: '', tips: '', animation: 'fadeIn' }];
   }
 
   return steps.map((step, index) => ({
     number: index + 1,
     instruction: String(step && step.instruction ? step.instruction : ''),
+    estimatedTime: step && step.estimatedTime !== undefined && step.estimatedTime !== null
+      ? String(step.estimatedTime)
+      : '',
+    tips: String(step && step.tips ? step.tips : ''),
     animation: step && step.animation ? step.animation : DEFAULT_ANIMATIONS[index % DEFAULT_ANIMATIONS.length]
   }));
+}
+
+function validateSteps(steps) {
+  const orderedSteps = normalizeStepOrder(steps);
+
+  if (!orderedSteps.length) {
+    return stepValidationError('请至少添加一个调制步骤', '未添加调制步骤');
+  }
+
+  if (orderedSteps.length > MAX_STEPS) {
+    return stepValidationError(`调制步骤最多添加${MAX_STEPS}步`, '调制步骤数量过多');
+  }
+
+  if (orderedSteps.some((step) => !normalizeText(step.instruction))) {
+    return stepValidationError('请完善所有调制步骤', '调制步骤不完整');
+  }
+
+  if (orderedSteps.some((step) => normalizeText(step.instruction).length > MAX_STEP_LENGTH)) {
+    return stepValidationError(`单个调制步骤不能超过${MAX_STEP_LENGTH}个字符`, '调制步骤过长');
+  }
+
+  if (orderedSteps.some((step) => !isValidStepEstimatedTime(step.estimatedTime))) {
+    return stepValidationError(`步骤预计用时需为1-${MAX_STEP_TIME}的整数分钟`, '步骤预计用时不合法');
+  }
+
+  if (orderedSteps.some((step) => normalizeText(step.tips).length > MAX_STEP_TIP_LENGTH)) {
+    return stepValidationError(`单个步骤提示不能超过${MAX_STEP_TIP_LENGTH}个字符`, '步骤提示过长');
+  }
+
+  return {
+    isValid: true,
+    error: '',
+    message: ''
+  };
+}
+
+function stepValidationError(error, message) {
+  return {
+    isValid: false,
+    error,
+    message
+  };
+}
+
+function isValidStepEstimatedTime(value) {
+  const text = normalizeText(value);
+  const numberValue = Number(text);
+  return !text || (/^\d{1,3}$/.test(text) && Number.isInteger(numberValue) && numberValue >= 1 && numberValue <= MAX_STEP_TIME);
+}
+
+function normalizeStepEstimatedTime(value) {
+  const text = normalizeText(value);
+  return isValidStepEstimatedTime(text) && text ? Number(text) : text;
 }
 
 function normalizeDescription(description) {
@@ -696,7 +793,11 @@ function toComparableDraft(data) {
   return {
     ...draft,
     ingredients: draft.ingredients.map(normalizeText),
-    steps: draft.steps.map((step) => normalizeText(step.instruction))
+    steps: draft.steps.map((step) => ({
+      instruction: normalizeText(step.instruction),
+      estimatedTime: normalizeStepEstimatedTime(step.estimatedTime),
+      tips: normalizeText(step.tips)
+    }))
   };
 }
 
@@ -718,6 +819,8 @@ module.exports = {
   MAX_INGREDIENT_LENGTH,
   MAX_STEPS,
   MAX_STEP_LENGTH,
+  MAX_STEP_TIME,
+  MAX_STEP_TIP_LENGTH,
   createInitialDraft,
   createDraftFromCocktail,
   toDraft,
@@ -738,6 +841,8 @@ module.exports = {
   normalizeIngredients,
   normalizeSteps,
   normalizeStepOrder,
+  normalizeStepEstimatedTime,
+  isValidStepEstimatedTime,
   resolveTime,
   parseTimeSelection,
   findNameConflict

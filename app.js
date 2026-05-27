@@ -331,7 +331,7 @@ App({
       this.globalData.cocktails = this.cocktailLibrary.listCocktails();
       return cocktail;
     } catch (error) {
-      this.handleError(error, '添加配方');
+      this.handleError(error, '保存酒谱');
       return null;
     }
   },
@@ -342,7 +342,7 @@ App({
       this.globalData.cocktails = this.cocktailLibrary.listCocktails();
       return cocktail;
     } catch (error) {
-      this.handleError(error, '编辑配方');
+      this.handleError(error, '编辑酒谱');
       return null;
     }
   },
@@ -353,7 +353,7 @@ App({
       this.globalData.cocktails = this.cocktailLibrary.listCocktails();
       return deleted;
     } catch (error) {
-      this.handleError(error, '删除配方');
+      this.handleError(error, '删除酒谱');
       return false;
     }
   },
@@ -364,7 +364,7 @@ App({
       this.globalData.cocktails = this.cocktailLibrary.listCocktails();
       return deletedCount;
     } catch (error) {
-      this.handleError(error, '删除配方');
+      this.handleError(error, '删除酒谱');
       return 0;
     }
   },

@@ -3,7 +3,7 @@ const SORT_MODES = {
   NAME: 'name'
 };
 
-const SORT_OPTIONS = ['最近修改', '名称'];
+const SORT_OPTIONS = ['最近保存', '酒名'];
 
 function buildCocktailListView(options = {}) {
   const {
@@ -53,7 +53,7 @@ function decorateCocktail(cocktail, index = 0, options = {}) {
   return {
     ...cocktail,
     listIndex: String(index + 1).padStart(2, '0'),
-    sourceText: cocktail.source === 'custom' ? '自定义' : '内置',
+    sourceText: cocktail.source === 'custom' ? '私藏' : '馆藏',
     ingredientCount: ingredients.length,
     ingredientsPreview,
     updatedAtText: formatDate(cocktail.updatedAt || cocktail.createdAt),

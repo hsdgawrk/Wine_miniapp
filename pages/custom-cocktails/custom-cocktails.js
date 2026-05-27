@@ -132,7 +132,7 @@ Page({
     const selectedCount = this.data.selectedIds.length;
     if (!selectedCount) {
       wx.showToast({
-        title: '请选择配方',
+        title: '请选择酒谱',
         icon: 'none'
       });
       return;

@@ -8,7 +8,7 @@
     "pages/import-export/import-export"
   ],
   "window": {
-    "navigationBarTitleText": "调酒配方",
+    "navigationBarTitleText": "调酒酒谱",
     "navigationBarBackgroundColor": "#12110f",
     "navigationBarTextStyle": "white",
     "backgroundTextStyle": "dark",

@@ -394,7 +394,7 @@ function createCocktailLibrary(options = {}) {
     }
 
     if (cocktailDraft.findNameConflict(validation.draft.name, cocktails, existing.id)) {
-      throw new Error('配方名称重复，请修改名称后再保存');
+      throw new Error('这个酒名已经存在，请修改后再保存');
     }
 
     const updatedAt = now().toISOString();
@@ -653,8 +653,8 @@ function normalizeSteps(steps) {
   return steps.map((step, index) => ({
     number: index + 1,
     instruction: cocktailDraft.normalizeText(step && step.instruction),
-    tips: step && step.tips ? step.tips : '',
-    estimatedTime: step && step.estimatedTime ? step.estimatedTime : '',
+    tips: cocktailDraft.normalizeText(step && step.tips),
+    estimatedTime: cocktailDraft.normalizeStepEstimatedTime(step && step.estimatedTime),
     animation: step && step.animation ? step.animation : animations[index % animations.length]
   })).filter((step) => step.instruction);
 }
@@ -674,7 +674,7 @@ function buildFallbackSteps(cocktailName, ingredients = []) {
     },
     {
       number: 2,
-      instruction: `按${cocktailName}配方比例混合所有成分`,
+      instruction: `按${cocktailName}酒谱比例混合所有材料`,
       tips: '先处理需要摇和或搅拌的基酒与辅料',
       estimatedTime: 3,
       animation: 'slideIn'
@@ -755,7 +755,11 @@ function toComparableCustomContent(cocktail = {}) {
     time: cocktailDraft.normalizeText(cocktail.time) || cocktailDraft.DEFAULT_TIME,
     emoji: cocktail.emoji || cocktailDraft.EMOJI_OPTIONS[0],
     ingredients: (cocktail.ingredients || []).map((item) => cocktailDraft.normalizeText(item)),
-    steps: (cocktail.steps || []).map((step) => cocktailDraft.normalizeText(step && step.instruction))
+    steps: (cocktail.steps || []).map((step) => ({
+      instruction: cocktailDraft.normalizeText(step && step.instruction),
+      estimatedTime: cocktailDraft.normalizeStepEstimatedTime(step && step.estimatedTime),
+      tips: cocktailDraft.normalizeText(step && step.tips)
+    }))
   };
 }
 

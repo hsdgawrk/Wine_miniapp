@@ -2,8 +2,8 @@
   <view class="page-header">
     <view>
       <text class="eyebrow">CUSTOM CELLAR</text>
-      <text class="page-title">自定义配方管理</text>
-      <text class="page-subtitle">仅管理当前设备上的自定义配方</text>
+      <text class="page-title">私藏酒谱</text>
+      <text class="page-subtitle">管理这台设备上的私藏酒谱</text>
     </view>
     <view class="header-actions">
       <button class="add-header-button" bindtap="navigateToAdd">添加</button>
@@ -24,7 +24,7 @@
         class="search-input"
         value="{{searchQuery}}"
         bindinput="onSearch"
-        placeholder="搜索名称、简介、分类、难度或成分"
+        placeholder="搜索酒名、风味、分类、难度或材料"
         placeholder-class="placeholder"
         confirm-type="search"
       />
@@ -51,18 +51,18 @@
 
   <view wx:if="{{customCocktails.length === 0}}" class="empty-state">
     <text class="empty-mark">＋</text>
-    <text class="empty-title">还没有自定义配方</text>
-    <text class="empty-copy">可以新建一条配方，或粘贴配方导入码导入到本机。</text>
+    <text class="empty-title">还没有私藏酒谱</text>
+    <text class="empty-copy">可以记一杯新酒，也可以粘贴酒谱文本收录到私藏。</text>
     <view class="empty-actions">
-      <button class="primary-button" bindtap="navigateToAdd">添加配方</button>
-      <button class="secondary-button" bindtap="navigateToImport">导入配方</button>
+      <button class="primary-button" bindtap="navigateToAdd">记一杯新酒</button>
+      <button class="secondary-button" bindtap="navigateToImport">收录酒谱</button>
     </view>
   </view>
 
   <view wx:elif="{{visibleCocktails.length === 0}}" class="empty-state">
     <text class="empty-mark">⌕</text>
-    <text class="empty-title">未找到自定义配方</text>
-    <text class="empty-copy">换一个关键词，或清除搜索后查看全部自定义配方。</text>
+    <text class="empty-title">未找到私藏酒谱</text>
+    <text class="empty-copy">换一个关键词，或清除搜索后查看全部私藏酒谱。</text>
     <button class="primary-button single" bindtap="clearSearch">清除搜索</button>
   </view>
 
@@ -89,10 +89,10 @@
         <view class="card-meta">
           <text>{{item.difficulty}}</text>
           <text>{{item.time}}</text>
-          <text>{{item.ingredientCount}} 种成分</text>
+          <text>{{item.ingredientCount}} 种材料</text>
         </view>
         <view class="card-footer">
-          <text class="updated-text">最近修改 {{item.updatedAtText}}</text>
+          <text class="updated-text">最近保存 {{item.updatedAtText}}</text>
           <text wx:if="{{item.ingredientsPreview}}" class="preview-text">{{item.ingredientsPreview}}</text>
         </view>
       </view>
@@ -117,8 +117,8 @@
   <view wx:if="{{showMorePanel}}" class="more-sheet" catchtouchmove="noopTouchMove">
     <view class="sheet-handle"></view>
     <text class="sheet-title">{{activeCocktail.name}}</text>
-    <button class="sheet-action" bindtap="editActiveCocktail">编辑配方</button>
-    <button class="sheet-action danger" bindtap="deleteActiveCocktail">删除配方</button>
+    <button class="sheet-action" bindtap="editActiveCocktail">编辑酒谱</button>
+    <button class="sheet-action danger" bindtap="deleteActiveCocktail">删除酒谱</button>
     <button class="sheet-cancel" bindtap="closeMorePanel">取消</button>
   </view>
 </view>
