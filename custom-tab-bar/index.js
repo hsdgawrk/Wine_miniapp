@@ -15,8 +15,15 @@ Component({
         pagePath: "/pages/index/index",
         text: "添加",
         code: "+",
-        action: "新配方",
+        action: "创建",
         tab: "add"
+      },
+      {
+        pagePath: "/pages/index/index",
+        text: "我的",
+        code: "ME",
+        action: "配方",
+        tab: "mine"
       }
     ]
   },
@@ -47,7 +54,7 @@ Component({
         return;
       }
 
-      wx.switchTab({
+      wx.reLaunch({
         url: path,
         success: () => {
           this.setData({ selected: index });

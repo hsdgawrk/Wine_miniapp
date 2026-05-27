@@ -1,0 +1,174 @@
+<view class="container edit-page">
+  <view wx:if="{{isLoading}}" class="loading">
+    <loading class="loading-spinner" type="dot-gray" />
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:elif="{{error}}" class="error-state">
+    <text class="error-kicker">ERROR</text>
+    <text class="error-title">无法编辑配方</text>
+    <text class="error-copy">{{error}}</text>
+    <button class="primary-button" bindtap="navigateBack">返回</button>
+  </view>
+
+  <block wx:else>
+    <view class="form-header">
+      <view>
+        <text class="eyebrow">EDIT RECIPE</text>
+        <text class="form-title">编辑自定义配方</text>
+        <text class="form-subtitle">保存后仍为同一条自定义配方，并刷新最近修改时间</text>
+      </view>
+      <view class="header-symbol">{{emoji}}</view>
+    </view>
+
+    <view wx:if="{{timeNeedsReselect}}" class="warning-panel">
+      <text class="warning-title">制作时间需要重新选择</text>
+      <text class="warning-copy">原值「{{legacyTimeText}}」不符合当前规则，请选择合法时间或保存为未设置。</text>
+    </view>
+
+    <view class="form-section">
+      <view class="form-group">
+        <text class="form-label">配方名称*</text>
+        <input
+          class="form-input {{formErrors.name ? 'error' : ''}}"
+          bindinput="onInputName"
+          placeholder="不超过20个字符"
+          placeholder-class="placeholder"
+          value="{{cocktailName}}"
+          maxlength="20"
+        />
+        <text wx:if="{{formErrors.name}}" class="error-message">{{formErrors.name}}</text>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">简介</text>
+        <textarea
+          class="form-input form-textarea {{formErrors.description ? 'error' : ''}}"
+          bindinput="onInputDescription"
+          placeholder="可不填，保存时显示为-"
+          placeholder-class="placeholder"
+          value="{{cocktailDescription}}"
+          maxlength="100"
+          auto-height="true"
+          show-count="true"
+        />
+        <text wx:if="{{formErrors.description}}" class="error-message">{{formErrors.description}}</text>
+      </view>
+
+      <view class="form-grid">
+        <view class="form-group form-grid-item">
+          <text class="form-label">分类</text>
+          <picker bindchange="onCategoryChange" value="{{categoryIndex}}" range="{{categoryOptions}}">
+            <view class="picker-display">
+              <text class="picker-text">{{category}}</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="form-group form-grid-item">
+          <text class="form-label">图标</text>
+          <picker bindchange="onEmojiChange" value="{{emojiIndex}}" range="{{emojiOptions}}">
+            <view class="picker-display">
+              <text class="picker-emoji">{{emoji}}</text>
+              <text class="picker-text">选择</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-grid">
+        <view class="form-group form-grid-item">
+          <text class="form-label">难度</text>
+          <picker bindchange="onDifficultyChange" value="{{difficultyIndex}}" range="{{difficultyOptions}}">
+            <view class="picker-display">
+              <text class="picker-text">{{difficulty}}</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="form-group form-grid-item">
+          <text class="form-label">制作时间</text>
+          <view class="time-picker-row {{formErrors.time ? 'error' : ''}}">
+            <picker class="time-picker" bindchange="onTimeNumberChange" value="{{timeNumberIndex}}" range="{{timeNumberOptions}}">
+              <view class="time-picker-display">{{timeNumber}}</view>
+            </picker>
+            <picker class="time-picker" bindchange="onTimeUnitChange" value="{{timeUnitIndex}}" range="{{timeUnitOptions}}">
+              <view class="time-picker-display">{{timeUnit}}</view>
+            </picker>
+          </view>
+          <text wx:if="{{formErrors.time}}" class="error-message">{{formErrors.time}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title-row">
+        <text class="form-section-title">配方成分*</text>
+        <text class="section-mini-label">{{ingredients.length}}/30</text>
+      </view>
+
+      <view class="ingredient-input-group">
+        <input
+          class="ingredient-input"
+          bindinput="onInputIngredient"
+          placeholder="输入成分名称"
+          placeholder-class="placeholder"
+          value="{{newIngredient}}"
+          maxlength="20"
+        />
+        <button class="add-ingredient-btn" bindtap="addIngredient">添加</button>
+      </view>
+
+      <view class="ingredients-list" wx:if="{{ingredients.length > 0}}">
+        <view class="ingredient-item" wx:for="{{ingredients}}" wx:key="index">
+          <text class="ingredient-name">{{item}}</text>
+          <button class="remove-ingredient-btn" bindtap="removeIngredient" data-index="{{index}}">×</button>
+        </view>
+      </view>
+      <text wx:if="{{formErrors.ingredients}}" class="error-message">{{formErrors.ingredients}}</text>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title-row">
+        <text class="form-section-title">制作步骤*</text>
+        <text class="section-mini-label">{{steps.length}}/30</text>
+      </view>
+
+      <block wx:for="{{steps}}" wx:key="number">
+        <view class="step-form-group">
+          <view class="step-header">
+            <text class="step-number">步骤 {{item.number}}</text>
+            <view class="step-tools">
+              <button wx:if="{{index > 0}}" class="step-tool-btn" bindtap="moveStepUp" data-index="{{index}}">上移</button>
+              <button wx:if="{{index < steps.length - 1}}" class="step-tool-btn" bindtap="moveStepDown" data-index="{{index}}">下移</button>
+              <button wx:if="{{steps.length > 1}}" class="step-tool-btn danger" bindtap="removeStep" data-index="{{index}}">移除</button>
+            </view>
+          </view>
+
+          <textarea
+            class="form-input form-textarea step-input {{formErrors.steps ? 'error' : ''}}"
+            bindinput="onInputStep"
+            data-index="{{index}}"
+            placeholder="描述倒酒顺序、调制手法或装饰要求"
+            placeholder-class="placeholder"
+            value="{{item.instruction}}"
+            maxlength="200"
+            auto-height="true"
+            show-count="true"
+          />
+        </view>
+      </block>
+
+      <text wx:if="{{formErrors.steps}}" class="error-message">{{formErrors.steps}}</text>
+      <button class="add-step-button" bindtap="addStep">+ 添加步骤</button>
+    </view>
+
+    <view class="action-buttons">
+      <button class="cancel-button" bindtap="navigateBack">取消</button>
+      <button class="save-button" loading="{{isSaving}}" disabled="{{isSaving}}" bindtap="saveCocktail">保存修改</button>
+    </view>
+  </block>
+</view>

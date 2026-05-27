@@ -1,0 +1,120 @@
+<view class="container custom-page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">CUSTOM CELLAR</text>
+      <text class="page-title">自定义配方管理</text>
+      <text class="page-subtitle">仅管理当前设备上的自定义配方</text>
+    </view>
+    <view class="header-actions">
+      <button class="add-header-button" bindtap="navigateToAdd">添加</button>
+      <button class="manage-button {{isManaging ? 'active' : ''}}" bindtap="toggleManageMode">
+        {{manageButtonText}}
+      </button>
+    </view>
+  </view>
+
+  <view class="toolbar">
+    <view class="search-bar">
+      <text class="search-glyph">⌕</text>
+      <input
+        class="search-input"
+        value="{{searchQuery}}"
+        bindinput="onSearch"
+        placeholder="搜索名称、简介、分类、难度或成分"
+        placeholder-class="placeholder"
+        confirm-type="search"
+      />
+      <view wx:if="{{searchQuery}}" class="clear-search" bindtap="clearSearch">
+        <text class="clear-icon">×</text>
+      </view>
+    </view>
+
+    <picker bindchange="onSortChange" value="{{sortIndex}}" range="{{sortOptions}}">
+      <view class="sort-button">
+        <text>{{sortLabel}}</text>
+        <text class="sort-arrow">›</text>
+      </view>
+    </picker>
+  </view>
+
+  <view wx:if="{{isManaging && visibleCocktails.length}}" class="manage-strip">
+    <view class="select-all" bindtap="toggleSelectAllVisible">
+      <view class="check-box {{allVisibleSelected ? 'checked' : ''}}"></view>
+      <text>{{allVisibleSelected ? '取消全选' : '全选可见'}}</text>
+    </view>
+    <text class="selected-count">已选 {{selectedCount}}</text>
+  </view>
+
+  <view wx:if="{{customCocktails.length === 0}}" class="empty-state">
+    <text class="empty-mark">＋</text>
+    <text class="empty-title">还没有自定义配方</text>
+    <text class="empty-copy">可以新建一条配方，或粘贴配方导入码导入到本机。</text>
+    <view class="empty-actions">
+      <button class="primary-button" bindtap="navigateToAdd">添加配方</button>
+      <button class="secondary-button" bindtap="navigateToImport">导入配方</button>
+    </view>
+  </view>
+
+  <view wx:elif="{{visibleCocktails.length === 0}}" class="empty-state">
+    <text class="empty-mark">⌕</text>
+    <text class="empty-title">未找到自定义配方</text>
+    <text class="empty-copy">换一个关键词，或清除搜索后查看全部自定义配方。</text>
+    <button class="primary-button single" bindtap="clearSearch">清除搜索</button>
+  </view>
+
+  <view wx:else class="custom-list {{isManaging ? 'manage-mode' : ''}}">
+    <view
+      wx:for="{{visibleCocktails}}"
+      wx:key="id"
+      class="custom-card {{item.isSelected ? 'selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onItemTap"
+    >
+      <view wx:if="{{isManaging}}" class="check-box {{item.isSelected ? 'checked' : ''}}"></view>
+
+      <view class="card-symbol">
+        <text class="card-emoji">{{item.emoji || '🍸'}}</text>
+      </view>
+
+      <view class="card-content">
+        <view class="card-title-row">
+          <text class="card-name">{{item.name}}</text>
+          <text class="card-category">{{item.category}}</text>
+        </view>
+        <text class="card-desc">{{item.description}}</text>
+        <view class="card-meta">
+          <text>{{item.difficulty}}</text>
+          <text>{{item.time}}</text>
+          <text>{{item.ingredientCount}} 种成分</text>
+        </view>
+        <view class="card-footer">
+          <text class="updated-text">最近修改 {{item.updatedAtText}}</text>
+          <text wx:if="{{item.ingredientsPreview}}" class="preview-text">{{item.ingredientsPreview}}</text>
+        </view>
+      </view>
+
+      <view
+        wx:if="{{!isManaging}}"
+        class="more-button"
+        data-id="{{item.id}}"
+        catchtap="openMorePanel"
+      >
+        <text>•••</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{isManaging && visibleCocktails.length}}" class="batch-dock">
+    <text class="batch-text">已选 {{selectedCount}} 条</text>
+    <button class="batch-delete" bindtap="confirmBatchDelete">删除所选</button>
+  </view>
+
+  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel"></view>
+  <view wx:if="{{showMorePanel}}" class="more-sheet">
+    <view class="sheet-handle"></view>
+    <text class="sheet-title">{{activeCocktail.name}}</text>
+    <button class="sheet-action" bindtap="editActiveCocktail">编辑配方</button>
+    <button class="sheet-action danger" bindtap="deleteActiveCocktail">删除配方</button>
+    <button class="sheet-cancel" bindtap="closeMorePanel">取消</button>
+  </view>
+</view>

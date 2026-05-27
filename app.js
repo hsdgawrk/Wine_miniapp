@@ -336,6 +336,39 @@ App({
     }
   },
 
+  updateCustomCocktail(id, cocktailData) {
+    try {
+      const cocktail = this.cocktailLibrary.updateCustomCocktail(id, cocktailData);
+      this.globalData.cocktails = this.cocktailLibrary.listCocktails();
+      return cocktail;
+    } catch (error) {
+      this.handleError(error, '编辑配方');
+      return null;
+    }
+  },
+
+  deleteCustomCocktail(id) {
+    try {
+      const deleted = this.cocktailLibrary.deleteCustomCocktail(id);
+      this.globalData.cocktails = this.cocktailLibrary.listCocktails();
+      return deleted;
+    } catch (error) {
+      this.handleError(error, '删除配方');
+      return false;
+    }
+  },
+
+  deleteCustomCocktails(ids) {
+    try {
+      const deletedCount = this.cocktailLibrary.deleteCustomCocktails(ids);
+      this.globalData.cocktails = this.cocktailLibrary.listCocktails();
+      return deletedCount;
+    } catch (error) {
+      this.handleError(error, '删除配方');
+      return 0;
+    }
+  },
+
   /**
    * 设置加载状态
    * @param {boolean} loading 是否加载中

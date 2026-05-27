@@ -3,8 +3,9 @@
     "pages/index/index",
     "pages/cocktail-detail/cocktail-detail",
     "pages/steps/steps",
-    "pages/add-cocktail/add-cocktail",
-    "pages/share/share"
+    "pages/custom-cocktails/custom-cocktails",
+    "pages/edit-cocktail/edit-cocktail",
+    "pages/import-export/import-export"
   ],
   "window": {
     "navigationBarTitleText": "调酒配方",
@@ -16,29 +17,6 @@
     "backgroundColorBottom": "#12110f",
     "enablePullDownRefresh": false,
     "onReachBottomDistance": 50
-  },
-  "tabBar": {
-    "custom": true,
-    "color": "#8f8880",
-    "selectedColor": "#d7ff68",
-    "backgroundColor": "#141311",
-    "borderStyle": "black",
-    "position": "bottom",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/add-cocktail/add-cocktail",
-        "text": "添加"
-      }
-    ]
-  },
-  "permission": {
-    "scope.userLocation": {
-      "desc": "您的位置信息将用于获取当地调酒师推荐"
-    }
   },
   "requiredBackgroundModes": [],
   "networkTimeout": {

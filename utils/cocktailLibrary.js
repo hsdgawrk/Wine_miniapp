@@ -1,3 +1,6 @@
+const cocktailDraft = require('./cocktailDraft');
+const cocktailTransfer = require('./cocktailTransfer');
+
 const CUSTOM_COCKTAILS_KEY = 'customCocktails';
 
 const builtInCocktails = [
@@ -67,7 +70,7 @@ const builtInCocktails = [
     emoji: '🧊',
     category: '烈酒',
     description: '多种烈酒的完美调和，看似清淡实则浓烈，喝酒人的挑战',
-    history: '长岛冰茶混合多种基酒，以类似冰茶的外观和强烈酒体形成反差。',
+    history: '长岛冰茶混合多种烈酒，以类似冰茶的外观和强烈酒体形成反差。',
     difficulty: '困难',
     time: '8分钟',
     popularity: 85,
@@ -236,8 +239,12 @@ function createCocktailLibrary(options = {}) {
   let cocktails = mergeCocktails(builtInCocktails, customCocktails);
 
   function init() {
-    customCocktails = readCustomCocktails(storageAdapter);
+    const result = readCustomCocktails(storageAdapter, now);
+    customCocktails = result.cocktails;
     cocktails = mergeCocktails(builtInCocktails, customCocktails);
+    if (result.changed) {
+      storageAdapter.setCustomCocktails(customCocktails.map(cloneCocktail));
+    }
     return listCocktails();
   }
 
@@ -245,25 +252,20 @@ function createCocktailLibrary(options = {}) {
     return cocktails.map(cloneCocktail);
   }
 
+  function listCustomCocktails() {
+    return customCocktails.map(cloneCocktail);
+  }
+
+  function countCustomCocktails() {
+    return customCocktails.length;
+  }
+
   function searchCocktails(query) {
-    const trimmedQuery = String(query || '').trim().toLowerCase();
-    if (!trimmedQuery) {
-      return listCocktails();
-    }
+    return searchCollection(cocktails, query).map(cloneCocktail);
+  }
 
-    return cocktails
-      .filter((cocktail) => {
-        const searchableText = [
-          cocktail.name,
-          cocktail.description,
-          cocktail.difficulty,
-          cocktail.category,
-          ...(cocktail.ingredients || [])
-        ].join(' ').toLowerCase();
-
-        return searchableText.includes(trimmedQuery);
-      })
-      .map(cloneCocktail);
+  function searchCustomCocktails(query) {
+    return searchCollection(customCocktails, query).map(cloneCocktail);
   }
 
   function getCocktailById(id) {
@@ -273,6 +275,16 @@ function createCocktailLibrary(options = {}) {
     }
 
     const cocktail = cocktails.find((item) => normalizeId(item.id) === normalizedId);
+    return cocktail ? cloneCocktail(cocktail) : null;
+  }
+
+  function getCustomCocktailById(id) {
+    const normalizedId = normalizeId(id);
+    if (!normalizedId) {
+      return null;
+    }
+
+    const cocktail = customCocktails.find((item) => normalizeId(item.id) === normalizedId);
     return cocktail ? cloneCocktail(cocktail) : null;
   }
 
@@ -295,7 +307,7 @@ function createCocktailLibrary(options = {}) {
     const steps = getCocktailSteps({ id: cocktail.id, name: cocktail.name });
     return {
       ...cocktail,
-      history: cocktail.history || buildDefaultHistory(cocktail),
+      history: cocktail.source === 'built-in' ? (cocktail.history || buildDefaultHistory(cocktail)) : '',
       steps
     };
   }
@@ -304,6 +316,10 @@ function createCocktailLibrary(options = {}) {
     const cocktail = getCocktailById(params.id) || getCocktailByName(params.name);
     if (!cocktail) {
       return buildFallbackSteps('鸡尾酒');
+    }
+
+    if (cocktail.source === 'custom') {
+      return normalizeSteps(cocktail.steps || []);
     }
 
     const sourceSteps = cocktail.steps && cocktail.steps.length
@@ -336,20 +352,158 @@ function createCocktailLibrary(options = {}) {
   }
 
   function saveDraft(draft) {
-    const createdAt = draft.createdAt || now().toISOString();
+    const validation = cocktailDraft.validateDraft(draftToFormData(draft), {
+      existingCocktails: cocktails
+    });
+    if (!validation.isValid) {
+      throw new Error(validation.message);
+    }
+
+    const createdAt = now().toISOString();
     const cocktail = normalizeCocktail({
-      ...draft,
-      id: draft.id || createId(createdAt, draft),
+      ...validation.draft,
+      id: createId(createdAt, validation.draft),
       createdAt,
+      updatedAt: createdAt,
       source: 'custom',
-      popularity: normalizePopularity(draft.popularity, draft.name)
+      popularity: normalizePopularity(validation.draft.popularity, validation.draft.name)
     });
 
     customCocktails = upsertCocktail(customCocktails, cocktail);
-    cocktails = mergeCocktails(builtInCocktails, customCocktails);
-    storageAdapter.setCustomCocktails(customCocktails.map(cloneCocktail));
+    persistCustomCocktails();
 
     return cloneCocktail(cocktail);
+  }
+
+  function updateCustomCocktail(id, draft) {
+    const existing = getCustomCocktailById(id);
+    if (!existing) {
+      throw cocktailTransfer.createTransferError(cocktailTransfer.ERROR_CODES.COCKTAIL_NOT_FOUND);
+    }
+
+    const validation = cocktailDraft.validateDraft(draftToFormData(draft), {
+      checkNameConflict: false
+    });
+    if (!validation.isValid) {
+      throw new Error(validation.message);
+    }
+
+    const hasChanged = hasCustomContentChanged(existing, validation.draft);
+    if (!hasChanged) {
+      return cloneCocktail(existing);
+    }
+
+    if (cocktailDraft.findNameConflict(validation.draft.name, cocktails, existing.id)) {
+      throw new Error('配方名称重复，请修改名称后再保存');
+    }
+
+    const updatedAt = now().toISOString();
+    const cocktail = normalizeCocktail({
+      ...existing,
+      ...validation.draft,
+      id: existing.id,
+      createdAt: existing.createdAt || updatedAt,
+      updatedAt,
+      source: 'custom',
+      history: '',
+      popularity: normalizePopularity(existing.popularity, validation.draft.name)
+    });
+
+    customCocktails = upsertCocktail(customCocktails, cocktail);
+    persistCustomCocktails();
+
+    return cloneCocktail(cocktail);
+  }
+
+  function deleteCustomCocktail(id) {
+    const normalizedId = normalizeId(id);
+    const beforeLength = customCocktails.length;
+    customCocktails = customCocktails.filter((cocktail) => normalizeId(cocktail.id) !== normalizedId);
+    const deleted = customCocktails.length !== beforeLength;
+    if (deleted) {
+      persistCustomCocktails();
+    }
+    return deleted;
+  }
+
+  function deleteCustomCocktails(ids = []) {
+    const idMap = ids.reduce((map, id) => {
+      map[normalizeId(id)] = true;
+      return map;
+    }, {});
+    const beforeLength = customCocktails.length;
+    customCocktails = customCocktails.filter((cocktail) => !idMap[normalizeId(cocktail.id)]);
+    const deletedCount = beforeLength - customCocktails.length;
+    if (deletedCount > 0) {
+      persistCustomCocktails();
+    }
+    return deletedCount;
+  }
+
+  function createImportPreview(text) {
+    const importedDraft = cocktailTransfer.parseImportCode(text);
+    return cocktailTransfer.buildImportPreview(importedDraft, cocktails);
+  }
+
+  function confirmImport(importPreview, targetName) {
+    if (!importPreview || !importPreview.cocktail) {
+      throw cocktailTransfer.createTransferError(cocktailTransfer.ERROR_CODES.IMPORT_CONTENT_INVALID);
+    }
+
+    const normalizedName = cocktailTransfer.validateImportTargetName(targetName, cocktails);
+    const createdAt = now().toISOString();
+    const draft = {
+      ...importPreview.cocktail,
+      name: normalizedName,
+      description: importPreview.cocktail.description || cocktailDraft.DEFAULT_DESCRIPTION,
+      time: importPreview.cocktail.time || cocktailDraft.DEFAULT_TIME,
+      emoji: cocktailDraft.EMOJI_OPTIONS[0],
+      history: ''
+    };
+    const validation = cocktailDraft.validateCocktail(draft, {
+      existingCocktails: cocktails
+    });
+    if (!validation.isValid) {
+      throw cocktailTransfer.createTransferError(cocktailTransfer.ERROR_CODES.IMPORT_CONTENT_INVALID);
+    }
+
+    const cocktail = normalizeCocktail({
+      ...validation.draft,
+      id: createId(createdAt, validation.draft),
+      createdAt,
+      updatedAt: createdAt,
+      source: 'custom',
+      emoji: cocktailDraft.EMOJI_OPTIONS[0],
+      popularity: normalizePopularity(undefined, validation.draft.name)
+    });
+
+    customCocktails = upsertCocktail(customCocktails, cocktail);
+    persistCustomCocktails();
+
+    return cloneCocktail(cocktail);
+  }
+
+  function exportCustomCocktail(id) {
+    const cocktail = getCocktailById(id);
+    if (!cocktail) {
+      throw cocktailTransfer.createTransferError(cocktailTransfer.ERROR_CODES.COCKTAIL_NOT_FOUND);
+    }
+    if (cocktail.source !== 'custom') {
+      throw cocktailTransfer.createTransferError(cocktailTransfer.ERROR_CODES.EXPORT_NOT_CUSTOM);
+    }
+
+    const validation = cocktailDraft.validateCocktail(cocktail, {
+      existingCocktails: cocktails,
+      currentId: cocktail.id
+    });
+    if (!validation.isValid) {
+      throw cocktailTransfer.createTransferError(cocktailTransfer.ERROR_CODES.EXPORT_CONTENT_INVALID, {
+        errors: validation.errors,
+        message: validation.message
+      });
+    }
+
+    return cocktailTransfer.createImportCode(validation.draft);
   }
 
   function createSharePayload(params = {}) {
@@ -372,35 +526,101 @@ function createCocktailLibrary(options = {}) {
     };
   }
 
+  function persistCustomCocktails() {
+    cocktails = mergeCocktails(builtInCocktails, customCocktails);
+    storageAdapter.setCustomCocktails(customCocktails.map(cloneCocktail));
+  }
+
   return {
     init,
     listCocktails,
+    listCustomCocktails,
+    countCustomCocktails,
     searchCocktails,
+    searchCustomCocktails,
     getCocktailById,
+    getCustomCocktailById,
     getCocktailByName,
     getCocktailDetail,
     getCocktailSteps,
     getDailyCocktail,
     getCurrentDateInfo,
     saveDraft,
+    updateCustomCocktail,
+    deleteCustomCocktail,
+    deleteCustomCocktails,
+    createImportPreview,
+    confirmImport,
+    exportCustomCocktail,
     createSharePayload
   };
 }
 
-function readCustomCocktails(storageAdapter) {
+function readCustomCocktails(storageAdapter, now) {
   try {
     const storedCocktails = storageAdapter.getCustomCocktails();
     if (!Array.isArray(storedCocktails)) {
-      return [];
+      return {
+        cocktails: [],
+        changed: storedCocktails !== undefined
+      };
     }
 
-    return storedCocktails
-      .map(normalizeCocktail)
+    let changed = false;
+    const cocktails = storedCocktails
+      .map((cocktail) => {
+        const result = migrateCustomCocktail(cocktail, now);
+        changed = changed || result.changed;
+        return result.cocktail;
+      })
       .filter((cocktail) => cocktail.name && !isBuiltInCocktail(cocktail));
+
+    return {
+      cocktails,
+      changed: changed || cocktails.length !== storedCocktails.length
+    };
   } catch (error) {
     console.warn('Failed to read custom cocktails:', error);
-    return [];
+    return {
+      cocktails: [],
+      changed: false
+    };
   }
+}
+
+function migrateCustomCocktail(cocktail, now) {
+  const normalized = normalizeCocktail({
+    ...cocktail,
+    source: 'custom'
+  });
+  let changed = false;
+  const timestamp = now().toISOString();
+
+  if (!normalized.description) {
+    normalized.description = cocktailDraft.DEFAULT_DESCRIPTION;
+    changed = true;
+  }
+  if (!normalized.time) {
+    normalized.time = cocktailDraft.DEFAULT_TIME;
+    changed = true;
+  }
+  if (!normalized.createdAt) {
+    normalized.createdAt = normalized.updatedAt || timestamp;
+    changed = true;
+  }
+  if (!normalized.updatedAt) {
+    normalized.updatedAt = normalized.createdAt || timestamp;
+    changed = true;
+  }
+  if (normalized.history) {
+    normalized.history = '';
+    changed = true;
+  }
+
+  return {
+    cocktail: normalized,
+    changed
+  };
 }
 
 function isBuiltInCocktail(cocktail) {
@@ -422,24 +642,25 @@ function mergeCocktails(baseCocktails, customItems) {
 }
 
 function normalizeCocktail(cocktail) {
-  const name = String(cocktail.name || '').trim();
+  const name = cocktailDraft.normalizeText(cocktail.name);
   const ingredients = Array.isArray(cocktail.ingredients)
-    ? cocktail.ingredients.map((item) => String(item || '').trim()).filter(Boolean)
+    ? cocktail.ingredients.map((item) => cocktailDraft.normalizeText(item))
     : [];
 
   return {
     id: normalizeId(cocktail.id) || createCustomId(cocktail),
     name,
-    emoji: cocktail.emoji || '🍸',
-    category: cocktail.category || '经典',
-    description: String(cocktail.description || '').trim(),
-    history: String(cocktail.history || '').trim(),
-    difficulty: cocktail.difficulty || '简单',
-    time: cocktail.time || '未设置',
+    emoji: cocktail.emoji || cocktailDraft.EMOJI_OPTIONS[0],
+    category: cocktailDraft.normalizeText(cocktail.category) || cocktailDraft.CATEGORY_OPTIONS[0],
+    description: cocktailDraft.normalizeText(cocktail.description),
+    history: cocktailDraft.normalizeText(cocktail.history),
+    difficulty: cocktail.difficulty || cocktailDraft.DIFFICULTY_OPTIONS[0],
+    time: cocktailDraft.normalizeText(cocktail.time) || cocktailDraft.DEFAULT_TIME,
     popularity: normalizePopularity(cocktail.popularity, name),
     ingredients,
     steps: normalizeSteps(cocktail.steps || []),
     createdAt: cocktail.createdAt || '',
+    updatedAt: cocktail.updatedAt || '',
     source: cocktail.source || 'custom'
   };
 }
@@ -450,15 +671,13 @@ function normalizeSteps(steps) {
   }
 
   const animations = ['fadeIn', 'slideIn', 'zoomIn'];
-  return steps
-    .map((step, index) => ({
-      number: index + 1,
-      instruction: String(step.instruction || '').trim(),
-      tips: step.tips || '',
-      estimatedTime: step.estimatedTime || '',
-      animation: step.animation || animations[index % animations.length]
-    }))
-    .filter((step) => step.instruction);
+  return steps.map((step, index) => ({
+    number: index + 1,
+    instruction: cocktailDraft.normalizeText(step && step.instruction),
+    tips: step && step.tips ? step.tips : '',
+    estimatedTime: step && step.estimatedTime ? step.estimatedTime : '',
+    animation: step && step.animation ? step.animation : animations[index % animations.length]
+  })).filter((step) => step.instruction);
 }
 
 function buildFallbackSteps(cocktailName, ingredients = []) {
@@ -504,6 +723,61 @@ function upsertCocktail(items, cocktail) {
     nextItems.push(cloneCocktail(cocktail));
   }
   return nextItems;
+}
+
+function searchCollection(items, query) {
+  const trimmedQuery = String(query || '').trim().toLowerCase();
+  if (!trimmedQuery) {
+    return items;
+  }
+
+  return items.filter((cocktail) => {
+    const searchableText = [
+      cocktail.name,
+      cocktail.description,
+      cocktail.difficulty,
+      cocktail.category,
+      ...(cocktail.ingredients || [])
+    ].join(' ').toLowerCase();
+
+    return searchableText.includes(trimmedQuery);
+  });
+}
+
+function draftToFormData(draft = {}) {
+  if (Object.prototype.hasOwnProperty.call(draft, 'cocktailName')) {
+    return draft;
+  }
+
+  return {
+    cocktailName: draft.name,
+    cocktailDescription: draft.description === cocktailDraft.DEFAULT_DESCRIPTION ? '' : draft.description,
+    difficulty: draft.difficulty,
+    category: draft.category,
+    emoji: draft.emoji,
+    time: draft.time,
+    ingredients: draft.ingredients,
+    steps: draft.steps
+  };
+}
+
+function hasCustomContentChanged(existing, draft) {
+  const existingComparable = toComparableCustomContent(existing);
+  const draftComparable = toComparableCustomContent(draft);
+  return JSON.stringify(existingComparable) !== JSON.stringify(draftComparable);
+}
+
+function toComparableCustomContent(cocktail = {}) {
+  return {
+    name: cocktailDraft.normalizeText(cocktail.name),
+    description: cocktailDraft.normalizeText(cocktail.description) || cocktailDraft.DEFAULT_DESCRIPTION,
+    category: cocktailDraft.normalizeText(cocktail.category),
+    difficulty: cocktail.difficulty || '',
+    time: cocktailDraft.normalizeText(cocktail.time) || cocktailDraft.DEFAULT_TIME,
+    emoji: cocktail.emoji || cocktailDraft.EMOJI_OPTIONS[0],
+    ingredients: (cocktail.ingredients || []).map((item) => cocktailDraft.normalizeText(item)),
+    steps: (cocktail.steps || []).map((step) => cocktailDraft.normalizeText(step && step.instruction))
+  };
 }
 
 function cloneCocktail(cocktail) {
@@ -554,7 +828,7 @@ function toDateKey(date) {
 function hashCode(value) {
   const text = String(value || '');
   let hash = 0;
-  for (let i = 0; i < text.length; i++) {
+  for (let i = 0; i < text.length; i += 1) {
     hash = ((hash << 5) - hash) + text.charCodeAt(i);
     hash |= 0;
   }

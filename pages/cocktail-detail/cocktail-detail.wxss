@@ -255,6 +255,96 @@
   transform: scale(0.98);
 }
 
+.sheet-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.56);
+}
+
+.more-sheet {
+  position: fixed;
+  left: 20rpx;
+  right: 20rpx;
+  bottom: 20rpx;
+  z-index: 41;
+  padding: 18rpx 18rpx 24rpx;
+  box-sizing: border-box;
+  border-radius: 18rpx;
+  background:
+    linear-gradient(135deg, rgba(215, 255, 104, 0.08), transparent 48%),
+    #1d1a16;
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 -24rpx 80rpx rgba(0, 0, 0, 0.44);
+}
+
+.sheet-handle {
+  width: 82rpx;
+  height: 8rpx;
+  margin: 0 auto 24rpx;
+  border-radius: 999rpx;
+  background: rgba(247, 241, 232, 0.22);
+}
+
+.sheet-title {
+  display: block;
+  color: #fff8ee;
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1.2;
+  margin: 0 10rpx 18rpx;
+}
+
+.sheet-action,
+.sheet-cancel {
+  width: 100%;
+  height: 86rpx;
+  line-height: 86rpx;
+  margin: 0 0 12rpx;
+  padding: 0;
+  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff8ee;
+  font-size: 27rpx;
+  font-weight: 900;
+}
+
+.sheet-action.danger {
+  color: #ff7a66;
+  background: rgba(255, 122, 102, 0.12);
+}
+
+.sheet-cancel {
+  margin-bottom: 0;
+  background: #d7ff68;
+  color: #15130f;
+}
+
+.sheet-empty {
+  padding: 26rpx 18rpx 30rpx;
+  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.07);
+  margin-bottom: 12rpx;
+}
+
+.sheet-empty-title {
+  display: block;
+  color: #fff8ee;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.sheet-empty-copy {
+  display: block;
+  margin-top: 10rpx;
+  color: rgba(247, 241, 232, 0.62);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
 .error-page {
   padding-top: 88rpx;
 }

@@ -17,11 +17,11 @@
     </view>
     <view class="meta-cell">
       <text class="meta-label">时间</text>
-      <text class="meta-value">{{cocktail.time || '按需'}}</text>
+      <text class="meta-value">{{cocktail.time || '未设置'}}</text>
     </view>
     <view class="meta-cell">
-      <text class="meta-label">成分</text>
-      <text class="meta-value">{{cocktail.ingredients ? cocktail.ingredients.length : 0}}种</text>
+      <text class="meta-label">来源</text>
+      <text class="meta-value">{{cocktail.source === 'custom' ? '自定义' : '内置'}}</text>
     </view>
   </view>
 
@@ -43,15 +43,34 @@
     </view>
   </view>
 
-  <view class="detail-section">
+  <view class="detail-section" wx:if="{{cocktail.source === 'built-in' && cocktail.history}}">
     <text class="section-kicker">ORIGIN</text>
     <text class="section-title">历史背景</text>
-    <text class="section-body">{{cocktail.history || '暂无历史背景记录。'}}</text>
+    <text class="section-body">{{cocktail.history}}</text>
   </view>
 
   <view class="action-dock">
     <button class="primary-button" bindtap="navigateToSteps">开始制作</button>
-    <button class="secondary-button" bindtap="navigateToShare">分享配方</button>
+    <button class="secondary-button" bindtap="openMorePanel">更多</button>
+  </view>
+
+  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel"></view>
+  <view wx:if="{{showMorePanel}}" class="more-sheet">
+    <view class="sheet-handle"></view>
+    <text class="sheet-title">{{cocktail.name}}</text>
+
+    <block wx:if="{{cocktail.source === 'custom'}}">
+      <button class="sheet-action" bindtap="navigateToEdit">编辑配方</button>
+      <button class="sheet-action" bindtap="navigateToExport">导出配方导入码</button>
+      <button class="sheet-action danger" bindtap="confirmDelete">删除自定义配方</button>
+    </block>
+
+    <view wx:else class="sheet-empty">
+      <text class="sheet-empty-title">内置配方</text>
+      <text class="sheet-empty-copy">内置配方当前不提供编辑、删除或导出操作。</text>
+    </view>
+
+    <button class="sheet-cancel" bindtap="closeMorePanel">取消</button>
   </view>
 </view>
 

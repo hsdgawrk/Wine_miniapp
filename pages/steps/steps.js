@@ -123,17 +123,5 @@ Page({
     wx.reLaunch({
       url: '/pages/index/index'
     });
-  },
-
-  onShareAppMessage() {
-    const query = this.data.cocktailId
-      ? `id=${encodeURIComponent(this.data.cocktailId)}&name=${encodeURIComponent(this.data.cocktailName)}`
-      : `name=${encodeURIComponent(this.data.cocktailName)}`;
-
-    return {
-      title: `我正在制作${this.data.cocktailName}`,
-      path: `/pages/cocktail-detail/cocktail-detail?${query}`,
-      imageUrl: ''
-    };
   }
 });

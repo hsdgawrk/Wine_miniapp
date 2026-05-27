@@ -1,6 +1,7 @@
 const MAIN_TABS = {
   HOME: 'home',
-  ADD: 'add'
+  ADD: 'add',
+  MINE: 'mine'
 };
 
 const TAB_DEFINITIONS = [
@@ -13,6 +14,11 @@ const TAB_DEFINITIONS = [
     tab: MAIN_TABS.ADD,
     selectedIndex: 1,
     title: '添加配方'
+  },
+  {
+    tab: MAIN_TABS.MINE,
+    selectedIndex: 2,
+    title: '我的配方'
   }
 ];
 
@@ -80,7 +86,13 @@ function createPendingMainTabStore(globalData) {
 }
 
 function normalizeMainTab(tab) {
-  return tab === MAIN_TABS.ADD ? MAIN_TABS.ADD : MAIN_TABS.HOME;
+  if (tab === MAIN_TABS.ADD) {
+    return MAIN_TABS.ADD;
+  }
+  if (tab === MAIN_TABS.MINE) {
+    return MAIN_TABS.MINE;
+  }
+  return MAIN_TABS.HOME;
 }
 
 function getSelectedIndex(tab) {
