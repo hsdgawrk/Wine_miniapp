@@ -8,7 +8,7 @@ const TAB_DEFINITIONS = [
   {
     tab: MAIN_TABS.HOME,
     selectedIndex: 0,
-    title: '调酒酒谱'
+    title: '绿蚁来信'
   },
   {
     tab: MAIN_TABS.ADD,
