@@ -1,9 +1,17 @@
+const MORE_PANEL_CLOSE_DISTANCE = 64;
+const MORE_PANEL_CLOSE_DURATION = 220;
+const MORE_PANEL_REBOUND_LIMIT = 220;
+
 Page({
   data: {
     cocktail: null,
     steps: [],
     error: null,
-    showMorePanel: false
+    showMorePanel: false,
+    morePanelTranslateY: 0,
+    morePanelMaskOpacity: 1,
+    morePanelDragging: false,
+    morePanelClosing: false
   },
 
   onLoad(options) {
@@ -15,6 +23,10 @@ Page({
     if (this.options) {
       this.loadCocktail(this.options, { silent: true });
     }
+  },
+
+  onUnload() {
+    this.clearMorePanelCloseTimer();
   },
 
   loadCocktail(options = {}, settings = {}) {
@@ -66,22 +78,54 @@ Page({
     if (!this.data.cocktail) {
       return;
     }
+    this.clearMorePanelCloseTimer();
     this.morePanelTouchStartY = 0;
     this.morePanelTouchDeltaY = 0;
-    this.setData({ showMorePanel: true });
+    this.morePanelExitY = this.getMorePanelExitY();
+    this.setData({
+      showMorePanel: true,
+      morePanelTranslateY: this.morePanelExitY,
+      morePanelMaskOpacity: 0,
+      morePanelDragging: false,
+      morePanelClosing: false
+    });
+
+    wx.nextTick(() => {
+      if (!this.data.showMorePanel) {
+        return;
+      }
+
+      this.setData({
+        morePanelTranslateY: 0,
+        morePanelMaskOpacity: 1
+      });
+    });
   },
 
   closeMorePanel() {
-    this.resetMorePanelTouch();
-    this.setData({ showMorePanel: false });
+    if (!this.data.showMorePanel) {
+      return;
+    }
+
+    this.animateMorePanelClose();
   },
 
   noopTouchMove() {},
 
   onMorePanelTouchStart(e) {
+    if (this.data.morePanelClosing) {
+      return;
+    }
+
     const touch = e.touches && e.touches[0];
+    this.clearMorePanelCloseTimer();
     this.morePanelTouchStartY = touch ? touch.clientY : 0;
     this.morePanelTouchDeltaY = 0;
+    this.morePanelTouchStartTime = Date.now();
+    this.setData({
+      morePanelDragging: true,
+      morePanelClosing: false
+    });
   },
 
   onMorePanelTouchMove(e) {
@@ -90,12 +134,21 @@ Page({
       return;
     }
 
-    this.morePanelTouchDeltaY = touch.clientY - this.morePanelTouchStartY;
+    const dragY = this.getMorePanelDragY(touch.clientY - this.morePanelTouchStartY);
+    this.morePanelTouchDeltaY = dragY;
+
+    this.setData({
+      morePanelTranslateY: dragY,
+      morePanelMaskOpacity: this.getMorePanelMaskOpacity(dragY)
+    });
   },
 
   onMorePanelTouchEnd() {
-    if (this.morePanelTouchDeltaY > 56) {
-      this.closeMorePanel();
+    const dragDuration = Math.max(1, Date.now() - (this.morePanelTouchStartTime || Date.now()));
+    const dragVelocity = this.morePanelTouchDeltaY / dragDuration;
+
+    if (this.morePanelTouchDeltaY > MORE_PANEL_CLOSE_DISTANCE || dragVelocity > 0.52) {
+      this.animateMorePanelClose();
       return;
     }
 
@@ -105,6 +158,82 @@ Page({
   resetMorePanelTouch() {
     this.morePanelTouchStartY = 0;
     this.morePanelTouchDeltaY = 0;
+    this.morePanelTouchStartTime = 0;
+
+    if (this.data.showMorePanel && this.data.morePanelDragging) {
+      this.setData({
+        morePanelTranslateY: 0,
+        morePanelMaskOpacity: 1,
+        morePanelDragging: false,
+        morePanelClosing: false
+      });
+    }
+  },
+
+  animateMorePanelClose() {
+    this.clearMorePanelCloseTimer();
+    this.morePanelTouchStartY = 0;
+    this.morePanelTouchDeltaY = 0;
+    this.morePanelTouchStartTime = 0;
+
+    this.setData({
+      morePanelTranslateY: this.getMorePanelExitY(),
+      morePanelMaskOpacity: 0,
+      morePanelDragging: false,
+      morePanelClosing: true
+    });
+
+    this.morePanelCloseTimer = setTimeout(() => {
+      this.morePanelCloseTimer = null;
+      this.setData({
+        showMorePanel: false,
+        morePanelTranslateY: 0,
+        morePanelMaskOpacity: 1,
+        morePanelDragging: false,
+        morePanelClosing: false
+      });
+    }, MORE_PANEL_CLOSE_DURATION);
+  },
+
+  clearMorePanelCloseTimer() {
+    if (!this.morePanelCloseTimer) {
+      return;
+    }
+
+    clearTimeout(this.morePanelCloseTimer);
+    this.morePanelCloseTimer = null;
+  },
+
+  getMorePanelDragY(deltaY) {
+    if (deltaY <= 0) {
+      return 0;
+    }
+
+    if (deltaY <= MORE_PANEL_REBOUND_LIMIT) {
+      return Math.round(deltaY);
+    }
+
+    return Math.round(MORE_PANEL_REBOUND_LIMIT + (deltaY - MORE_PANEL_REBOUND_LIMIT) * 0.28);
+  },
+
+  getMorePanelMaskOpacity(dragY) {
+    return Math.max(0.24, 1 - dragY / 280).toFixed(2);
+  },
+
+  getMorePanelExitY() {
+    if (this.morePanelExitY) {
+      return this.morePanelExitY;
+    }
+
+    const fallbackExitY = 520;
+    try {
+      const windowInfo = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+      this.morePanelExitY = Math.max(360, Math.round((windowInfo.windowHeight || fallbackExitY) * 0.62));
+    } catch (error) {
+      this.morePanelExitY = fallbackExitY;
+    }
+
+    return this.morePanelExitY;
   },
 
   navigateToEdit() {

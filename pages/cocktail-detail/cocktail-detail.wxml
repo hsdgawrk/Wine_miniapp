@@ -55,10 +55,17 @@
     <button class="secondary-button" bindtap="openMorePanel">更多</button>
   </view>
 
-  <view wx:if="{{showMorePanel}}" class="sheet-mask" bindtap="closeMorePanel" catchtouchmove="noopTouchMove"></view>
   <view
     wx:if="{{showMorePanel}}"
-    class="more-sheet"
+    class="sheet-mask {{morePanelDragging ? 'is-dragging' : ''}} {{morePanelClosing ? 'is-closing' : ''}}"
+    style="opacity: {{morePanelMaskOpacity}};"
+    bindtap="closeMorePanel"
+    catchtouchmove="noopTouchMove"
+  ></view>
+  <view
+    wx:if="{{showMorePanel}}"
+    class="more-sheet {{morePanelDragging ? 'is-dragging' : ''}} {{morePanelClosing ? 'is-closing' : ''}}"
+    style="transform: translate3d(0, {{morePanelTranslateY}}px, 0);"
     bindtouchstart="onMorePanelTouchStart"
     catchtouchmove="onMorePanelTouchMove"
     bindtouchend="onMorePanelTouchEnd"
