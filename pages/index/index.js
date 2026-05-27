@@ -10,6 +10,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    activeMainTab: 'home',
+    mainTabTransitionClass: '',
+
     // 每日推荐配方
     randomCocktail: null,
     
@@ -41,7 +44,14 @@ Page({
     
     // 统计信息
     totalCount: 0,
-    filteredCount: 0
+    filteredCount: 0,
+
+    addPreviewIngredients: ['基酒', '酸味', '甜味', '装饰'],
+    addPreviewSteps: [
+      { number: 1, placeholder: '记录备杯、加冰或预冷方式' },
+      { number: 2, placeholder: '记录倒酒顺序、摇和或搅拌方式' },
+      { number: 3, placeholder: '记录过滤、装饰和出杯状态' }
+    ]
   },
 
   /**
@@ -74,12 +84,23 @@ Page({
   onShow() {
     console.log('👀 主页面显示');
 
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 0 });
+    const app = getApp();
+    if (app && typeof app.ensureDarkWindowBackground === 'function') {
+      app.ensureDarkWindowBackground();
     }
-    
+
+    const pendingMainTab = app && app.globalData ? app.globalData.pendingMainTab : '';
+    if (pendingMainTab) {
+      app.globalData.pendingMainTab = '';
+      this.setMainTab(pendingMainTab, { scrollToTop: false });
+    } else {
+      this.syncTabBarSelection(this.data.activeMainTab);
+    }
+
     // 刷新数据（可能在其他页面添加了新配方）
-    this.refreshCocktailData();
+    if ((pendingMainTab || this.data.activeMainTab) === 'home') {
+      this.refreshCocktailData();
+    }
   },
 
   /**
@@ -103,6 +124,10 @@ Page({
     // 清理定时器
     if (this.data.searchDebounceTimer) {
       clearTimeout(this.data.searchDebounceTimer);
+    }
+
+    if (this.mainTabTransitionTimer) {
+      clearTimeout(this.mainTabTransitionTimer);
     }
   },
 
@@ -421,27 +446,61 @@ Page({
    * 导航到添加配方页
    */
   navigateToAddCocktail() {
-    try {
-      console.log('👆 用户点击添加配方');
-      
-      wx.navigateTo({
-        url: '/pages/add-cocktail/add-cocktail',
-        success: () => {
-          console.log('✅ 导航到添加页面成功');
-        },
-        fail: (error) => {
-          console.error('❌ 导航到添加页面失败:', error);
-          wx.showToast({
-            title: '页面跳转失败',
-            icon: 'none',
-            duration: 2000
-          });
-        }
-      });
+    this.setMainTab('add');
+  },
 
-    } catch (error) {
-      this.handlePageError(error, '打开添加页面');
+  switchMainTab(e) {
+    const tab = e.currentTarget.dataset.tab || 'home';
+    this.setMainTab(tab);
+  },
+
+  setMainTab(tab, options = {}) {
+    const targetTab = tab === 'add' ? 'add' : 'home';
+    const shouldScrollToTop = options.scrollToTop !== false;
+
+    this.syncTabBarSelection(targetTab);
+
+    if (targetTab === this.data.activeMainTab) {
+      return;
     }
+
+    if (this.mainTabTransitionTimer) {
+      clearTimeout(this.mainTabTransitionTimer);
+    }
+
+    this.setData({
+      activeMainTab: targetTab,
+      mainTabTransitionClass: 'main-tab-enter'
+    });
+
+    wx.setNavigationBarTitle({
+      title: targetTab === 'add' ? '添加配方' : '调酒配方'
+    });
+
+    if (targetTab === 'home') {
+      this.refreshCocktailData();
+    }
+
+    if (shouldScrollToTop && typeof wx.pageScrollTo === 'function') {
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 120
+      });
+    }
+
+    this.mainTabTransitionTimer = setTimeout(() => {
+      this.setData({ mainTabTransitionClass: '' });
+    }, 260);
+  },
+
+  syncTabBarSelection(tab = this.data.activeMainTab) {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: tab === 'add' ? 1 : 0 });
+    }
+  },
+
+  returnHomeTab() {
+    this.setMainTab('home');
   },
 
   /**

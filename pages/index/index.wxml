@@ -1,4 +1,4 @@
-<view class="container index-page fade-in">
+<view class="container index-page">
   <view wx:if="{{isLoading}}" class="loading">
     <loading class="loading-spinner" type="dot-gray" />
     <text class="loading-text">加载中...</text>
@@ -11,6 +11,7 @@
   </view>
 
   <block wx:else>
+    <view wx:if="{{activeMainTab === 'home'}}" class="main-tab-panel {{mainTabTransitionClass}}">
     <view class="top-strip">
       <view>
         <text class="eyebrow">BAR INDEX</text>
@@ -146,6 +147,142 @@
           <text class="no-more-text">已显示全部配方</text>
         </view>
       </block>
+    </view>
+    </view>
+
+    <view wx:elif="{{activeMainTab === 'add'}}" class="main-tab-panel add-cocktail-panel {{mainTabTransitionClass}}">
+      <view class="form-header add-preview-header">
+        <view>
+          <text class="eyebrow">NEW RECIPE</text>
+          <text class="form-title">添加新配方</text>
+          <text class="form-subtitle">酒款信息、成分和步骤的录入界面预览</text>
+        </view>
+        <view class="add-preview-symbol">＋</view>
+      </view>
+
+      <view class="form-section">
+        <view class="form-group">
+          <text class="form-label">酒款名称*</text>
+          <input
+            class="form-input preview-input"
+            placeholder="请输入酒名"
+            placeholder-class="preview-placeholder"
+            maxlength="30"
+            disabled="{{true}}"
+          />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">简介描述*</text>
+          <textarea
+            class="form-input form-textarea preview-input"
+            placeholder="简要描述这款酒的口感、风格或适饮场合"
+            placeholder-class="preview-placeholder"
+            maxlength="100"
+            auto-height="true"
+            disabled="{{true}}"
+          />
+        </view>
+
+        <view class="form-grid">
+          <view class="form-group form-grid-item">
+            <text class="form-label">酒款分类</text>
+            <view class="picker-display preview-picker">
+              <text class="picker-text">经典</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </view>
+
+          <view class="form-group form-grid-item">
+            <text class="form-label">配方图标</text>
+            <view class="picker-display preview-picker">
+              <text class="picker-emoji">🍸</text>
+              <text class="picker-text">鸡尾酒</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="form-grid">
+          <view class="form-group form-grid-item">
+            <text class="form-label">制作难度</text>
+            <view class="picker-display preview-picker">
+              <text class="picker-text">简单</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </view>
+
+          <view class="form-group form-grid-item">
+            <text class="form-label">制作时间</text>
+            <input
+              class="form-input preview-input"
+              placeholder="如：10分钟"
+              placeholder-class="preview-placeholder"
+              maxlength="20"
+              disabled="{{true}}"
+            />
+          </view>
+        </view>
+      </view>
+
+      <view class="form-section">
+        <view class="section-title-row">
+          <text class="form-section-title">配方成分*</text>
+          <text class="section-mini-label">{{addPreviewIngredients.length}} SLOT</text>
+        </view>
+
+        <view class="ingredient-input-group">
+          <input
+            class="ingredient-input preview-input"
+            placeholder="输入成分名称"
+            placeholder-class="preview-placeholder"
+            maxlength="20"
+            disabled="{{true}}"
+          />
+          <button class="add-ingredient-btn is-disabled" disabled="{{true}}">添加</button>
+        </view>
+
+        <view class="ingredients-list">
+          <view
+            class="ingredient-item preview-ingredient"
+            wx:for="{{addPreviewIngredients}}"
+            wx:key="index"
+          >
+            <text class="ingredient-name">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="form-section">
+        <view class="section-title-row">
+          <text class="form-section-title">制作步骤*</text>
+          <text class="section-mini-label">{{addPreviewSteps.length}} STEP</text>
+        </view>
+
+        <block wx:for="{{addPreviewSteps}}" wx:key="number">
+          <view class="step-form-group">
+            <view class="step-header">
+              <text class="step-number">步骤 {{item.number}}</text>
+            </view>
+
+            <textarea
+              class="form-input form-textarea step-input preview-input"
+              placeholder="{{item.placeholder}}"
+              placeholder-class="preview-placeholder"
+              maxlength="200"
+              auto-height="true"
+              disabled="{{true}}"
+            />
+          </view>
+        </block>
+
+        <button class="add-step-button is-disabled" disabled="{{true}}">+ 添加步骤</button>
+      </view>
+
+      <view class="action-buttons">
+        <button class="cancel-button" bindtap="returnHomeTab">取消</button>
+        <button class="save-button is-disabled" disabled="{{true}}">保存配方</button>
+      </view>
     </view>
   </block>
 </view>

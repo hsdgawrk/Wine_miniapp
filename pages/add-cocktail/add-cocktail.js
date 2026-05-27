@@ -18,6 +18,7 @@ Page({
     isLoading: false,
     isSaving: false,
     error: null,
+    isTabEntering: false,
     
     // 选项数据
     difficultyOptions: ['简单', '中等', '困难'],
@@ -46,6 +47,7 @@ Page({
    */
   onReady() {
     console.log('✅ 添加配方页面渲染完成');
+    this.finishTabSwitchLoading();
   },
 
   /**
@@ -54,9 +56,20 @@ Page({
   onShow() {
     console.log('👀 添加配方页面显示');
 
+    const app = getApp();
+    if (app && typeof app.ensureDarkWindowBackground === 'function') {
+      app.ensureDarkWindowBackground();
+    }
+
+    if (app && app.globalData && app.globalData.isTabSwitching) {
+      this.playTabEnterTransition();
+    }
+
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 1 });
     }
+
+    this.finishTabSwitchLoading();
   },
 
   /**
@@ -475,5 +488,20 @@ Page({
       icon: 'none',
       duration: 2000
     });
+  },
+
+  playTabEnterTransition() {
+    this.setData({ isTabEntering: true });
+
+    setTimeout(() => {
+      this.setData({ isTabEntering: false });
+    }, 260);
+  },
+
+  finishTabSwitchLoading() {
+    const app = getApp();
+    if (app && typeof app.finishTabSwitchLoadingAfterPaint === 'function') {
+      app.finishTabSwitchLoadingAfterPaint();
+    }
   }
 });

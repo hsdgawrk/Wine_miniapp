@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container {{isTabEntering ? 'tab-page-enter' : ''}}">
   <!-- 表单标题 -->
   <view class="form-header">
     <text class="form-title">添加新配方</text>

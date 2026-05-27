@@ -3,5 +3,7 @@
   "navigationBarBackgroundColor": "#12110f",
   "navigationBarTextStyle": "white",
   "backgroundColor": "#12110f",
+  "backgroundColorTop": "#12110f",
+  "backgroundColorBottom": "#12110f",
   "backgroundTextStyle": "dark"
 }

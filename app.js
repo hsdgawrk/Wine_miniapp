@@ -22,6 +22,8 @@ const cocktailLibrary = createCocktailLibrary({
   }
 });
 
+const WINDOW_BACKGROUND_COLOR = '#12110f';
+
 App({
   /**
    * 全局数据存储
@@ -48,10 +50,25 @@ App({
     isLoading: false,
     
     // 错误状态管理
-    error: null
+    error: null,
+
+    // 首页内底部视图切换的待处理目标
+    pendingMainTab: ''
   },
 
   cocktailLibrary,
+
+  ensureDarkWindowBackground() {
+    if (typeof wx.setBackgroundColor !== 'function') {
+      return;
+    }
+
+    wx.setBackgroundColor({
+      backgroundColor: WINDOW_BACKGROUND_COLOR,
+      backgroundColorTop: WINDOW_BACKGROUND_COLOR,
+      backgroundColorBottom: WINDOW_BACKGROUND_COLOR
+    });
+  },
 
   /**
    * 应用启动生命周期函数
@@ -64,6 +81,8 @@ App({
         scene: options.scene,
         query: options.query
       });
+
+      this.ensureDarkWindowBackground();
 
       // 检查基础库版本
       this.checkLibVersion();
@@ -92,6 +111,8 @@ App({
    */
   onShow(options) {
     console.log('👋 应用切换到前台', options);
+
+    this.ensureDarkWindowBackground();
     
     // 重置错误状态
     this.globalData.error = null;

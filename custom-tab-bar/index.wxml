@@ -2,10 +2,11 @@
   <cover-view class="tab-panel">
     <cover-view
       wx:for="{{list}}"
-      wx:key="pagePath"
+      wx:key="tab"
       class="tab-item {{selected === index ? 'is-active' : ''}}"
       data-path="{{item.pagePath}}"
       data-index="{{index}}"
+      data-tab="{{item.tab}}"
       bindtap="switchTab"
     >
       <cover-view class="tab-code">{{item.code}}</cover-view>
