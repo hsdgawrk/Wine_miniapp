@@ -1,6 +1,6 @@
 .detail-page {
   min-height: 100vh;
-  padding: 24rpx 24rpx 156rpx;
+  padding: 24rpx 24rpx 286rpx;
   box-sizing: border-box;
   background:
     linear-gradient(135deg, rgba(215, 255, 104, 0.07), transparent 30%),
@@ -196,30 +196,42 @@
 
 .action-dock {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 24rpx;
+  right: 24rpx;
   bottom: 0;
   display: flex;
-  padding: 20rpx 24rpx 30rpx;
-  background: rgba(18, 17, 15, 0.9);
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 18rpx 30rpx;
+  box-sizing: border-box;
+  border-radius: 18rpx 18rpx 0 0;
+  background:
+    linear-gradient(135deg, rgba(255, 248, 238, 0.12), rgba(255, 248, 238, 0.04)),
+    rgba(18, 17, 15, 0.94);
   backdrop-filter: blur(24rpx);
-  border-top: 1rpx solid rgba(255, 255, 255, 0.12);
+  border: 1rpx solid rgba(255, 255, 255, 0.12);
+  border-bottom: 0;
+  box-shadow: 0 -18rpx 54rpx rgba(0, 0, 0, 0.28);
   z-index: 10;
 }
 
 .primary-button,
 .secondary-button {
-  flex: 1;
+  width: 100%;
+  flex: none;
   height: 88rpx;
   line-height: 88rpx;
+  margin: 0;
   padding: 0;
-  border-radius: 16rpx;
+  box-sizing: border-box;
+  border-radius: 12rpx;
   font-size: 28rpx;
   font-weight: 900;
 }
 
-.secondary-button {
-  margin-left: 14rpx;
+.primary-button::after,
+.secondary-button::after {
+  border: 0;
 }
 
 .primary-button {
@@ -229,9 +241,13 @@
 }
 
 .secondary-button {
+  height: 76rpx;
+  line-height: 76rpx;
+  margin-top: 18rpx;
   background: rgba(255, 255, 255, 0.08);
   color: #fff8ee;
   border: 1rpx solid rgba(255, 255, 255, 0.16);
+  font-size: 26rpx;
 }
 
 .primary-button:active,
@@ -265,5 +281,15 @@
 
   .hero-emoji {
     font-size: 100rpx;
+  }
+
+  .action-dock {
+    left: 20rpx;
+    right: 20rpx;
+  }
+
+  .secondary-button {
+    height: 74rpx;
+    line-height: 74rpx;
   }
 }
