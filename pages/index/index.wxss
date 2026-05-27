@@ -17,10 +17,80 @@ page {
 }
 
 .top-strip {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   margin: 8rpx 0 24rpx;
+}
+
+.home-atmosphere {
+  position: absolute;
+  top: -130rpx;
+  left: -24rpx;
+  right: -24rpx;
+  height: 720rpx;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-atmosphere::before {
+  content: '';
+  position: absolute;
+  top: 34rpx;
+  left: 30rpx;
+  right: 18rpx;
+  height: 520rpx;
+  background:
+    linear-gradient(105deg, transparent 0%, rgba(215, 255, 104, 0.14) 18%, transparent 33%),
+    linear-gradient(76deg, transparent 11%, rgba(255, 248, 238, 0.07) 41%, transparent 56%),
+    repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.055) 0 1rpx, transparent 1rpx 28rpx);
+  opacity: 0.55;
+  transform: rotate(-5deg);
+  animation: liquidPrism 11s ease-in-out infinite alternate;
+}
+
+.home-ribbon {
+  position: absolute;
+  height: 170rpx;
+  border-radius: 999rpx;
+  filter: blur(12rpx);
+  opacity: 0.3;
+  transform-origin: center;
+}
+
+.home-ribbon-lime {
+  top: 24rpx;
+  left: -190rpx;
+  width: 780rpx;
+  background: linear-gradient(96deg, transparent 4%, rgba(215, 255, 104, 0.2) 32%, rgba(255, 248, 238, 0.05) 51%, transparent 76%);
+  transform: rotate(-13deg);
+  animation: ribbonDriftLime 13s ease-in-out infinite;
+}
+
+.home-ribbon-amber {
+  top: 250rpx;
+  right: -260rpx;
+  width: 840rpx;
+  background: linear-gradient(82deg, transparent 6%, rgba(255, 184, 77, 0.16) 34%, rgba(255, 122, 102, 0.06) 55%, transparent 78%);
+  transform: rotate(10deg);
+  animation: ribbonDriftAmber 15s ease-in-out infinite;
+}
+
+.home-caustic {
+  position: absolute;
+  top: 112rpx;
+  right: -18rpx;
+  width: 520rpx;
+  height: 330rpx;
+  background:
+    repeating-linear-gradient(118deg, transparent 0 34rpx, rgba(215, 255, 104, 0.08) 35rpx 37rpx, transparent 38rpx 68rpx),
+    linear-gradient(134deg, transparent 8%, rgba(255, 248, 238, 0.08) 46%, transparent 70%);
+  opacity: 0.42;
+  transform: skewX(-12deg) rotate(-4deg);
+  animation: causticSlide 16s ease-in-out infinite alternate;
 }
 
 .eyebrow {
@@ -66,6 +136,7 @@ page {
 
 .daily-cocktail-card {
   position: relative;
+  z-index: 1;
   display: flex;
   min-height: 360rpx;
   padding: 26rpx;
@@ -78,6 +149,22 @@ page {
   box-shadow: 0 28rpx 80rpx rgba(0, 0, 0, 0.36);
 }
 
+.daily-card-aura {
+  position: absolute;
+  top: -120rpx;
+  left: -140rpx;
+  width: 520rpx;
+  height: 520rpx;
+  border-radius: 44% 56% 50% 50%;
+  background:
+    radial-gradient(ellipse at center, rgba(215, 255, 104, 0.16), rgba(255, 184, 77, 0.08) 38%, transparent 67%);
+  filter: blur(18rpx);
+  opacity: 0.58;
+  transform: rotate(-18deg);
+  animation: cardAura 9s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
 .daily-cocktail-card::before {
   content: '';
   position: absolute;
@@ -86,6 +173,8 @@ page {
   bottom: 0;
   height: 8rpx;
   background: linear-gradient(90deg, #d7ff68, #ffb84d, #fff8ee);
+  background-size: 220% 100%;
+  animation: accentPour 5.8s ease-in-out infinite;
 }
 
 .daily-cocktail-card::after {
@@ -234,9 +323,12 @@ page {
   z-index: 1;
   font-size: 128rpx;
   opacity: 0.22;
+  animation: garnishFloat 7.2s ease-in-out infinite;
 }
 
 .search-section {
+  position: relative;
+  z-index: 1;
   margin: 26rpx 0 16rpx;
 }
 
@@ -302,6 +394,8 @@ page {
 }
 
 .cocktail-section {
+  position: relative;
+  z-index: 1;
   padding-top: 10rpx;
 }
 
@@ -553,6 +647,7 @@ page {
 }
 
 .main-tab-panel {
+  position: relative;
   min-height: calc(100vh - 208rpx);
 }
 
@@ -1205,6 +1300,95 @@ button[disabled].is-disabled {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes liquidPrism {
+  0% {
+    transform: translate3d(-20rpx, 0, 0) rotate(-5deg) skewX(-7deg);
+    opacity: 0.34;
+  }
+  46% {
+    transform: translate3d(18rpx, 18rpx, 0) rotate(-2deg) skewX(4deg);
+    opacity: 0.58;
+  }
+  100% {
+    transform: translate3d(46rpx, -8rpx, 0) rotate(3deg) skewX(-3deg);
+    opacity: 0.42;
+  }
+}
+
+@keyframes ribbonDriftLime {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-13deg) scaleX(1);
+  }
+  50% {
+    transform: translate3d(72rpx, 26rpx, 0) rotate(-9deg) scaleX(1.04);
+  }
+  100% {
+    transform: translate3d(28rpx, -12rpx, 0) rotate(-15deg) scaleX(0.98);
+  }
+}
+
+@keyframes ribbonDriftAmber {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(10deg) scaleX(1);
+  }
+  45% {
+    transform: translate3d(-74rpx, 18rpx, 0) rotate(7deg) scaleX(1.06);
+  }
+  100% {
+    transform: translate3d(-30rpx, -20rpx, 0) rotate(12deg) scaleX(0.98);
+  }
+}
+
+@keyframes causticSlide {
+  0% {
+    transform: translate3d(0, 0, 0) skewX(-12deg) rotate(-4deg);
+    opacity: 0.26;
+  }
+  100% {
+    transform: translate3d(-56rpx, 18rpx, 0) skewX(-6deg) rotate(1deg);
+    opacity: 0.44;
+  }
+}
+
+@keyframes cardAura {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-18deg) scale(0.96);
+    opacity: 0.34;
+  }
+  55% {
+    transform: translate3d(96rpx, 42rpx, 0) rotate(8deg) scale(1.08);
+    opacity: 0.62;
+  }
+  100% {
+    transform: translate3d(54rpx, -16rpx, 0) rotate(16deg) scale(1);
+    opacity: 0.46;
+  }
+}
+
+@keyframes accentPour {
+  0%,
+  100% {
+    opacity: 0.72;
+    background-position: 0% 50%;
+  }
+  50% {
+    opacity: 1;
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes garnishFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-4deg);
+    opacity: 0.18;
+  }
+  50% {
+    transform: translate3d(-14rpx, -12rpx, 0) rotate(3deg);
+    opacity: 0.26;
   }
 }
 

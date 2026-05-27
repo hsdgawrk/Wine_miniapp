@@ -12,6 +12,12 @@
 
   <block wx:else>
     <view wx:if="{{activeMainTab === 'home'}}" class="main-tab-panel {{mainTabTransitionClass}}">
+      <view class="home-atmosphere" aria-hidden="true">
+        <view class="home-ribbon home-ribbon-lime"></view>
+        <view class="home-ribbon home-ribbon-amber"></view>
+        <view class="home-caustic"></view>
+      </view>
+
       <view class="top-strip">
         <view>
           <text class="eyebrow">BAR INDEX</text>
@@ -28,6 +34,8 @@
         class="daily-cocktail-card slide-up"
         bindtap="onDailyRecommendTap"
       >
+        <view class="daily-card-aura" aria-hidden="true"></view>
+
         <view class="date-plate">
           <text class="date-month">{{currentDate.month}}</text>
           <text class="date-day">{{currentDate.day}}</text>
