@@ -14,7 +14,7 @@ Page({
     ...cocktailDraftForm.createInitialFormData(),
 
     mainTabs: [
-      { tab: 'home', text: '首页', code: '01', action: '菜单' },
+      { tab: 'home', text: '首页', code: '@', action: '菜单' },
       { tab: 'add', text: '添加', code: '+', action: '创建' },
       { tab: 'mine', text: '私藏', code: 'ME', action: '酒谱' }
     ],

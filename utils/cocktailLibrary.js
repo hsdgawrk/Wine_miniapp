@@ -9,212 +9,394 @@ const builtInCocktails = [
     name: '马提尼',
     emoji: '🍸',
     category: '经典',
-    description: '优雅与经典的完美结合，干练口感中透露着杜松子的芬芳',
-    history: '马提尼是经典鸡尾酒的代表，常被视为干练、简洁与仪式感的象征。',
+    description: '金酒的冷冽草本与干味美思的轻盈酒香交织，入口清瘦、利落、带柑橘尾韵',
+    history: '马提尼在十九世纪末到二十世纪初逐渐成型，随着金酒、味美思和鸡尾酒杯文化一起成为酒吧审美的标志。它强调冰镇、稀释与香气控制，是检验搅拌技法的经典酒款。',
     difficulty: '简单',
-    time: '3分钟',
+    time: '5分钟',
     popularity: 95,
-    ingredients: ['金酒', '干味美思', '橄榄', '柠檬皮']
+    ingredients: ['金酒 60ml', '干味美思 10ml', '柠檬皮', '绿橄榄', '冰块'],
+    steps: [
+      {
+        number: 1,
+        instruction: '将马天尼杯或鸡尾酒杯提前冰镇，调酒杯中加入足量冰块',
+        tips: '杯具温度越低，酒体越能保持清澈锋利',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '倒入60ml金酒和10ml干味美思',
+        tips: '伦敦干金酒会带来更清晰的杜松子和柑橘香',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '用吧勺缓慢搅拌约25秒，让酒液充分降温并适度稀释',
+        tips: '不要摇制，搅拌能保留马提尼干净通透的质感',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '过滤倒入冰镇后的杯中',
+        tips: '倒酒前倒掉杯中融水，避免口感被稀释',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '挤压柠檬皮释放精油，也可改用一颗绿橄榄装饰',
+        tips: '柠檬皮更清爽，橄榄会让尾段多一点咸鲜感',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '2',
     name: '曼哈顿',
     emoji: '🥃',
     category: '经典',
-    description: '威士忌的醇厚与甜味美思的柔和，造就了这款永恒的经典',
-    history: '曼哈顿以威士忌为主体，口感成熟稳重，是美式经典调酒的重要代表。',
+    description: '黑麦威士忌的辛香、甜味美思的草本甜感与苦精香料感叠出沉稳酒体',
+    history: '曼哈顿通常被认为兴起于十九世纪后期的纽约，是威士忌、加强葡萄酒与苦精组合的代表。它不像酸酒那样依赖果汁，而是靠搅拌后的温度、稀释和香料层次取胜。',
     difficulty: '中等',
     time: '5分钟',
     popularity: 88,
-    ingredients: ['威士忌', '甜味美思', '安格斯特拉苦精', '樱桃']
+    ingredients: ['黑麦威士忌 50ml', '甜味美思 20ml', '安格斯特拉苦精 1dash', '酒渍樱桃', '冰块'],
+    steps: [
+      {
+        number: 1,
+        instruction: '冰镇鸡尾酒杯，调酒杯中加入足量冰块',
+        tips: '曼哈顿适合无冰直饮，预冷杯具很重要',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '倒入50ml黑麦威士忌、20ml甜味美思和1dash安格斯特拉苦精',
+        tips: '黑麦威士忌更辛辣，波本会让整体更圆润甜美',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '用吧勺搅拌约30秒，直到调酒杯外壁明显降温',
+        tips: '搅拌动作保持稳定，避免带入过多气泡',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '过滤倒入冰镇鸡尾酒杯',
+        tips: '如果喜欢更厚重的酒体，可以略微缩短搅拌时间',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '放入酒渍樱桃完成装饰',
+        tips: '樱桃糖浆不要倒太多，以免压过威士忌香气',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '3',
     name: '莫吉托',
     emoji: '🌿',
     category: '清爽',
-    description: '薄荷叶的清香与朗姆酒的甘甜，夏日午后的完美选择',
-    history: '莫吉托源自加勒比风味，薄荷、青柠与朗姆酒让它成为清爽型鸡尾酒的代表。',
+    description: '白朗姆的甘蔗甜香被薄荷、青柠和苏打水拉亮，清爽、有气泡感且不厚重',
+    history: '莫吉托带有鲜明的古巴风格，薄荷、青柠、糖和朗姆构成了热带地区常见的清凉组合。它的关键不是把薄荷捣碎，而是轻柔释放香气并保持杯中气泡活力。',
     difficulty: '简单',
-    time: '4分钟',
+    time: '6分钟',
     popularity: 92,
-    ingredients: ['白朗姆酒', '薄荷叶', '青柠汁', '苏打水', '白糖']
+    ingredients: ['白朗姆酒 45ml', '青柠汁 20ml', '薄荷枝 6枝', '白砂糖 2茶匙', '苏打水', '碎冰'],
+    steps: [
+      {
+        number: 1,
+        instruction: '在高球杯中加入薄荷叶、2茶匙白砂糖和20ml新鲜青柠汁',
+        tips: '薄荷叶先轻拍再入杯，香气会更自然',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '轻轻按压薄荷和糖，让糖逐渐溶入青柠汁',
+        tips: '不要把薄荷捣成碎渣，否则容易产生草腥和苦味',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '加入少量苏打水和碎冰，再倒入45ml白朗姆酒',
+        tips: '先加一点苏打水能帮助糖分散，也能保留气泡层次',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '补满碎冰，以苏打水加满后从杯底向上轻轻提拉搅拌',
+        tips: '动作要轻，目标是混合酒液而不是赶走气泡',
+        estimatedTime: 2,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '用薄荷枝和青柠片装饰',
+        tips: '装饰用薄荷枝先拍醒，靠近杯口能增强第一口香气',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '4',
     name: '血腥玛丽',
     emoji: '🍅',
     category: '早餐酒',
-    description: '浓郁的番茄汁与伏特加的深度融合，醒酒解腻的理想选择',
-    history: '血腥玛丽以番茄汁和伏特加为核心，咸鲜辛辣的风味让它常出现在早午餐场景。',
+    description: '番茄汁的咸鲜厚度包裹伏特加，柠檬、辣酱和伍斯特酱带出辛香与酸度',
+    history: '血腥玛丽在二十世纪酒吧文化中逐渐成为早午餐代表，因可按个人口味调整辣度、盐度和香料而流派众多。它更像一杯带酒精的冷汤，平衡点在鲜味、酸度和辛辣感。',
     difficulty: '简单',
-    time: '5分钟',
+    time: '6分钟',
     popularity: 78,
-    ingredients: ['伏特加', '番茄汁', '柠檬汁', '伍斯特郡酱', '塔巴斯科辣椒酱', '芹菜盐']
+    ingredients: ['伏特加 45ml', '番茄汁 90ml', '柠檬汁 15ml', '伍斯特酱 2dash', '塔巴斯科辣酱', '芹菜盐', '黑胡椒', '芹菜杆'],
+    steps: [
+      {
+        number: 1,
+        instruction: '在调酒杯中加入冰块、45ml伏特加、90ml番茄汁和15ml柠檬汁',
+        tips: '番茄汁提前冷藏，成品会更清爽',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '加入2dash伍斯特酱，并按口味加入塔巴斯科辣酱、芹菜盐和黑胡椒',
+        tips: '辣酱和盐先少量加入，试味后再微调',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '用吧勺轻轻搅拌，让番茄汁与调味料完全融合',
+        tips: '不要剧烈摇制，番茄汁起泡后口感会显得粗糙',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '过滤或连冰倒入岩石杯；若想长饮，可倒入装满冰块的高球杯',
+        tips: '带冰饮用会让辛辣感更柔和',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '用芹菜杆和柠檬角装饰，饮用前可再轻轻搅一下',
+        tips: '芹菜杆既是装饰，也能作为搅拌棒使用',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '5',
     name: '玛格丽特',
     emoji: '🥭',
     category: '热带',
-    description: '龙舌兰酒的烈性搭配青柠的酸爽，热情如火的墨西哥风情',
-    history: '玛格丽特以龙舌兰酒、橙酒和青柠构成酸甜平衡，盐边是它鲜明的饮用仪式。',
+    description: '100%龙舌兰的植物辛香、橙酒的甜橙气息和青柠酸度形成明快平衡',
+    history: '玛格丽特是龙舌兰鸡尾酒中最具代表性的经典之一，常见做法以龙舌兰、橙酒和青柠汁为核心。半盐边让饮用者能在酸甜与咸鲜之间自由切换，是它最容易被记住的仪式感。',
     difficulty: '中等',
     time: '6分钟',
     popularity: 89,
-    ingredients: ['银龙舌兰酒', '三重橙酒', '青柠汁', '粗盐', '青柠片']
+    ingredients: ['龙舌兰酒 50ml', '三重橙酒 20ml', '青柠汁 15ml', '粗盐', '青柠片', '冰块'],
+    steps: [
+      {
+        number: 1,
+        instruction: '用青柠片擦拭杯口半圈，再蘸上薄薄一层粗盐',
+        tips: '做半盐边即可，方便根据每一口的需要选择是否碰到盐',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '在摇壶中加入50ml龙舌兰酒、20ml三重橙酒和15ml新鲜青柠汁',
+        tips: '选择100%龙舌兰酒，植物香和酒体会更干净',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '加入冰块后用力摇制约15秒',
+        tips: '摇到摇壶外壁结霜即可，过度稀释会削弱青柠的明亮感',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '过滤倒入冰镇后的鸡尾酒杯',
+        tips: '若使用岩石杯，也可以加冰饮用，口感会更轻松',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '用青柠片装饰，饮用前先闻杯口的青柠香气',
+        tips: '盐边、青柠和橙酒香气会先于酒液进入感官',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '6',
     name: '长岛冰茶',
     emoji: '🧊',
     category: '烈酒',
-    description: '多种烈酒的完美调和，看似清淡实则浓烈，喝酒人的挑战',
-    history: '长岛冰茶混合多种烈酒，以类似冰茶的外观和强烈酒体形成反差。',
+    description: '伏特加、金酒、朗姆和龙舌兰叠加出强劲底盘，柠檬糖浆与可乐让它像冰茶般顺口',
+    history: '长岛冰茶以多种基酒同杯而出名，视觉上接近冰茶，实际酒精感更直接。它的重点不是单纯堆叠烈酒，而是用柠檬、糖浆和可乐把酒体收束到清爽长饮的结构里。',
     difficulty: '困难',
     time: '8分钟',
     popularity: 85,
-    ingredients: ['伏特加', '朗姆酒', '金酒', '龙舌兰酒', '三重橙酒', '柠檬汁', '可乐']
+    ingredients: ['伏特加 15ml', '白朗姆 15ml', '金酒 15ml', '龙舌兰 15ml', '君度 15ml', '柠檬汁 25ml', '糖浆 30ml', '可乐', '冰块'],
+    steps: [
+      {
+        number: 1,
+        instruction: '在高球杯中装满冰块',
+        tips: '冰块要足，才能让多种烈酒保持清爽而不过分灼热',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '依次加入15ml伏特加、15ml白朗姆、15ml金酒、15ml龙舌兰和15ml君度',
+        tips: '用量要准确，任一基酒过量都会破坏平衡',
+        estimatedTime: 2,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '加入25ml柠檬汁和30ml糖浆',
+        tips: '新鲜柠檬汁能托住酸度，糖浆负责把烈酒边缘磨圆',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '用吧勺轻轻搅拌，让基酒、酸和甜先混合均匀',
+        tips: '先搅匀再加可乐，成品颜色和甜度会更稳定',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '以可乐补满杯身，再轻轻提拉一次，最后用柠檬片装饰',
+        tips: '可乐只需轻柔混合，避免气泡迅速流失',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '7',
     name: '威士忌酸',
     emoji: '🍋',
     category: '酸甜',
-    description: '威士忌的醇香与柠檬的酸甜交织，层次丰富的口感体验',
-    history: '威士忌酸属于 Sour 家族，利用柠檬和糖浆平衡威士忌酒体。',
+    description: '波本的香草与橡木感被柠檬酸度提亮，糖浆和蛋白泡沫带来圆润口感',
+    history: '威士忌酸属于 Sour 家族，结构清晰：烈酒、酸和甜形成主轴，蛋白则提供绵密质地。它从十九世纪以来一直是威士忌调酒的基础范式，适合练习酸甜平衡。',
     difficulty: '简单',
-    time: '4分钟',
+    time: '6分钟',
     popularity: 82,
-    ingredients: ['波本威士忌', '柠檬汁', '糖浆', '蛋白', '安格斯特拉苦精']
+    ingredients: ['波本威士忌 45ml', '柠檬汁 25ml', '糖浆 20ml', '蛋白 少量', '安格斯特拉苦精', '橙片', '樱桃', '冰块'],
+    steps: [
+      {
+        number: 1,
+        instruction: '在摇壶中加入45ml波本威士忌、25ml柠檬汁、20ml糖浆和少量蛋白',
+        tips: '蛋白可选；使用时选择新鲜鸡蛋并注意卫生',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '不加冰先干摇约10秒，让蛋白产生细腻泡沫',
+        tips: '干摇能让泡沫更稳定，口感也更柔顺',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '加入冰块后再次用力摇制约15秒',
+        tips: '摇到摇壶明显冰冷即可，酸甜和酒体会更融合',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '过滤倒入古典杯；可直饮，也可倒在冰块上',
+        tips: '带冰版本更适合慢饮，直饮版本香气更集中',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '滴上少量苦精，并用橙片和樱桃装饰',
+        tips: '苦精滴在泡沫表面即可，不需要搅开',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   },
   {
     id: '8',
     name: '大都会',
     emoji: '💗',
     category: '时尚',
-    description: '粉红色的浪漫外表下，隐藏着伏特加与蔓越莓的完美和谐',
-    history: '大都会以伏特加和蔓越莓构成明亮外观，是都市风格鸡尾酒的代表。',
+    description: '柑橘伏特加与君度带出清亮果香，蔓越莓和青柠让粉红色酒体酸甜利落',
+    history: '大都会在二十世纪后期随着都市酒吧文化走红，因明亮色泽、清爽酸甜和利落杯型成为时尚型鸡尾酒代表。它看似轻盈，实际非常依赖酸度和橙酒甜感的精准平衡。',
     difficulty: '简单',
-    time: '3分钟',
+    time: '5分钟',
     popularity: 87,
-    ingredients: ['伏特加', '三重橙酒', '蔓越莓汁', '青柠汁']
+    ingredients: ['柑橘伏特加 40ml', '君度 15ml', '青柠汁 15ml', '蔓越莓汁 30ml', '柠檬皮', '冰块'],
+    steps: [
+      {
+        number: 1,
+        instruction: '提前冰镇大号鸡尾酒杯',
+        tips: '大都会通常无冰上桌，杯具预冷能保持第一口的清爽',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 2,
+        instruction: '在摇壶中加入40ml柑橘伏特加、15ml君度、15ml青柠汁和30ml蔓越莓汁',
+        tips: '蔓越莓汁负责颜色和酸甜，不宜过量以免变成果汁感',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      },
+      {
+        number: 3,
+        instruction: '加入冰块后用力摇制约12到15秒',
+        tips: '摇制要干脆，让酒体冰冷并带出轻微空气感',
+        estimatedTime: 1,
+        animation: 'zoomIn'
+      },
+      {
+        number: 4,
+        instruction: '细滤倒入冰镇后的鸡尾酒杯',
+        tips: '细滤能去除碎冰，让表面更干净',
+        estimatedTime: 1,
+        animation: 'fadeIn'
+      },
+      {
+        number: 5,
+        instruction: '挤压柠檬皮释放精油后放入或弃用，按喜好完成装饰',
+        tips: '柠檬皮精油会让第一口更明亮，也能平衡蔓越莓甜感',
+        estimatedTime: 1,
+        animation: 'slideIn'
+      }
+    ]
   }
 ];
-
-const detailedStepsByName = {
-  '莫吉托': [
-    {
-      number: 1,
-      instruction: '在杯中加入10片新鲜薄荷叶',
-      tips: '轻轻拍打薄荷叶释放香味，不要用力捣碎',
-      estimatedTime: 1,
-      animation: 'fadeIn'
-    },
-    {
-      number: 2,
-      instruction: '加入15ml新鲜柠檬汁',
-      tips: '使用新鲜柠檬榨汁，避免使用浓缩柠檬汁',
-      estimatedTime: 1,
-      animation: 'slideIn'
-    },
-    {
-      number: 3,
-      instruction: '倒入60ml白朗姆酒',
-      tips: '选择品质较好的白朗姆酒，口感会更佳',
-      estimatedTime: 1,
-      animation: 'zoomIn'
-    },
-    {
-      number: 4,
-      instruction: '加入适量苏打水并轻轻搅拌',
-      tips: '苏打水要冰镇过，搅拌时避免破坏薄荷叶',
-      estimatedTime: 1,
-      animation: 'fadeIn'
-    },
-    {
-      number: 5,
-      instruction: '用柠檬片和薄荷叶装饰',
-      tips: '装饰不仅美观，还能增加香气',
-      estimatedTime: 1,
-      animation: 'slideIn'
-    }
-  ],
-  '玛格丽特': [
-    {
-      number: 1,
-      instruction: '用柠檬片擦拭杯沿，蘸上盐边',
-      tips: '盐边能平衡玛格丽特的酸味',
-      estimatedTime: 2,
-      animation: 'fadeIn'
-    },
-    {
-      number: 2,
-      instruction: '在调酒器中加入45ml龙舌兰酒',
-      tips: '使用100%龙舌兰制作的酒效果最佳',
-      estimatedTime: 1,
-      animation: 'slideIn'
-    },
-    {
-      number: 3,
-      instruction: '加入15ml橙皮酒',
-      tips: 'Cointreau或Triple Sec都可以',
-      estimatedTime: 1,
-      animation: 'zoomIn'
-    },
-    {
-      number: 4,
-      instruction: '倒入20ml新鲜柠檬汁',
-      tips: '新鲜柠檬汁是关键，不能用瓶装的',
-      estimatedTime: 1,
-      animation: 'fadeIn'
-    },
-    {
-      number: 5,
-      instruction: '加冰摇匀，过滤倒入杯中',
-      tips: '摇制15-20秒，让所有成分充分混合',
-      estimatedTime: 2,
-      animation: 'slideIn'
-    }
-  ],
-  '曼哈顿': [
-    {
-      number: 1,
-      instruction: '在调酒杯中加入60ml威士忌',
-      tips: '推荐使用黑麦威士忌或波本威士忌',
-      estimatedTime: 1,
-      animation: 'fadeIn'
-    },
-    {
-      number: 2,
-      instruction: '倒入30ml甜味威末酒',
-      tips: '选择品质好的意大利甜味威末酒',
-      estimatedTime: 1,
-      animation: 'slideIn'
-    },
-    {
-      number: 3,
-      instruction: '加入2-3滴安格仕苦酒',
-      tips: '苦酒用量要适中，太多会掩盖其他味道',
-      estimatedTime: 1,
-      animation: 'zoomIn'
-    },
-    {
-      number: 4,
-      instruction: '加冰搅拌30秒',
-      tips: '搅拌而不是摇制，保持酒体的丝滑质感',
-      estimatedTime: 1,
-      animation: 'fadeIn'
-    },
-    {
-      number: 5,
-      instruction: '过滤倒入鸡尾酒杯，用樱桃装饰',
-      tips: '预冷鸡尾酒杯能保持最佳口感',
-      estimatedTime: 1,
-      animation: 'slideIn'
-    }
-  ]
-};
 
 const defaultStorageAdapter = {
   getCustomCocktails() {
@@ -324,7 +506,7 @@ function createCocktailLibrary(options = {}) {
 
     const sourceSteps = cocktail.steps && cocktail.steps.length
       ? cocktail.steps
-      : detailedStepsByName[cocktail.name] || buildFallbackSteps(cocktail.name, cocktail.ingredients);
+      : buildFallbackSteps(cocktail.name, cocktail.ingredients);
 
     return normalizeSteps(sourceSteps);
   }

@@ -20,7 +20,7 @@
 
       <view class="top-strip">
         <view>
-          <text class="eyebrow">BAR INDEX</text>
+          <text class="eyebrow">是啊，喝什么</text>
           <text class="page-title">今晚喝什么</text>
         </view>
         <view class="library-stat">
@@ -45,7 +45,6 @@
         <view class="daily-content">
           <view class="daily-kicker">
             <text class="daily-label">今日特调</text>
-            <text class="daily-year">{{currentDate.year}}</text>
           </view>
           <text class="daily-cocktail-title">{{randomCocktail.name}}</text>
           <text class="daily-cocktail-description">{{randomCocktail.description}}</text>

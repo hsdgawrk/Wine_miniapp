@@ -255,12 +255,6 @@ page {
   background: rgba(215, 255, 104, 0.1);
 }
 
-.daily-year {
-  color: rgba(247, 241, 232, 0.48);
-  font-size: 22rpx;
-  font-weight: 700;
-}
-
 .daily-cocktail-title {
   display: block;
   color: #fff8ee;

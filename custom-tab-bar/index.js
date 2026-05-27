@@ -7,7 +7,7 @@ Component({
       {
         pagePath: "/pages/index/index",
         text: "首页",
-        code: "01",
+        code: "@",
         action: "菜单",
         tab: "home"
       },
