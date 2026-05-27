@@ -121,6 +121,10 @@ Page({
     });
   },
 
+  handleTouchMove() {
+    return false;
+  },
+
   handleTouchEnd(e) {
     const touch = e.changedTouches && e.changedTouches[0];
     if (!touch) return;
@@ -128,7 +132,7 @@ Page({
     const deltaX = touch.clientX - this.data.touchStartX;
     const deltaY = touch.clientY - this.data.touchStartY;
     const elapsed = Date.now() - this.data.touchStartTime;
-    const isHorizontalSwipe = Math.abs(deltaX) > 58 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
+    const isHorizontalSwipe = Math.abs(deltaX) > 46 && Math.abs(deltaX) > Math.abs(deltaY) * 0.8;
 
     if (!isHorizontalSwipe || elapsed > 900) {
       return;
